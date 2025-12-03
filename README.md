@@ -16,13 +16,14 @@ Each song features a unique visual identity, custom CSS keyframe animations, and
 
 ## 🎨 Featured Tracks & Styles
 
-| Song Title                   | Original Artist         | Visual Concept    | Key Effects                                               |
-| :--------------------------- | :---------------------- | :---------------- | :-------------------------------------------------------- |
-| **Hated by Life Itself**     | Kanzaki Iori / Mafumafu | _Kinetic Glitch_  | Aggressive typography, camera shake, RGB split.           |
-| **I'm glad you're evil too** | PinocchioP              | _Warm Melancholy_ | Firefly particles, dynamic sunset gradients, fading text. |
-| **Fix You**                  | Coldplay                | _Organic Light_   | Swinging physics lightbulb, rain particles, stadium glow. |
-| **Heather**                  | Conan Gray              | _Vintage Film_    | Film grain, light leaks, cold breath typography.          |
-| **About You**                | The 1975                | _Cinematic Noir_  | Film grain, focus pulling gaps, fading outro monologue.   |
+| Song Title                   | Original Artist         | Visual Concept     | Key Effects                                               |
+| :--------------------------- | :---------------------- | :----------------- | :-------------------------------------------------------- |
+| **Hated by Life Itself**     | Kanzaki Iori / Mafumafu | _Kinetic Glitch_   | Aggressive typography, camera shake, RGB split.           |
+| **I'm glad you're evil too** | PinocchioP              | _Warm Melancholy_  | Firefly particles, dynamic sunset gradients, fading text. |
+| **Fix You**                  | Coldplay                | _Organic Light_    | Swinging physics lightbulb, rain particles, stadium glow. |
+| **Heather**                  | Conan Gray              | _Vintage Film_     | Film grain, light leaks, cold breath typography.          |
+| **About You**                | The 1975                | _Cinematic Noir_   | Film grain, focus pulling gaps, fading outro monologue.   |
+| **Drown**                    | Bring Me The Horizon    | _Cursed Broadcast_ | CRT Scanlines, chromatic aberration, water submersion.    |
 
 ## 🛠️ Technical Highlights
 
@@ -57,6 +58,7 @@ I do not own the rights to any of the musical recordings or lyrics featured in t
 - **Coldplay** (_Fix You_)
 - **Conan Gray** (_Heather_)
 - **The 1975** (_About You_)
+- **Bring Me The Horizon** (_Drown_)
 
 _If you are a copyright holder and wish for a track to be removed, please contact me and I will take it down immediately._
 

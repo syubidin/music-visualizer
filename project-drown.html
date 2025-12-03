@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Drown - BMTH | Interactive</title>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet" />
+
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='0' y='0' width='64' height='64' rx='16' fill='%23111'/%3E%3Cpath d='M18 32L18 32 M27 20L27 44 M36 14L36 50 M45 20L45 44 M54 32L54 32' stroke='%23ffffff' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E"
+    />
+
+    <style>
+      :root {
+        --bg-void: #0a0a0a;
+        --bg-broadcast: #b8b09b; /* Vintage Stage Color */
+        --bg-drown: #001f2b; /* Underwater */
+        --text-main: #111;
+        --text-light: #f0f0f0;
+        --scanline: rgba(0, 0, 0, 0.1);
+        --glitch-1: #ff00ff;
+        --glitch-2: #00ffff;
+      }
+
+      body,
+      html {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        background-color: var(--bg-void);
+        color: var(--text-light);
+        font-family: 'Anton', sans-serif;
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        transition: background-color 0.5s ease;
+      }
+
+      /* --- CRT EFFECT LAYERS --- */
+
+      /* 1. Scanlines */
+      body::before {
+        content: ' ';
+        display: block;
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+        z-index: 90;
+        background-size: 100% 2px, 3px 100%;
+        pointer-events: none;
+      }
+
+      /* 2. Static Noise (For Gaps) */
+      #static-layer {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+        opacity: 0;
+        z-index: 5;
+        pointer-events: none;
+        mix-blend-mode: hard-light;
+        transition: opacity 0.5s;
+      }
+
+      /* 3. Water Submerge Layer */
+      #water-layer {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 0%;
+        background: linear-gradient(to top, rgba(0, 30, 50, 0.9), rgba(0, 30, 50, 0));
+        z-index: 20;
+        pointer-events: none;
+        transition: height 5s ease;
+      }
+
+      /* --- GLOBAL NAVBAR --- */
+      #song-nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        padding: 20px 30px;
+        z-index: 9999;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: opacity 1s ease, transform 1s ease;
+        pointer-events: auto;
+        mix-blend-mode: exclusion; /* Visible against scanlines */
+      }
+      #song-nav.nav-hidden {
+        opacity: 0;
+        transform: translateY(-20px);
+        pointer-events: none;
+      }
+      .nav-home {
+        text-decoration: none;
+        color: #fff;
+        opacity: 0.7;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-family: 'Roboto Mono', monospace;
+        font-size: 0.8rem;
+        letter-spacing: 1px;
+        transition: opacity 0.3s;
+      }
+      .nav-x {
+        color: #fff;
+        opacity: 0.6;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+      }
+      .nav-x svg {
+        width: 18px;
+        height: 18px;
+      }
+      .nav-home:hover,
+      .nav-x:hover {
+        opacity: 1;
+        transform: scale(1.05);
+      }
+
+      /* --- LYRICS --- */
+      #lyric-container {
+        position: relative;
+        z-index: 50;
+        width: 90%;
+        max-width: 1100px;
+        perspective: 800px;
+      }
+
+      .lyric-line {
+        font-size: 3rem;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        opacity: 0;
+        transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        /* Glitch base */
+        text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.2);
+      }
+
+      /* --- GAP FILLER: BROADCAST MESSAGES --- */
+      #broadcast-msg {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-family: 'Roboto Mono', monospace;
+        font-size: 1.5rem;
+        color: #ff3333;
+        background: black;
+        padding: 5px 15px;
+        border: 1px solid #ff3333;
+        z-index: 40;
+        display: none;
+        text-shadow: 0 0 5px #ff3333;
+      }
+
+      /* --- STYLES & STATES --- */
+
+      /* 1. Vintage Broadcast (Verse) */
+      .mood-vintage {
+        background-color: var(--bg-broadcast);
+      }
+      .mood-vintage .lyric-line {
+        color: #222;
+        text-shadow: 4px 4px 0px rgba(0, 0, 0, 0.1);
+        transform: scale(1);
+      }
+
+      /* 2. Drowning (Chorus) */
+      .mood-drown {
+        background-color: var(--bg-drown);
+      }
+      .mood-drown .lyric-line {
+        color: #e0f7fa;
+        text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+        animation: waterWobble 3s infinite ease-in-out;
+      }
+
+      /* 3. Breakdown (Bridge/Exorcism) */
+      .mood-chaos {
+        background-color: #110000;
+      }
+      .mood-chaos .lyric-line {
+        color: #fff;
+        font-size: 4rem;
+        animation: violentShake 0.1s infinite;
+        text-shadow: -2px 0 var(--glitch-1), 2px 0 var(--glitch-2);
+      }
+
+      /* 4. Emphasized Words */
+      .highlight-hole {
+        clip-path: polygon(0 0, 100% 0, 100% 80%, 0 100%);
+        transform: skewY(5deg);
+      }
+      .highlight-save {
+        color: #fff !important;
+        text-shadow: 0 0 20px #fff !important;
+      }
+
+      /* --- OVERLAY --- */
+      #overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #000;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 200;
+        transition: opacity 1s ease;
+      }
+      #overlay h1 {
+        font-size: 4rem;
+        color: #f0f0f0;
+        margin-bottom: 20px;
+        animation: flicker 3s infinite;
+      }
+      #overlay p {
+        font-family: 'Roboto Mono', monospace;
+        font-size: 0.8rem;
+        color: #555;
+      }
+
+      /* --- ENDING --- */
+      #ending-screen {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #000;
+        z-index: 150;
+        opacity: 0;
+        pointer-events: none;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        transition: opacity 2s ease;
+      }
+      #ending-screen h1 {
+        font-family: 'Roboto Mono', monospace;
+        color: #ff3333;
+        font-size: 1.5rem;
+        border: 2px solid #ff3333;
+        padding: 20px;
+      }
+      #replay-btn {
+        background: #222;
+        border: 1px solid #444;
+        color: #ccc;
+        padding: 15px 40px;
+        font-family: 'Roboto Mono', monospace;
+        margin-top: 30px;
+        cursor: pointer;
+        transition: 0.3s;
+      }
+      #replay-btn:hover {
+        background: #333;
+        border-color: #fff;
+        color: #fff;
+      }
+
+      #final-footer {
+        position: fixed;
+        bottom: 30px;
+        width: 100%;
+        text-align: center;
+        font-family: 'Roboto Mono', monospace;
+        font-size: 0.7rem;
+        color: #444;
+        z-index: 1000;
+        opacity: 0;
+        transition: opacity 2s ease 1s;
+      }
+      .footer-visible {
+        opacity: 1 !important;
+      }
+
+      /* --- KEYFRAMES --- */
+      @keyframes flicker {
+        0%,
+        19%,
+        21%,
+        23%,
+        25%,
+        54%,
+        56%,
+        100% {
+          opacity: 1;
+        }
+        20%,
+        24%,
+        55% {
+          opacity: 0.2;
+        }
+      }
+      @keyframes waterWobble {
+        0%,
+        100% {
+          transform: skewX(0deg) translateY(0);
+        }
+        25% {
+          transform: skewX(-2deg) translateY(2px);
+        }
+        75% {
+          transform: skewX(2deg) translateY(-2px);
+        }
+      }
+      @keyframes violentShake {
+        0% {
+          transform: translate(2px, 1px) rotate(0deg);
+        }
+        10% {
+          transform: translate(-1px, -2px) rotate(-1deg);
+        }
+        20% {
+          transform: translate(-3px, 0px) rotate(1deg);
+        }
+        30% {
+          transform: translate(0px, 2px) rotate(0deg);
+        }
+        40% {
+          transform: translate(1px, -1px) rotate(1deg);
+        }
+        50% {
+          transform: translate(-1px, 2px) rotate(-1deg);
+        }
+        60% {
+          transform: translate(-3px, 1px) rotate(0deg);
+        }
+        70% {
+          transform: translate(2px, 1px) rotate(-1deg);
+        }
+        80% {
+          transform: translate(-1px, -1px) rotate(1deg);
+        }
+        90% {
+          transform: translate(2px, 2px) rotate(0deg);
+        }
+        100% {
+          transform: translate(1px, -2px) rotate(-1deg);
+        }
+      }
+      @keyframes flashStatic {
+        0% {
+          opacity: 0.1;
+        }
+        10% {
+          opacity: 0.4;
+        }
+        20% {
+          opacity: 0.1;
+        }
+        30% {
+          opacity: 0.6;
+        }
+        100% {
+          opacity: 0.2;
+        }
+      }
+
+      @media (max-width: 600px) {
+        .lyric-line {
+          font-size: 2rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <nav id="song-nav">
+      <a href="index.html" class="nav-home">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          <polyline points="9 22 9 12 15 12 15 22"></polyline>
+        </svg>
+        <span>Library</span>
+      </a>
+      <a href="https://x.com/syuby" target="_blank" class="nav-x">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path></svg>
+      </a>
+    </nav>
+
+    <div id="static-layer"></div>
+    <div id="water-layer"></div>
+    <div id="broadcast-msg">NO SIGNAL</div>
+
+    <div id="overlay">
+      <h1>DROWN</h1>
+      <p>BRING ME THE HORIZON</p>
+      <p style="margin-top: 30px; font-size: 0.6rem; opacity: 0.5">[ INITIATE BROADCAST ]</p>
+    </div>
+
+    <div id="ending-screen">
+      <h1>SYSTEM FAILURE</h1>
+      <p style="color: #666; font-family: 'Roboto Mono'; font-size: 0.8rem; margin-top: 10px">SIGNAL LOST</p>
+      <button id="replay-btn">REBOOT</button>
+    </div>
+    <div id="final-footer">from: syuby</div>
+
+    <audio id="audio-player">
+      <source src="drown.mp3" type="audio/mpeg" />
+    </audio>
+
+    <div id="lyric-container">
+      <div id="main-text" class="lyric-line"></div>
+    </div>
+
+    <script>
+      const audio = document.getElementById('audio-player');
+      const overlay = document.getElementById('overlay');
+      const mainText = document.getElementById('main-text');
+      const staticLayer = document.getElementById('static-layer');
+      const waterLayer = document.getElementById('water-layer');
+      const broadcastMsg = document.getElementById('broadcast-msg');
+      const endingScreen = document.getElementById('ending-screen');
+      const finalFooter = document.getElementById('final-footer');
+      const replayBtn = document.getElementById('replay-btn');
+      const songNav = document.getElementById('song-nav');
+
+      let currentLineIndex = -1;
+      let staticInterval;
+
+      // --- GAP FILLER: SIGNAL LOSS ---
+      const sysMessages = ['NO SIGNAL', 'TUNING...', 'ERROR 404', 'HELP ME', 'LOST CONNECTION', 'D R O W N'];
+
+      function triggerStatic(active, intense = false) {
+        if (active) {
+          staticLayer.style.opacity = intense ? '0.4' : '0.15';
+          staticLayer.style.animation = 'flashStatic 0.5s infinite';
+          broadcastMsg.style.display = 'block';
+
+          // Rapidly change message if intense
+          if (intense && !staticInterval) {
+            staticInterval = setInterval(() => {
+              broadcastMsg.innerText = sysMessages[Math.floor(Math.random() * sysMessages.length)];
+              broadcastMsg.style.transform = `translate(-50%, -50%) skewX(${Math.random() * 20 - 10}deg)`;
+            }, 100);
+          } else if (!intense) {
+            broadcastMsg.innerText = 'TUNING...';
+          }
+        } else {
+          staticLayer.style.opacity = '0';
+          staticLayer.style.animation = 'none';
+          broadcastMsg.style.display = 'none';
+          if (staticInterval) {
+            clearInterval(staticInterval);
+            staticInterval = null;
+          }
+        }
+      }
+
+      // --- DATA ---
+      const lyrics = [
+        { time: 0, text: '', type: 'gap' },
+
+        // VERSE 1 (Vintage TV Vibe)
+        { time: 15.15, text: "What doesn't kill you", type: 'vintage' },
+        { time: 18.14, text: 'Makes you wish you were dead', type: 'vintage' },
+        { time: 20.8, text: 'Got a hole in my soul growing deeper and deeper', type: 'vintage', extra: 'hole' },
+        { time: 25.16, text: "And I can't take", type: 'vintage' },
+        { time: 27.01, text: 'One more moment of this silence', type: 'vintage' },
+        { time: 30.17, text: 'The loneliness is haunting me', type: 'vintage' },
+        { time: 34.23, text: "And the weight of the world's getting harder to hold up", type: 'vintage' },
+
+        { time: 38.78, text: '', type: 'gap' },
+
+        { time: 41.28, text: 'It comes in waves, I close my eyes', type: 'vintage' },
+        { time: 44.81, text: 'Hold my breath and let it bury me', type: 'drown' }, // Begin shift
+        { time: 47.84, text: "I'm not okay and it's not alright", type: 'vintage' },
+        { time: 51.12, text: "Won't you drag the lake and bring me home again?", type: 'vintage' },
+
+        // CHORUS 1 (Drowning - Blue)
+        { time: 56.31, text: 'Who will fix me now?', type: 'drown' },
+        { time: 59.76, text: "Dive in when I'm down?", type: 'drown' },
+        { time: 62.96, text: 'Save me from myself', type: 'drown', extra: 'save' },
+        { time: 65.65, text: "Don't let me drown", type: 'drown' },
+
+        { time: 69.71, text: 'Who will make me fight?', type: 'drown' },
+        { time: 73.27, text: 'Drag me out alive?', type: 'drown' },
+        { time: 76.52, text: 'Save me from myself', type: 'drown', extra: 'save' },
+        { time: 78.99, text: "Don't let me drown", type: 'drown' },
+
+        { time: 83.36, text: '', type: 'gap' },
+
+        // VERSE 2
+        { time: 85.43, text: "What doesn't destroy you", type: 'vintage' },
+        { time: 88.52, text: 'Leaves you broken instead', type: 'vintage' },
+        { time: 91.17, text: 'Got a hole in my soul growing deeper and deeper', type: 'vintage', extra: 'hole' },
+        { time: 95.69, text: "And I can't take", type: 'vintage' },
+        { time: 97.5, text: 'One more moment of this silence', type: 'vintage' },
+        { time: 100.81, text: 'The loneliness is haunting me', type: 'vintage' },
+        { time: 104.52, text: "And the weight of the world's getting harder to hold up", type: 'vintage' },
+
+        { time: 111.62, text: 'It comes in waves, I close my eyes', type: 'vintage' },
+        { time: 115.1, text: 'Hold my breath and let it bury me', type: 'drown' },
+        { time: 118.49, text: "I'm not okay and it's not alright", type: 'vintage' },
+        { time: 121.56, text: "Won't you drag the lake and bring me home again?", type: 'vintage' },
+
+        // CHORUS 2
+        { time: 126.76, text: 'Who will fix me now?', type: 'drown' },
+        { time: 130.34, text: "Dive in when I'm down?", type: 'drown' },
+        { time: 133.51, text: 'Save me from myself', type: 'drown', extra: 'save' },
+        { time: 135.97, text: "Don't let me drown", type: 'drown' },
+        { time: 140.31, text: 'Who will make me fight?', type: 'drown' },
+        { time: 143.52, text: 'Drag me out alive?', type: 'drown' },
+        { time: 146.94, text: 'Save me from myself', type: 'drown', extra: 'save' },
+        { time: 149.34, text: "Don't let me drown", type: 'drown' },
+
+        // BRIDGE (Building Panic)
+        { time: 154.71, text: "'Cause you know that I can't do this on my own", type: 'vintage' },
+        { time: 161.35, text: "'Cause you know that I can't do this on my own", type: 'drown' },
+        { time: 168.18, text: "'Cause you know that I can't do this on my own", type: 'drown' },
+        { time: 174.93, text: "'Cause you know that I can't do this on my...", type: 'chaos' }, // Cut off
+
+        { time: 180.78, text: '', type: 'gap-chaos' }, // THE BREAKDOWN / EXORCISM
+
+        // OUTRO (Submerged)
+        { time: 193.86, text: 'Who will fix me now?', type: 'drown' },
+        { time: 200.75, text: 'Who will fix me now?', type: 'drown' },
+
+        { time: 207.39, text: 'Who will fix me now?', type: 'drown' },
+        { time: 210.62, text: "Dive in when I'm down?", type: 'drown' },
+        { time: 214.16, text: 'Save me from myself', type: 'drown', extra: 'save' },
+        { time: 216.57, text: "Don't let me drown", type: 'drown' },
+
+        { time: 217.85, text: '', type: 'gap' }, // END
+      ];
+
+      overlay.addEventListener('click', () => {
+        overlay.style.opacity = '0';
+        setTimeout(() => (overlay.style.display = 'none'), 1500);
+        songNav.classList.add('nav-hidden');
+        audio.play();
+        triggerStatic(true, false); // Intro tuning
+      });
+
+      audio.addEventListener('timeupdate', () => {
+        const currentTime = audio.currentTime;
+        let activeIndex = -1;
+        for (let i = 0; i < lyrics.length; i++) {
+          if (currentTime >= lyrics[i].time) activeIndex = i;
+          else break;
+        }
+        if (activeIndex !== -1 && activeIndex !== currentLineIndex) {
+          renderLyric(lyrics[activeIndex]);
+          currentLineIndex = activeIndex;
+        }
+      });
+
+      function renderLyric(line) {
+        // MOOD & BACKGROUND
+        document.body.className = `mood-${line.type.replace('gap-', '')}`;
+
+        // RESET
+        mainText.style.opacity = '0';
+        mainText.className = 'lyric-line'; // Reset special classes
+
+        // SPECIAL ANIMATIONS FOR BREAKDOWN
+        if (line.type === 'gap-chaos') {
+          triggerStatic(true, true); // Intense static
+          waterLayer.style.height = '0%';
+          return;
+        }
+
+        if (line.type === 'gap') {
+          triggerStatic(true, false); // Moderate static
+          waterLayer.style.height = '0%';
+          return;
+        }
+
+        // NORMAL RENDER
+        triggerStatic(false);
+
+        // Water rising effect
+        if (line.type === 'drown') {
+          waterLayer.style.height = '100%';
+        } else {
+          waterLayer.style.height = '0%';
+        }
+
+        setTimeout(() => {
+          mainText.innerText = line.text;
+          mainText.style.opacity = '1';
+
+          // Add extra emphasis classes
+          if (line.extra) {
+            mainText.classList.add(`highlight-${line.extra}`);
+          }
+        }, 100);
+      }
+
+      audio.addEventListener('ended', () => {
+        triggerStatic(true, false); // Signal lost
+        mainText.style.opacity = '0';
+        waterLayer.style.height = '0%';
+        endingScreen.classList.add('visible');
+        endingScreen.style.opacity = '1';
+        endingScreen.style.pointerEvents = 'auto';
+        finalFooter.classList.add('visible');
+        finalFooter.classList.add('footer-visible');
+        songNav.classList.remove('nav-hidden');
+      });
+
+      replayBtn.addEventListener('click', () => {
+        endingScreen.style.opacity = '0';
+        endingScreen.style.pointerEvents = 'none';
+        finalFooter.classList.remove('footer-visible');
+        songNav.classList.add('nav-hidden');
+
+        triggerStatic(true, false);
+
+        audio.currentTime = 0;
+        audio.play();
+        currentLineIndex = -1;
+        renderLyric(lyrics[0]);
+      });
+    </script>
+  </body>
+</html>
