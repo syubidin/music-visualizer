@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Surat Cinta Untuk Starla - Virgoun | Interactive Letter</title>
+    <link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Reenie+Beanie&family=Cinzel:wght@700&display=swap" rel="stylesheet" />
+
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='0' y='0' width='64' height='64' rx='16' fill='%232b2b2b'/%3E%3Cpath d='M18 32L18 32 M27 20L27 44 M36 14L36 50 M45 20L45 44 M54 32L54 32' stroke='%23f0e6d2' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E"
+    />
+
+    <style>
+      :root {
+        --bg-paper: #f4eadd; /* Slightly warmer vintage paper */
+        --ink-color: #2b2b2b; /* Faded black/sepia ink */
+        --ink-red: #8a2be2;
+        --wax-red: #9e2a2b;
+      }
+
+      body,
+      html {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        background-color: var(--bg-paper);
+        color: var(--ink-color);
+        font-family: 'Special Elite', monospace;
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        transition: background-color 1s ease;
+      }
+
+      /* --- ATMOSPHERE LAYERS --- */
+      /* 1. Paper Texture & Noise */
+      body::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.6' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.1'/%3E%3C/svg%3E");
+        pointer-events: none;
+        z-index: 0;
+        mix-blend-mode: multiply;
+      }
+      /* 2. Vignette & Creases */
+      body::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(circle at center, transparent 50%, rgba(60, 50, 40, 0.3) 100%);
+        pointer-events: none;
+        z-index: 1;
+        box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.1);
+      }
+      /* 3. Floating Paper Dust */
+      #paper-dust {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        z-index: 2;
+        pointer-events: none;
+      }
+      .dust-mote {
+        position: absolute;
+        background: rgba(100, 90, 80, 0.3);
+        border-radius: 50%;
+        animation: floatDust linear infinite;
+      }
+
+      /* --- NAVBAR --- */
+      #song-nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        padding: 20px 30px;
+        z-index: 9999;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: opacity 1s ease, transform 1s ease;
+        pointer-events: auto;
+      }
+      #song-nav.nav-hidden {
+        opacity: 0;
+        transform: translateY(-20px);
+        pointer-events: none;
+      }
+      .nav-home,
+      .nav-x {
+        color: var(--ink-color);
+        opacity: 0.7;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .nav-home:hover,
+      .nav-x:hover {
+        opacity: 1;
+        transform: scale(1.05);
+        filter: blur(0.5px); /* Ink bleed effect on hover */
+      }
+
+      /* --- MAIN CONTENT --- */
+      #paper-sheet {
+        position: relative;
+        z-index: 20;
+        width: 85%;
+        max-width: 850px;
+        min-height: 300px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        /* Slight rotation for realism */
+        transform: rotate(-0.5deg);
+        transition: transform 0.1s;
+      }
+      /* The physical impact of typing */
+      .typing-shake {
+        animation: typeShake 0.1s ease-in-out;
+      }
+
+      #typewriter-text {
+        font-size: 1.8rem;
+        line-height: 1.8;
+        min-height: 1.8rem;
+        white-space: pre-wrap;
+        position: relative;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1); /* Ink press depth */
+      }
+
+      .cursor {
+        display: inline-block;
+        width: 3px;
+        height: 1.6rem;
+        background-color: var(--ink-color);
+        opacity: 0.7;
+        animation: blink 1s steps(2, start) infinite;
+        vertical-align: text-bottom;
+        margin-left: 4px;
+      }
+
+      /* --- DECORATIONS: DOODLES & INK --- */
+      #decoration-layer {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 5;
+        pointer-events: none;
+        mix-blend-mode: multiply;
+      }
+      .doodle path {
+        fill: none;
+        stroke: rgba(43, 43, 43, 0.2);
+        stroke-width: 2.5;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-dasharray: 1000;
+        stroke-dashoffset: 1000;
+        animation: drawDoodle 3s ease-out forwards;
+      }
+      .ink-blot {
+        position: absolute;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(43, 43, 43, 0.2) 0%, transparent 70%);
+        filter: url(#ink-spread); /* SVG filter for organic edge */
+        opacity: 0;
+        animation: spreadInk 4s ease-out forwards;
+      }
+
+      /* --- OVERLAY --- */
+      #overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #e8dec8; /* A slightly darker cover paper */
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 200;
+        cursor: pointer;
+        transition: opacity 1.2s ease;
+        box-shadow: inset 0 0 150px rgba(0, 0, 0, 0.2);
+      }
+      #overlay h1 {
+        font-size: 3rem;
+        margin-bottom: 15px;
+        color: var(--ink-color);
+        border-bottom: 3px double var(--ink-color);
+        padding-bottom: 15px;
+        letter-spacing: 2px;
+      }
+      #overlay p {
+        font-family: 'Reenie Beanie', cursive;
+        font-size: 1.8rem;
+        color: #555;
+        transform: rotate(-3deg);
+        margin-top: 20px;
+      }
+      .click-hint {
+        font-family: 'Special Elite';
+        font-size: 0.9rem;
+        margin-top: 50px !important;
+        transform: rotate(0deg) !important;
+        opacity: 0.6;
+        animation: pulse 2s infinite;
+      }
+
+      /* --- ENDING --- */
+      #ending-screen {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(244, 234, 221, 0.98);
+        z-index: 150;
+        opacity: 0;
+        pointer-events: none;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        transition: opacity 2s ease;
+      }
+      #ending-content {
+        text-align: center;
+        transform: translateY(20px);
+        transition: transform 2s ease;
+      }
+      #signature {
+        font-family: 'Reenie Beanie', cursive;
+        font-size: 3.5rem;
+        color: var(--ink-color);
+        transform: rotate(-4deg);
+        margin: 30px 0;
+        position: relative;
+      }
+      /* Wax Seal Decoration */
+      #signature::after {
+        content: 'V'; /* Initial */
+        position: absolute;
+        right: -40px;
+        bottom: -20px;
+        width: 50px;
+        height: 50px;
+        background: var(--wax-red);
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: rgba(255, 255, 255, 0.8);
+        font-family: 'Cinzel', serif;
+        font-size: 1.5rem;
+        box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.3), 0 4px 6px rgba(0, 0, 0, 0.2);
+        border: 3px solid rgba(138, 43, 226, 0.2);
+        transform: rotate(10deg);
+      }
+
+      #replay-btn {
+        background: transparent;
+        border: 2px solid var(--ink-color);
+        color: var(--ink-color);
+        padding: 12px 35px;
+        font-family: 'Special Elite', monospace;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: 0.3s;
+        position: relative;
+        overflow: hidden;
+      }
+      #replay-btn:hover {
+        background: var(--ink-color);
+        color: var(--bg-paper);
+      }
+
+      #final-footer {
+        position: fixed;
+        bottom: 30px;
+        width: 100%;
+        text-align: center;
+        font-family: 'Special Elite', monospace;
+        font-size: 0.8rem;
+        color: #777;
+        z-index: 1000;
+        opacity: 0;
+        transition: opacity 2s ease 1s;
+      }
+      .footer-visible {
+        opacity: 1 !important;
+      }
+      .visible-block {
+        opacity: 1 !important;
+        pointer-events: auto !important;
+      }
+      .visible-block #ending-content {
+        transform: translateY(0);
+      }
+
+      /* --- STYLES & ANIMATIONS --- */
+      .highlight {
+        color: var(--ink-red);
+        text-shadow: 0 0 2px var(--ink-red);
+      }
+      .faded {
+        opacity: 0.6;
+        font-size: 1.4rem;
+        font-style: italic;
+      }
+
+      @keyframes blink {
+        50% {
+          opacity: 0;
+        }
+      }
+      @keyframes drawDoodle {
+        to {
+          stroke-dashoffset: 0;
+        }
+      }
+      @keyframes floatDust {
+        0% {
+          transform: translateY(0) rotate(0deg);
+          opacity: 0;
+        }
+        50% {
+          opacity: 0.8;
+        }
+        100% {
+          transform: translateY(150px) rotate(360deg);
+          opacity: 0;
+        }
+      }
+      @keyframes spreadInk {
+        0% {
+          transform: scale(0);
+          opacity: 0.8;
+        }
+        100% {
+          transform: scale(3);
+          opacity: 0;
+        }
+      }
+      @keyframes typeShake {
+        0% {
+          transform: rotate(-0.5deg) translate(0, 0);
+        }
+        25% {
+          transform: rotate(-0.5deg) translate(1px, 1px);
+        }
+        50% {
+          transform: rotate(-0.5deg) translate(-1px, -0.5px);
+        }
+        75% {
+          transform: rotate(-0.5deg) translate(0.5px, 1px);
+        }
+        100% {
+          transform: rotate(-0.5deg) translate(0, 0);
+        }
+      }
+      @keyframes pulse {
+        50% {
+          opacity: 0.3;
+        }
+      }
+
+      @media (max-width: 600px) {
+        #typewriter-text {
+          font-size: 1.3rem;
+        }
+        #overlay h1 {
+          font-size: 2rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <svg style="position: absolute; width: 0; height: 0; overflow: hidden">
+      <filter id="ink-spread">
+        <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="3" result="noise" />
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="15" />
+      </filter>
+    </svg>
+
+    <nav id="song-nav">
+      <a href="index.html" class="nav-home">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          <polyline points="9 22 9 12 15 12 15 22"></polyline>
+        </svg>
+        <span>Library</span>
+      </a>
+      <a href="https://x.com/syuby" target="_blank" class="nav-x">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path></svg>
+      </a>
+    </nav>
+
+    <div id="paper-dust"></div>
+    <div id="decoration-layer"></div>
+
+    <div id="overlay">
+      <h1>SURAT CINTA</h1>
+      <p>untuk Starla...</p>
+      <p class="click-hint">[ CLICK TO BREAK SEAL ]</p>
+    </div>
+
+    <div id="ending-screen">
+      <div id="ending-content">
+        <h1 style="font-size: 1.8rem; margin-bottom: 20px; font-family: 'Cinzel', serif">Telah Habis.</h1>
+        <p style="font-family: 'Special Elite'; margin-bottom: 10px">Terima kasih telah membaca.</p>
+        <div id="signature">Sincerely, Virgoun.</div>
+        <button id="replay-btn">Read Again</button>
+      </div>
+    </div>
+    <div id="final-footer">from: syuby</div>
+
+    <audio id="audio-player">
+      <source src="starla.mp3" type="audio/mpeg" />
+    </audio>
+
+    <div id="paper-sheet">
+      <div id="typewriter-text"><span class="cursor"></span></div>
+    </div>
+
+    <script>
+      const audio = document.getElementById('audio-player');
+      const overlay = document.getElementById('overlay');
+      const paperSheet = document.getElementById('paper-sheet');
+      const textContainer = document.getElementById('typewriter-text');
+      const decorationLayer = document.getElementById('decoration-layer');
+      const dustContainer = document.getElementById('paper-dust');
+      const endingScreen = document.getElementById('ending-screen');
+      const finalFooter = document.getElementById('final-footer');
+      const replayBtn = document.getElementById('replay-btn');
+      const songNav = document.getElementById('song-nav');
+
+      let currentLineIndex = -1;
+      let typeInterval;
+      let decorationInterval;
+
+      // --- ATMOSPHERE: PAPER DUST ---
+      function createDust() {
+        const mote = document.createElement('div');
+        mote.className = 'dust-mote';
+        const size = Math.random() * 4 + 1;
+        mote.style.width = `${size}px`;
+        mote.style.height = `${size}px`;
+        mote.style.left = `${Math.random() * 100}%`;
+        mote.style.animationDuration = `${Math.random() * 10 + 10}s`;
+        dustContainer.appendChild(mote);
+        setTimeout(() => mote.remove(), 20000);
+      }
+      setInterval(createDust, 800);
+
+      // --- DECORATIONS: DOODLES & INK ---
+      const doodlePaths = ['M10,10 Q50,60 90,10 T180,50', 'M30,30 C30,30 60,70 60,30 C60,-10 30,30 30,30', 'M20,60 L150,65', 'M70,70 A30,30 0 1,0 130,70 A30,30 0 1,0 70,70', 'M40,40 L60,60 M60,40 L40,60', 'M10,80 Q50,120 90,80'];
+
+      function spawnDecoration(isInk) {
+        const x = Math.random() * 80 + 10;
+        const y = Math.random() * 80 + 10;
+
+        if (isInk && Math.random() > 0.6) {
+          // Ink Blot
+          const blot = document.createElement('div');
+          blot.className = 'ink-blot';
+          const size = Math.random() * 100 + 50;
+          blot.style.width = `${size}px`;
+          blot.style.height = `${size}px`;
+          blot.style.left = `${x}%`;
+          blot.style.top = `${y}%`;
+          decorationLayer.appendChild(blot);
+          setTimeout(() => blot.remove(), 5000);
+        } else {
+          // Doodle
+          const svgNS = 'http://www.w3.org/2000/svg';
+          const svg = document.createElementNS(svgNS, 'svg');
+          svg.setAttribute('width', '200');
+          svg.setAttribute('height', '150');
+          svg.classList.add('doodle');
+          svg.style.left = `${x}%`;
+          svg.style.top = `${y}%`;
+          svg.style.transform = `translate(-50%, -50%) rotate(${Math.random() * 40 - 20}deg)`;
+
+          const path = document.createElementNS(svgNS, 'path');
+          path.setAttribute('d', doodlePaths[Math.floor(Math.random() * doodlePaths.length)]);
+          svg.appendChild(path);
+          decorationLayer.appendChild(svg);
+          setTimeout(() => svg.remove(), 4000);
+        }
+      }
+
+      function startDecorating(intense = false) {
+        if (!decorationInterval) decorationInterval = setInterval(() => spawnDecoration(intense), intense ? 800 : 1500);
+      }
+      function stopDecorating() {
+        clearInterval(decorationInterval);
+        decorationInterval = null;
+      }
+
+      // --- DATA ---
+      const lyrics = [
+        { time: 0, text: '', type: 'gap' },
+        // INTRO (Poetry)
+        { time: 2.58, text: 'Teruntuk kamu, hidup dan matiku', type: 'intro' },
+        { time: 6.57, text: 'Aku tak tahu lagi harus dengan kata apa aku menuliskannya\nAtau dengan kalimat apa aku mengungkapkannya', type: 'intro' },
+        { time: 14.92, text: 'Karena untuk keberkian kalinya\nKau buat aku kembali percaya akan kata cinta', type: 'intro' },
+        { time: 21.56, text: 'Dan benar, bahwa cinta masih berkuasa di atas segalanya', type: 'intro' },
+        { time: 26.64, text: 'Ketika hati yang mudah rapuh ini\nDiuji oleh duniawi, diuji oleh materi untuk kesekian kali', type: 'intro' },
+        { time: 35.21, text: 'Lagi, lagi, dan lagi', type: 'highlight' },
+
+        { time: 40.1, text: '', type: 'gap-long' }, // More ink blots here
+
+        // VERSE 1
+        { time: 65.66, text: 'Kutuliskan kenangan tentang\nCaraku menemukan dirimu', type: 'normal' },
+        { time: 75.76, text: 'Tentang apa yang membuatku mudah\nBerikan hatiku padamu', type: 'normal' },
+        { time: 85.73, text: 'Takkan habis sejuta lagu\nUntuk menceritakan cantikmu', type: 'normal' },
+        { time: 95.6, text: "'Kan teramat panjang puisi\n'Tuk menyuratkan cinta ini", type: 'normal' },
+
+        // CHORUS 1
+        { time: 103.94, text: 'Telah habis sudah cinta ini\nTak lagi tersisa untuk dunia', type: 'chorus' },
+        { time: 113.63, text: "Karena t'lah kuhabiskan\nSisa cintaku hanya untukmu", type: 'highlight' },
+
+        { time: 123.88, text: '', type: 'gap' },
+
+        // VERSE 2 & CHORUS 2
+        { time: 130.61, text: 'Aku pernah berfikir tentang\nHidupku tanpa ada dirimu', type: 'normal' },
+        { time: 140.65, text: 'Dapatkah lebih indah dari\nYang kujalani sampai kini?', type: 'normal' },
+        { time: 150.82, text: "Aku s'lalu bermimpi tentang\nIndah hari tua bersamamu", type: 'normal' },
+        { time: 160.73, text: 'Tetap cantik rambut panjangmu\nMeskipun nanti tak hitam lagi', type: 'normal' },
+        { time: 169.04, text: 'Bila habis sudah waktu ini\nTak lagi berpijak pada dunia', type: 'chorus' },
+        { time: 178.6, text: 'Telah aku habiskan\nSisa hidupku hanya untukmu', type: 'highlight' },
+        { time: 188.82, text: "Dan t'lah habis sudah cinta ini\nTak lagi tersisa untuk dunia", type: 'chorus' },
+        { time: 198.69, text: "Karena t'lah kuhabiskan\nSisa cintaku hanya untukmu", type: 'highlight' },
+
+        { time: 207.5, text: '', type: 'gap' },
+
+        // BRIDGE & CLIMAX
+        { time: 210.07, text: 'Untukmu hidup dan matiku', type: 'intro' },
+        { time: 217.12, text: '', type: 'gap-long' }, // Solo
+        { time: 223.55, text: 'Bila musim berganti\nSampai waktu terhenti', type: 'build' },
+        { time: 233.43, text: "Walau dunia membenci\nKu 'kan tetap di sini", type: 'build' },
+        { time: 243.46, text: 'Bila habis sudah waktu ini\n(Bila musim berganti)', type: 'chorus' },
+        { time: 248.79, text: 'Tak lagi berpijak pada dunia\n(Sampai waktu berhenti)', type: 'chorus' },
+        { time: 253.78, text: 'Telah aku habiskan\n(Walau dunia membenci)', type: 'chorus' },
+        { time: 257.91, text: "Sisa hidupku hanya untukmu\n(Ku 'kan tetap di sini)", type: 'highlight' },
+        { time: 263.89, text: 'Telah habis sudah cinta ini\n(Bila musim berganti)', type: 'chorus' },
+        { time: 268.37, text: 'Tak lagi tersisa untuk dunia\n(Sampai waktu terhenti)', type: 'chorus' },
+        { time: 273.44, text: 'Karena telah kuhabiskan\n(Walau dunia membenci)', type: 'highlight' },
+        { time: 276.89, text: "Sisa cintaku hanya untukmu\n(Ku 'kan tetap di sini)", type: 'highlight' },
+
+        // OUTRO
+        { time: 283.6, text: 'Karena telah kuhabiskan', type: 'intro' },
+        { time: 286.73, text: 'Sisa cintaku hanya untukmu', type: 'intro' },
+        { time: 290.02, text: '', type: 'gap' },
+      ];
+
+      overlay.addEventListener('click', () => {
+        overlay.style.opacity = '0';
+        setTimeout(() => (overlay.style.display = 'none'), 1200);
+        songNav.classList.add('nav-hidden');
+        audio.play();
+        startDecorating(false);
+      });
+
+      audio.addEventListener('timeupdate', () => {
+        const currentTime = audio.currentTime;
+        let activeIndex = -1;
+        for (let i = 0; i < lyrics.length; i++) {
+          if (currentTime >= lyrics[i].time) activeIndex = i;
+          else break;
+        }
+        if (activeIndex !== -1 && activeIndex !== currentLineIndex) {
+          renderLyric(lyrics[activeIndex]);
+          currentLineIndex = activeIndex;
+        }
+      });
+
+      // --- ENHANCED TYPEWRITER ---
+      function typeWriter(text, speed = 50) {
+        textContainer.innerHTML = '<span class="cursor"></span>';
+        const cursor = textContainer.querySelector('.cursor');
+        let i = 0;
+        clearInterval(typeInterval);
+
+        typeInterval = setInterval(() => {
+          if (i < text.length) {
+            const char = text.charAt(i);
+            const span = document.createElement('span');
+            char === '\n' ? (span.innerHTML = '<br>') : (span.textContent = char);
+            textContainer.insertBefore(span, cursor);
+
+            // Physical Impact Animation
+            paperSheet.classList.remove('typing-shake');
+            void paperSheet.offsetWidth; // Trigger reflow
+            paperSheet.classList.add('typing-shake');
+
+            i++;
+          } else {
+            clearInterval(typeInterval);
+            paperSheet.classList.remove('typing-shake');
+          }
+        }, speed);
+      }
+
+      function renderLyric(line) {
+        if (line.type.includes('gap')) {
+          startDecorating(line.type === 'gap-long'); // Intense decorating for long gaps
+          textContainer.innerHTML = '<span class="cursor"></span>';
+          return;
+        }
+        stopDecorating();
+
+        let speed = 70;
+        if (line.text.length > 30) speed = 40;
+        if (line.type === 'intro') speed = 55;
+
+        textContainer.className = '';
+        if (line.type === 'highlight') textContainer.classList.add('highlight');
+        if (line.type === 'intro') textContainer.classList.add('faded');
+
+        typeWriter(line.text, speed);
+      }
+
+      audio.addEventListener('ended', () => {
+        stopDecorating();
+        textContainer.innerHTML = '';
+        endingScreen.classList.add('visible-block');
+        finalFooter.classList.add('footer-visible');
+        songNav.classList.remove('nav-hidden');
+      });
+
+      replayBtn.addEventListener('click', () => {
+        endingScreen.classList.remove('visible-block');
+        finalFooter.classList.remove('footer-visible');
+        songNav.classList.add('nav-hidden');
+
+        audio.currentTime = 0;
+        audio.play();
+        currentLineIndex = -1;
+        renderLyric(lyrics[0]);
+        decorationLayer.innerHTML = ''; // Clear old decorations
+      });
+    </script>
+  </body>
+</html>

@@ -24,6 +24,7 @@ Each song features a unique visual identity, custom CSS keyframe animations, and
 | **Heather**                  | Conan Gray              | _Vintage Film_     | Film grain, light leaks, cold breath typography.          |
 | **About You**                | The 1975                | _Cinematic Noir_   | Film grain, focus pulling gaps, fading outro monologue.   |
 | **Drown**                    | Bring Me The Horizon    | _Cursed Broadcast_ | CRT Scanlines, chromatic aberration, water submersion.    |
+| **Surat Cinta Untuk Starla** | Virgoun                 | _Vintage Letter_   | Typewriter effect, hand-drawn doodles, paper texture.     |
 
 ## 🛠️ Technical Highlights
 
@@ -59,6 +60,7 @@ I do not own the rights to any of the musical recordings or lyrics featured in t
 - **Conan Gray** (_Heather_)
 - **The 1975** (_About You_)
 - **Bring Me The Horizon** (_Drown_)
+- **Virgoun** (_Surat Cinta Untuk Starla_)
 
 _If you are a copyright holder and wish for a track to be removed, please contact me and I will take it down immediately._
 
