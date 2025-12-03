@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Inochi ni Kirawarete Iru - Final Version</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sawarabi+Mincho&display=swap" rel="stylesheet" />
+    <style>
+      :root {
+        --bg-color: #050505;
+        --text-main: #f0f0f0;
+        --accent-red: #ff3333;
+        --accent-dark-red: #5a0000;
+      }
+
+      body,
+      html {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        background-color: var(--bg-color);
+        color: var(--text-main);
+        font-family: 'Sawarabi Mincho', serif;
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        transition: background-color 0.1s ease;
+      }
+
+      /* --- BACKGROUND DECORATIONS --- */
+      #bg-decoration {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        z-index: 1;
+        pointer-events: none;
+      }
+
+      .floating-word {
+        position: absolute;
+        color: #333;
+        font-family: 'Sawarabi Mincho', serif;
+        user-select: none;
+        opacity: 0;
+        animation: floatUp 4s linear forwards;
+      }
+
+      /* Scanlines */
+      body::after {
+        content: ' ';
+        display: block;
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+        z-index: 90;
+        background-size: 100% 2px, 3px 100%;
+        pointer-events: none;
+      }
+
+      /* --- OVERLAY (START) --- */
+      #overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #000;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 100;
+        cursor: pointer;
+        transition: opacity 1s ease;
+      }
+      #overlay h1 {
+        font-size: 2rem;
+        margin-bottom: 15px;
+        text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        animation: pulse 2s infinite;
+      }
+
+      /* --- ENDING SCREEN --- */
+      #ending-screen {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #000;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 95; /* Di bawah overlay start, di atas lirik */
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 2s ease;
+      }
+
+      #ending-screen h1 {
+        font-size: 2.5rem;
+        margin-bottom: 5px;
+        color: #fff;
+        text-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+      }
+
+      #ending-screen h2 {
+        font-size: 1.2rem;
+        color: #888;
+        margin-bottom: 40px;
+        font-family: 'Courier New', Courier, monospace;
+        letter-spacing: 2px;
+      }
+
+      #replay-btn {
+        background: transparent;
+        border: 1px solid #555;
+        color: #aaa;
+        padding: 12px 40px;
+        font-family: 'Sawarabi Mincho', serif;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        letter-spacing: 2px;
+      }
+
+      #replay-btn:hover {
+        border-color: #fff;
+        color: #fff;
+        background: rgba(255, 255, 255, 0.1);
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+      }
+
+      /* --- FOOTER --- */
+      #final-footer {
+        position: absolute;
+        bottom: 30px;
+        width: 100%;
+        text-align: center;
+        color: #444;
+        font-size: 0.8rem;
+        font-family: 'Courier New', monospace;
+        z-index: 96;
+        opacity: 0;
+        transition: opacity 2s ease 1s; /* Delay 1s biar muncul belakangan */
+      }
+
+      /* --- LYRIC CONTAINER --- */
+      #lyric-container {
+        position: relative;
+        z-index: 10;
+        padding: 20px;
+        width: 90%;
+        max-width: 900px;
+        transition: opacity 1s ease;
+      }
+
+      #jp-text {
+        font-size: 2.2rem;
+        font-weight: 500;
+        margin-bottom: 25px;
+        line-height: 1.5;
+        min-height: 90px;
+        text-shadow: 0 0 10px rgba(0, 0, 0, 0.9);
+        white-space: pre-wrap;
+      }
+
+      #en-text {
+        font-size: 1rem;
+        color: #aaa;
+        font-family: 'Courier New', Courier, monospace;
+        letter-spacing: 1px;
+        min-height: 30px;
+        opacity: 0.8;
+      }
+
+      /* --- EFFECTS --- */
+      .typing::after {
+        content: '|';
+        animation: blink 0.8s infinite;
+        color: var(--accent-red);
+      }
+
+      .impact-text {
+        color: var(--accent-red);
+        font-size: 2.6rem !important;
+        text-shadow: 3px 3px 0 #fff;
+        animation: glitch-anim 0.25s infinite;
+        font-weight: bold;
+      }
+      .impact-bg {
+        background-color: #1a0505;
+      }
+      .flash-bg {
+        animation: flash 0.1s ease-out;
+      }
+      .scream-text {
+        font-size: 4rem !important;
+        color: #fff;
+        text-shadow: 5px 5px 0 #ff0000, -5px -5px 0 #00ffff;
+        animation: shake 0.2s infinite;
+      }
+
+      /* --- ANIMATIONS --- */
+      @keyframes floatUp {
+        0% {
+          opacity: 0;
+          transform: translateY(20px) scale(0.8);
+        }
+        20% {
+          opacity: 0.6;
+        }
+        80% {
+          opacity: 0.6;
+        }
+        100% {
+          opacity: 0;
+          transform: translateY(-50px) scale(1);
+        }
+      }
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 0.6;
+        }
+        50% {
+          opacity: 1;
+        }
+      }
+      @keyframes blink {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0;
+        }
+      }
+      @keyframes glitch-anim {
+        0% {
+          transform: skew(0deg);
+        }
+        20% {
+          transform: skew(-10deg);
+          filter: blur(1px);
+        }
+        40% {
+          transform: skew(10deg);
+        }
+        60% {
+          transform: skew(-5deg);
+        }
+        80% {
+          transform: skew(5deg);
+        }
+        100% {
+          transform: skew(0deg);
+        }
+      }
+      @keyframes shake {
+        0% {
+          transform: translate(2px, 2px) rotate(0deg);
+        }
+        25% {
+          transform: translate(-2px, -2px) rotate(-1deg);
+        }
+        50% {
+          transform: translate(2px, -1px) rotate(1deg);
+        }
+        75% {
+          transform: translate(-1px, 2px) rotate(0deg);
+        }
+        100% {
+          transform: translate(1px, -2px) rotate(-1deg);
+        }
+      }
+      @keyframes flash {
+        0% {
+          background-color: white;
+          filter: invert(1);
+        }
+        100% {
+          background-color: var(--bg-color);
+          filter: invert(0);
+        }
+      }
+
+      .hidden {
+        opacity: 0;
+        pointer-events: none;
+      }
+      .visible {
+        opacity: 1 !important;
+        pointer-events: auto !important;
+      }
+
+      @media (max-width: 600px) {
+        #jp-text {
+          font-size: 1.6rem;
+        }
+        .scream-text {
+          font-size: 2.5rem !important;
+        }
+      }
+      /* --- GLOBAL NAVBAR STYLES --- */
+      #song-nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        padding: 20px 30px;
+        z-index: 9999; /* Highest priority */
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: opacity 1s ease, transform 1s ease;
+        pointer-events: auto;
+      }
+
+      /* Hide nav when class is added */
+      #song-nav.nav-hidden {
+        opacity: 0;
+        transform: translateY(-20px);
+        pointer-events: none;
+      }
+
+      .nav-home {
+        text-decoration: none;
+        color: inherit; /* Takes color from the specific song's theme */
+        opacity: 0.7;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-family: sans-serif;
+        font-size: 0.9rem;
+        letter-spacing: 1px;
+        transition: opacity 0.3s;
+      }
+
+      .nav-home:hover {
+        opacity: 1;
+      }
+
+      /* Mobile Responsiveness */
+      @media (max-width: 600px) {
+        #song-nav {
+          padding: 15px;
+        }
+        .nav-home span {
+          display: none;
+        } /* Show only icon on mobile */
+      }
+    </style>
+  </head>
+  <body>
+    <nav id="song-nav">
+      <a href="index.html" class="nav-home">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          <polyline points="9 22 9 12 15 12 15 22"></polyline>
+        </svg>
+        <span>Library</span>
+      </a>
+    </nav>
+    <div id="bg-decoration"></div>
+
+    <div id="overlay">
+      <h1>命に嫌われている。</h1>
+      <p style="letter-spacing: 2px; font-size: 0.8rem">[ CLICK TO START ]</p>
+    </div>
+
+    <div id="ending-screen">
+      <h1>命に嫌われている。</h1>
+      <h2>Hated by Life Itself.</h2>
+      <button id="replay-btn">REPLAY</button>
+    </div>
+
+    <div id="final-footer">from: syuby</div>
+
+    <audio id="audio-player">
+      <source src="inki.mp3" type="audio/mpeg" />
+    </audio>
+
+    <div id="lyric-container">
+      <div id="jp-text">...</div>
+      <div id="en-text"></div>
+    </div>
+
+    <script>
+      // =======================================================
+      // BACKGROUND EFFECTS
+      // =======================================================
+      const bgContainer = document.getElementById('bg-decoration');
+      const words = ['死', '命', '嘘', '逃', '終', '殺', '無駄', '孤独', '廃棄', '呼吸', '未来', '過去', '生きろ', '嫌'];
+
+      function spawnWord() {
+        const span = document.createElement('span');
+        span.classList.add('floating-word');
+        span.innerText = words[Math.floor(Math.random() * words.length)];
+        const size = Math.random() * 2 + 1;
+        span.style.fontSize = `${size}rem`;
+        span.style.left = `${Math.random() * 90}%`;
+        span.style.top = `${Math.random() * 90}%`;
+        if (Math.random() > 0.8) {
+          span.style.color = '#4a0000';
+          span.style.zIndex = '0';
+        }
+        bgContainer.appendChild(span);
+        setTimeout(() => {
+          span.remove();
+        }, 4000);
+      }
+      setInterval(spawnWord, 400);
+
+      // =======================================================
+      // DATA LIRIK
+      // =======================================================
+      const lyrics = [
+        { time: 0, jp: '', en: '' },
+
+        { time: 20.06, jp: '「死にたいなんて言うなよ。\n諦めないで生きろよ。」', en: '"Don\'t say you want to die. Don\'t give up on living."', type: 'typewriter' },
+        { time: 24.3, jp: 'そんな歌が正しいなんて馬鹿げてるよな。', en: 'That such songs are correct is honestly ridiculous.' },
+        { time: 29.07, jp: '実際自分は死んでもよくて', en: "Truth is, I don't care if I die," },
+        { time: 31.93, jp: '周りが死んだら悲しくて', en: "but if people around me die, I'd be sad." },
+        { time: 33.66, jp: '「それが嫌だから」っていうエゴなんです。', en: 'It\'s just an ego that says, "I just don\'t like that."' },
+        { time: 38.96, jp: '他人が生きてもどうでもよくて', en: "I don't really care if strangers live." },
+        { time: 41.31, jp: '誰かを嫌うこともファッションで', en: 'Hating someone is just a fashion trend.' },
+        { time: 43.89, jp: 'それでも「平和に生きよう」', en: 'And yet, "Let\'s live peacefully."' },
+        { time: 45.83, jp: 'なんて素敵なことでしょう', en: 'What a wonderful thing to say.' },
+        { time: 49.12, jp: '画面の先では誰かが死んで', en: 'Someone dies on the other side of the screen,' },
+        { time: 51.47, jp: 'それを嘆いて誰かが歌って', en: 'someone laments it and sings a song.' },
+        { time: 53.52, jp: 'それに感化された少年が\nナイフをもって走った。', en: 'Influenced by that, a young boy ran off holding a knife.' },
+
+        // CHORUS 1
+        { time: 57.93, jp: '僕らは命に嫌われている。', en: 'We are hated by life itself.', type: 'impact' },
+        { time: 60.44, jp: '価値観もエゴも押し付けて\nいつも誰かを殺したい歌を', en: 'Pushing values and egos, songs about wanting to kill someone,' },
+        { time: 65.53, jp: '簡単に電波で流した', en: 'we simply broadcast over the airwaves.' },
+        { time: 67.69, jp: '僕らは命に嫌われている。', en: 'We are hated by life itself.', type: 'impact' },
+        { time: 70.59, jp: '軽々しく死にたいだとか', en: 'Saying we want to die so lightly,' },
+        { time: 72.89, jp: '軽々しく命を見てる\n僕らは命に嫌われている。', en: 'Looking at life lightly, we are hated by life itself.', type: 'impact' },
+
+        { time: 76.5, jp: '', en: '' }, // SILENCE
+
+        // RAP
+        { time: 87.46, jp: 'お金がないので今日も一日中惰眠を謳歌する', en: 'No money, so I enjoy sleeping all day long again.' },
+        { time: 91.96, jp: '生きる意味なんて見い出せず、', en: 'Without finding the meaning of life,' },
+        { time: 94.63, jp: '無駄を自覚して息をする。', en: 'I breathe while realizing how pointless it is.' },
+        { time: 96.94, jp: '｢寂しい｣なんて言葉でこの傷が表せていいものか', en: "Is it okay to express these wounds with 'lonely'?" },
+        { time: 101.84, jp: 'そんな意地ばかり抱え今日も一人ベッドに眠る', en: 'Stubbornly, I sleep alone in bed again today.' },
+        { time: 106.42, jp: '少年だった僕達はいつか青年に変わっていく。', en: 'We young boys will eventually become young men.' },
+        { time: 111.27, jp: '年老いていつか枯れ葉のように\n誰にも知られず朽ちていく。', en: 'Getting old, someday rotting away like a dead leaf unnoticed.' },
+        { time: 116.18, jp: '不死身な身体を手に入れて、\n一生死なずに生きていく｡', en: 'Obtaining an immortal body, living forever without dying.' },
+        { time: 120.8, jp: 'そんなSFを妄想してる', en: "I'm daydreaming about such science fiction." },
+        { time: 125.64, jp: '自分が死んでもどうでもよくて', en: "I don't care even if I die," },
+        { time: 128.0, jp: 'それでも周りに生きて欲しくて', en: 'yet I want those around me to live.' },
+        { time: 131.27, jp: '矛盾を抱えて生きてくなんて\n怒られてしまう。', en: "Living on with such contradictions, I'll get yelled at." },
+
+        { time: 134.0, jp: '', en: '' }, // SILENCE
+
+        // BRIDGE
+        { time: 135.66, jp: '「正しいものは正しくいなさい。」', en: '"Righteous things should remain righteous."', type: 'typewriter' },
+        { time: 137.98, jp: '「死にたくないなら生きていなさい。」', en: '"If you don\'t want to die, then live."', type: 'typewriter' },
+        { time: 140.27, jp: '悲しくなるならそれでもいいなら\nずっと一人で笑えよ｡', en: "If you're sad and fine with that, then laugh alone forever." },
+
+        // CHORUS 2
+        { time: 144.63, jp: '僕らは命に嫌われている。', en: 'We are hated by life itself.', type: 'impact' },
+        { time: 146.9, jp: '幸福の意味すらわからず、\n生まれた環境ばかり憎んで', en: 'Not knowing happiness, hating only our environment,' },
+        { time: 151.63, jp: '簡単に過去ばかり呪う。', en: 'We easily curse only our pasts.' },
+        { time: 154.1, jp: '僕らは命に嫌われている。', en: 'We are hated by life itself.', type: 'impact' },
+        { time: 156.62, jp: 'さよならばかりが好きすぎて\n本当の別れなど知らない', en: "We like 'goodbye' too much, not knowing true parting," },
+        { time: 161.93, jp: '僕らは命に嫌われている。', en: 'We are hated by life itself.', type: 'impact' },
+
+        { time: 165.0, jp: '', en: '' }, // SILENCE
+
+        // BUILD UP
+        { time: 173.54, jp: '幸福も別れも愛情も友情も', en: 'Happiness, farewells, love, friendship,', type: 'flash' },
+        { time: 178.24, jp: '滑稽な夢の戯れで\n全部カネで買える代物。', en: 'All comical dreams, everything bought with money.' },
+        { time: 183.51, jp: '明日死んでしまうかもしれない。', en: 'We might die tomorrow.' },
+        { time: 185.66, jp: 'すべて無駄になるかもしれない。', en: 'Everything might be in vain.' },
+        { time: 187.98, jp: '朝も夜も春も秋も', en: 'Mornings, nights, spring, and autumn,' },
+        { time: 191.26, jp: '変わらず誰かがどこかで死ぬ。', en: 'Someone dies somewhere unchanged.' },
+        { time: 193.09, jp: '夢も明日も何もいらない。', en: "I don't need dreams or tomorrow or anything." },
+        { time: 195.37, jp: '君が生きていたならそれでいい。', en: "If you were alive, that's all I need." },
+        { time: 197.35, jp: 'そうだ。', en: 'Yes.', type: 'flash' },
+        { time: 199.08, jp: '本当はそういうことが歌いたい。', en: "Actually, that's what I want to sing about." },
+
+        // FINAL CHORUS
+        { time: 202.74, jp: '命に嫌われている。', en: 'Hated by life itself.', type: 'impact' },
+        { time: 204.52, jp: '結局いつかは死んでいく。', en: "In the end, we'll die someday." },
+        { time: 206.82, jp: '君だって僕だって\nいつかは枯れ葉のように朽ちていく｡', en: 'You and I will eventually rot away like dead leaves.' },
+
+        // CLIMAX
+        { time: 211.78, jp: 'それでも僕らは必死に生きて', en: 'Even so, we live desperately.', type: 'impact' },
+        { time: 214.27, jp: '命を必死に抱えて生きて', en: 'Embracing life desperately, we live.', type: 'impact' },
+        { time: 216.64, jp: '殺して あがいて 笑って 抱えて', en: 'Killing, struggling, laughing, embracing,', type: 'flash' },
+
+        // SCREAM
+        { time: 218.86, jp: '生きて、生きて、生きて、', en: 'Live, live, live,', type: 'scream' },
+        { time: 221.15, jp: '生きて、生きろ。', en: 'Live, LIVE!!', type: 'scream' },
+
+        { time: 224.5, jp: '', en: '' }, // SILENCE
+      ];
+
+      // =======================================================
+      // LOGIC
+      // =======================================================
+      const audio = document.getElementById('audio-player');
+      const overlay = document.getElementById('overlay');
+      const endingScreen = document.getElementById('ending-screen');
+      const replayBtn = document.getElementById('replay-btn');
+      const finalFooter = document.getElementById('final-footer');
+      const lyricContainer = document.getElementById('lyric-container');
+      const songNav = document.getElementById('song-nav');
+
+      const jpDisplay = document.getElementById('jp-text');
+      const enDisplay = document.getElementById('en-text');
+      const body = document.body;
+
+      let typeInterval;
+      let currentLineIndex = -1;
+
+      // Start
+      overlay.addEventListener('click', () => {
+        overlay.classList.add('hidden');
+        audio.play().catch((e) => alert('Please interact with the page first or allow autoplay.'));
+        songNav.classList.add('nav-hidden');
+      });
+
+      // Update Time
+      audio.addEventListener('timeupdate', () => {
+        const currentTime = audio.currentTime;
+        let activeIndex = -1;
+        for (let i = 0; i < lyrics.length; i++) {
+          if (currentTime >= lyrics[i].time) {
+            activeIndex = i;
+          } else {
+            break;
+          }
+        }
+        if (activeIndex !== -1 && activeIndex !== currentLineIndex) {
+          renderLyric(lyrics[activeIndex]);
+          currentLineIndex = activeIndex;
+        }
+      });
+
+      // ENDING EVENT
+      audio.addEventListener('ended', () => {
+        // Sembunyikan lirik
+        lyricContainer.style.opacity = '0';
+
+        // Munculkan Ending & Footer
+        endingScreen.classList.add('visible');
+        finalFooter.classList.add('visible');
+        songNav.classList.remove('nav-hidden');
+      });
+
+      // REPLAY BUTTON
+      replayBtn.addEventListener('click', () => {
+        // Reset UI
+        endingScreen.classList.remove('visible');
+        finalFooter.classList.remove('visible');
+        songNav.classList.add('nav-hidden');
+        lyricContainer.style.opacity = '1';
+
+        // Reset Audio & State
+        audio.currentTime = 0;
+        audio.play();
+        currentLineIndex = -1;
+
+        // Clear Text
+        jpDisplay.innerText = '...';
+        enDisplay.innerText = '';
+      });
+
+      function renderLyric(line) {
+        clearInterval(typeInterval);
+        jpDisplay.className = '';
+        body.className = '';
+        jpDisplay.innerText = '';
+        enDisplay.innerText = line.en;
+
+        if (line.jp === '') return;
+
+        if (line.type === 'typewriter') {
+          jpDisplay.classList.add('typing');
+          let text = line.jp;
+          let i = 0;
+          jpDisplay.innerText = '';
+          typeInterval = setInterval(() => {
+            jpDisplay.innerText += text.charAt(i);
+            i++;
+            if (i >= text.length) clearInterval(typeInterval);
+          }, 80);
+        } else if (line.type === 'impact') {
+          jpDisplay.innerText = line.jp;
+          jpDisplay.classList.add('impact-text');
+          body.classList.add('impact-bg');
+        } else if (line.type === 'flash') {
+          jpDisplay.innerText = line.jp;
+          body.classList.add('flash-bg');
+          setTimeout(() => body.classList.remove('flash-bg'), 200);
+        } else if (line.type === 'scream') {
+          jpDisplay.innerText = line.jp;
+          jpDisplay.classList.add('scream-text');
+          body.classList.add('impact-bg');
+          body.classList.add('flash-bg');
+        } else {
+          jpDisplay.innerText = line.jp;
+        }
+      }
+    </script>
+  </body>
+</html>

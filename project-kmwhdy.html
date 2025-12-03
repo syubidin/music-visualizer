@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>I'm glad you're evil too - Memories</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sawarabi+Mincho&family=Zen+Kurenaido&display=swap" rel="stylesheet" />
+    <style>
+      :root {
+        --bg-color: #1a1a2e;
+        --text-main: #e0e0e0;
+        --accent-warm: #ff9a62;
+        --accent-soft: #ffb7b2;
+      }
+
+      body,
+      html {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        background-color: var(--bg-color);
+        color: var(--text-main);
+        font-family: 'Sawarabi Mincho', serif;
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        transition: background-color 2s ease, color 2s ease;
+      }
+
+      /* --- NOISE & VIGNETTE (Film Look) --- */
+      body::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.04'/%3E%3C/svg%3E");
+        pointer-events: none;
+        z-index: 5;
+        mix-blend-mode: overlay;
+      }
+
+      body::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(circle, transparent 60%, black 150%);
+        pointer-events: none;
+        z-index: 4;
+      }
+
+      /* --- BACKGROUND GRADIENT --- */
+      #bg-gradient {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(255, 154, 98, 0) 100%);
+        opacity: 0;
+        transition: opacity 3s ease;
+        z-index: 0;
+        pointer-events: none;
+      }
+
+      /* --- PARTICLES --- */
+      #particles {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+        pointer-events: none;
+        overflow: hidden;
+      }
+      .firefly {
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.6);
+        box-shadow: 0 0 10px rgba(255, 255, 210, 0.8);
+        animation: floatParticle linear forwards;
+      }
+
+      /* --- MEMORY FRAGMENTS (Gap Filler) --- */
+      #memory-layer {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 2;
+        pointer-events: none;
+        overflow: hidden;
+      }
+      .memory-word {
+        position: absolute;
+        font-family: 'Zen Kurenaido', sans-serif;
+        color: rgba(255, 255, 255, 0.15);
+        font-size: 1.2rem;
+        user-select: none;
+        animation: driftFade 6s ease-out forwards;
+      }
+
+      /* --- OVERLAY --- */
+      #overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #0b0b14;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 100;
+        cursor: pointer;
+        transition: opacity 1.5s ease;
+      }
+      #overlay h1 {
+        font-family: 'Zen Kurenaido', sans-serif;
+        font-size: 2.5rem;
+        margin-bottom: 10px;
+        color: var(--accent-soft);
+        text-shadow: 0 0 15px var(--accent-warm);
+        animation: breathe 3s infinite ease-in-out;
+      }
+      #overlay p {
+        font-family: 'Courier New', monospace;
+        font-size: 0.8rem;
+        color: #555;
+      }
+
+      /* --- ENDING SCREEN --- */
+      #ending-screen {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #fffcf9;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 95;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 3s ease;
+      }
+      #ending-screen h1 {
+        color: #333;
+        font-family: 'Zen Kurenaido', sans-serif;
+        font-size: 2.5rem;
+      }
+      #ending-screen h2 {
+        color: #555;
+        font-size: 1rem;
+        margin-bottom: 30px;
+        letter-spacing: 2px;
+      }
+      #replay-btn {
+        background: transparent;
+        border: 1px solid #333;
+        color: #333;
+        padding: 10px 30px;
+        font-family: 'Sawarabi Mincho', serif;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+      #replay-btn:hover {
+        background: #333;
+        color: #fff;
+      }
+      #final-footer {
+        position: absolute;
+        bottom: 20px;
+        width: 100%;
+        text-align: center;
+        color: #888;
+        font-size: 0.7rem;
+        font-family: monospace;
+        opacity: 0;
+        transition: opacity 2s ease 1s;
+        z-index: 96;
+      }
+
+      /* --- LYRIC CONTAINER --- */
+      #lyric-container {
+        position: relative;
+        z-index: 10;
+        padding: 40px;
+        width: 80%;
+        max-width: 800px;
+        transition: opacity 1s ease;
+      }
+      #jp-text {
+        font-size: 2rem;
+        font-weight: 500;
+        margin-bottom: 20px;
+        line-height: 1.6;
+        min-height: 80px;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        transition: all 0.5s ease;
+      }
+      #en-text {
+        font-size: 1rem;
+        color: rgba(255, 255, 255, 0.6);
+        font-family: 'Zen Kurenaido', sans-serif;
+        letter-spacing: 1px;
+        min-height: 30px;
+        transition: color 2s ease;
+      }
+
+      /* --- MOOD STATES --- */
+      .mood-night {
+        --bg-color: #1a1a2e;
+        --text-main: #e0e0e0;
+      }
+      .mood-night #bg-gradient {
+        opacity: 0;
+      }
+
+      .mood-sunset {
+        --bg-color: #4a2c2c;
+      }
+      .mood-sunset #bg-gradient {
+        background: linear-gradient(0deg, #ff9a62 0%, #4a2c2c 100%);
+        opacity: 0.6;
+      }
+
+      .mood-twilight {
+        --bg-color: #0f0f1a;
+      }
+
+      .mood-final {
+        --bg-color: #fff5ee;
+        --text-main: #333;
+      }
+      .mood-final #jp-text,
+      .mood-final #en-text {
+        color: #333;
+        text-shadow: none;
+        font-weight: bold;
+      }
+
+      /* --- TEXT ANIMATION CLASSES --- */
+      .anim-fade {
+        animation: fadeInUp 1.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+      }
+      .anim-glow {
+        animation: glowPulse 3s infinite alternate;
+        text-shadow: 0 0 10px var(--accent-warm);
+      }
+      .anim-tremble {
+        display: inline-block;
+        animation: tremble 4s infinite;
+      }
+      .anim-blur {
+        animation: blurIn 2s ease forwards;
+        color: #bbb;
+        font-style: italic;
+      }
+
+      /* --- KEYFRAMES --- */
+      @keyframes floatParticle {
+        0% {
+          transform: translateY(100vh) translateX(0);
+          opacity: 0;
+        }
+        10% {
+          opacity: 0.8;
+        }
+        90% {
+          opacity: 0.8;
+        }
+        100% {
+          transform: translateY(-10vh) translateX(20px);
+          opacity: 0;
+        }
+      }
+      @keyframes driftFade {
+        0% {
+          transform: translateY(20px);
+          opacity: 0;
+        }
+        20% {
+          opacity: 0.4;
+        }
+        80% {
+          opacity: 0.4;
+        }
+        100% {
+          transform: translateY(-30px);
+          opacity: 0;
+        }
+      }
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+          filter: blur(5px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+          filter: blur(0);
+        }
+      }
+      @keyframes glowPulse {
+        from {
+          text-shadow: 0 0 5px var(--accent-warm);
+        }
+        to {
+          text-shadow: 0 0 20px var(--accent-warm), 0 0 10px white;
+        }
+      }
+      @keyframes tremble {
+        0%,
+        100% {
+          transform: rotate(0deg);
+        }
+        25% {
+          transform: rotate(0.5deg);
+        }
+        75% {
+          transform: rotate(-0.5deg);
+        }
+      }
+      @keyframes blurIn {
+        from {
+          filter: blur(10px);
+          opacity: 0;
+        }
+        to {
+          filter: blur(0);
+          opacity: 0.9;
+        }
+      }
+      @keyframes breathe {
+        0%,
+        100% {
+          transform: scale(1);
+          opacity: 0.8;
+        }
+        50% {
+          transform: scale(1.05);
+          opacity: 1;
+        }
+      }
+
+      .visible {
+        opacity: 1 !important;
+        pointer-events: auto !important;
+      }
+      .hidden {
+        opacity: 0;
+        pointer-events: none;
+      }
+      /* --- GLOBAL NAVBAR STYLES --- */
+      #song-nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        padding: 20px 30px;
+        z-index: 9999; /* Highest priority */
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: opacity 1s ease, transform 1s ease;
+        pointer-events: auto;
+      }
+
+      /* Hide nav when class is added */
+      #song-nav.nav-hidden {
+        opacity: 0;
+        transform: translateY(-20px);
+        pointer-events: none;
+      }
+
+      .nav-home {
+        text-decoration: none;
+        color: inherit; /* Takes color from the specific song's theme */
+        opacity: 0.7;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-family: sans-serif;
+        font-size: 0.9rem;
+        letter-spacing: 1px;
+        transition: opacity 0.3s;
+      }
+
+      .nav-home:hover {
+        opacity: 1;
+      }
+
+      /* Mobile Responsiveness */
+      @media (max-width: 600px) {
+        #song-nav {
+          padding: 15px;
+        }
+        .nav-home span {
+          display: none;
+        } /* Show only icon on mobile */
+      }
+    </style>
+  </head>
+  <body class="mood-night">
+    <nav id="song-nav">
+      <a href="index.html" class="nav-home">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          <polyline points="9 22 9 12 15 12 15 22"></polyline>
+        </svg>
+        <span>Library</span>
+      </a>
+    </nav>
+    <div id="bg-gradient"></div>
+    <div id="particles"></div>
+    <div id="memory-layer"></div>
+    <div id="overlay">
+      <h1>きみも悪い人でよかった</h1>
+      <p>[ Click to Start ]</p>
+    </div>
+
+    <div id="ending-screen">
+      <h1>きみも悪い人でよかった</h1>
+      <h2>I'm glad you're evil too</h2>
+      <button id="replay-btn">Replay Memory</button>
+    </div>
+
+    <div id="final-footer">from: syuby</div>
+
+    <audio id="audio-player">
+      <source src="kmwhdy.mp3" type="audio/mpeg" />
+    </audio>
+
+    <div id="lyric-container">
+      <div id="jp-text">...</div>
+      <div id="en-text"></div>
+    </div>
+
+    <script>
+      // =======================================================
+      // MEMORY FRAGMENTS (GAP FILLER)
+      // =======================================================
+      const memoryLayer = document.getElementById('memory-layer');
+      const memories = ['Walking...', 'Rain', 'Cold', 'Midnight', 'Secret', 'Hand', 'Warmth', 'Us', 'Evening', 'Sunset', 'Stupid', 'Laughing', 'Crying', 'Alive', 'Tomorrow', 'Breathing', 'Dream', 'Two people', 'Sorry', 'Love'];
+
+      function spawnMemory() {
+        const span = document.createElement('div');
+        span.classList.add('memory-word');
+        span.innerText = memories[Math.floor(Math.random() * memories.length)];
+
+        // Random Position around the center but scattered
+        const x = 50 + (Math.random() * 60 - 30); // 20% to 80%
+        const y = 50 + (Math.random() * 60 - 30);
+
+        span.style.left = `${x}%`;
+        span.style.top = `${y}%`;
+        span.style.fontSize = `${Math.random() * 1 + 0.8}rem`;
+
+        memoryLayer.appendChild(span);
+        setTimeout(() => {
+          span.remove();
+        }, 6000);
+      }
+
+      // Variable to control memory spawning
+      let memoryInterval;
+
+      function startMemories(speed = 800) {
+        if (!memoryInterval) memoryInterval = setInterval(spawnMemory, speed);
+      }
+      function stopMemories() {
+        clearInterval(memoryInterval);
+        memoryInterval = null;
+      }
+
+      // =======================================================
+      // PARTICLE SYSTEM
+      // =======================================================
+      const particleContainer = document.getElementById('particles');
+      function createParticle() {
+        const p = document.createElement('div');
+        p.classList.add('firefly');
+        const size = Math.random() * 4 + 2;
+        p.style.width = `${size}px`;
+        p.style.height = `${size}px`;
+        p.style.left = `${Math.random() * 100}%`;
+        p.style.animationDuration = `${Math.random() * 5 + 5}s`;
+        particleContainer.appendChild(p);
+        setTimeout(() => {
+          p.remove();
+        }, 10000);
+      }
+      setInterval(createParticle, 300);
+
+      // =======================================================
+      // LYRIC DATA
+      // =======================================================
+      const lyrics = [
+        { time: 0, jp: '', en: '', type: 'gap' }, // INTRO GAP
+
+        // VERSE 1
+        { time: 10.52, jp: '真夜中 街灯を見つめながら', en: 'Staring at the streetlights at midnight,', mood: 'night', anim: 'fade' },
+        { time: 15.59, jp: '楽しかった会話を 思い出してる', en: 'I recall the fun conversations we had.', mood: 'night', anim: 'blur' },
+        { time: 21.26, jp: '心を開くことは とても怖いはずなのに', en: 'Opening my heart is supposed to be terrifying,', mood: 'night', anim: 'tremble' },
+        { time: 26.32, jp: 'きみの前では無邪気に笑えた', en: 'Yet, I was able to smile innocently in front of you.', mood: 'night', anim: 'glow' },
+
+        { time: 33.25, jp: '', en: '', type: 'gap' }, // INTERLUDE GAP
+
+        // VERSE 2
+        { time: 38.13, jp: 'くだらない感傷を抱えたまま', en: 'Holding onto silly sentiments,', mood: 'night', anim: 'fade' },
+        { time: 43.55, jp: '煤けた路地裏を歩きつづけた', en: 'I kept walking through the soot-covered back alleys.', mood: 'night', anim: 'fade' },
+        { time: 48.8, jp: '冷たい雨に打たれ 陽だまりを避けてたのに', en: 'Struck by cold rain, avoiding the sunny spots,', mood: 'night', anim: 'tremble' },
+        { time: 54.31, jp: 'きみの手のひらは温かかった', en: 'Your palm was surprisingly warm.', mood: 'sunset', anim: 'glow' },
+
+        // PRE-CHORUS
+        { time: 59.94, jp: '周りには滑稽に見える 青臭い幸せ', en: 'A naive happiness that looks ridiculous to others.', mood: 'night', anim: 'blur' },
+        { time: 70.71, jp: '瓦礫の中で 強く抱きしめた', en: 'In the midst of rubble, I held you tight.', mood: 'sunset', anim: 'glow' },
+        { time: 78.24, jp: 'まるで初恋のように', en: 'Just like a first love.', mood: 'sunset', anim: 'fade' },
+
+        // CHORUS 1
+        { time: 86.32, jp: '夕焼けがきれいで 犬はかわいくて', en: 'The sunset is beautiful, dogs are cute,', mood: 'sunset', anim: 'fade' },
+        { time: 91.57, jp: '野暮なニュースに 一緒にむかついて', en: 'Getting angry together at pointless news.', mood: 'sunset', anim: 'tremble' },
+        { time: 97.31, jp: 'ダメ映画で笑って バラエティ見て泣いて', en: 'Laughing at bad movies, crying at variety shows,', mood: 'sunset', anim: 'fade' },
+        { time: 102.63, jp: 'はしゃぎまわる 少し寂しい二人がいた', en: 'We frolicked around, two slightly lonely people.', mood: 'sunset', anim: 'blur' },
+        { time: 108.02, jp: 'きみもぼくと同じくらい悪い人でよかった', en: "I'm glad you're just as evil of a person as I am.", mood: 'sunset', anim: 'glow' },
+
+        { time: 119.16, jp: '', en: '', type: 'gap' }, // LONG INTERLUDE GAP
+
+        // VERSE 3
+        { time: 130.83, jp: '小さな心臓の鼓動が二つ', en: 'Two small heartbeats,', mood: 'twilight', anim: 'tremble' },
+        { time: 136.71, jp: 'あてどない革命を夢見ていた', en: 'Dreaming of an aimless revolution.', mood: 'twilight', anim: 'blur' },
+        { time: 141.44, jp: '同じ言葉を重ねて 同じ時間を過ごした', en: 'Repeating the same words, spending the same time,', mood: 'twilight', anim: 'fade' },
+        { time: 146.88, jp: '違う生き物同士の淡い夢', en: 'A faint dream between two different creatures.', mood: 'twilight', anim: 'blur' },
+
+        // PRE-CHORUS 2
+        { time: 152.5, jp: '暗がりで呼吸をしてる ささやかな幸せ', en: 'A modest happiness breathing in the dark.', mood: 'night', anim: 'tremble' },
+        { time: 163.68, jp: 'ぬかるみで転んでも 追いかけてく', en: 'Even if I trip in the mud, I keep chasing.', mood: 'sunset', anim: 'fade' },
+        { time: 170.68, jp: '少年と少女のように', en: 'Just like a boy and a girl.', mood: 'sunset', anim: 'glow' },
+
+        // CHORUS 2
+        { time: 179.15, jp: '花火がきれいで 夕飯はおいしくて', en: 'Fireworks are beautiful, dinner is delicious,', mood: 'sunset', anim: 'glow' },
+        { time: 184.04, jp: '駄作のストーリー 一緒に紐解いて', en: 'Unravelling poor stories together.', mood: 'sunset', anim: 'fade' },
+        { time: 190.09, jp: '罰ゲームで笑って 変な歌で泣いて', en: 'Laughing at punishment games, crying at weird songs,', mood: 'sunset', anim: 'tremble' },
+        { time: 195.24, jp: 'くすぐりあう 少し寂しい二人がいた', en: 'Tickling each other, two slightly lonely people.', mood: 'sunset', anim: 'blur' },
+        { time: 200.91, jp: 'きみもぼくと同じくらい悪い人でよかった', en: "I'm glad you're just as evil of a person as I am.", mood: 'sunset', anim: 'glow' },
+
+        { time: 211.19, jp: '悪い人でよかった', en: "I'm glad you're a bad person.", mood: 'twilight', anim: 'fade' },
+        { time: 218.12, jp: '', en: '', mood: 'twilight', type: 'gap' }, // GAP
+
+        // BRIDGE
+        { time: 231.55, jp: '真面目な顔をしたって', en: 'Even if I put on a serious face,', mood: 'night', anim: 'tremble' },
+        { time: 236.82, jp: 'なんか嘘くさくなってさ', en: 'It just feels like a lie.', mood: 'night', anim: 'blur' },
+        { time: 242.32, jp: 'いい人になんかなれず', en: 'I can\'t become a "good person",', mood: 'night', anim: 'fade' },
+        { time: 245.34, jp: 'ただ抱きしめた', en: 'So I just held you tight.', mood: 'sunset', anim: 'glow' },
+        { time: 249.98, jp: 'まるで初恋のように', en: 'Just like a first love.', mood: 'sunset', anim: 'glow' },
+
+        { time: 255.82, jp: '', en: '', mood: 'sunset', type: 'gap' }, // SOLO GAP
+
+        // FINAL CHORUS
+        { time: 267.44, jp: '夕焼けがきれいで 犬はかわいくて', en: 'The sunset is beautiful, dogs are cute,', mood: 'final', anim: 'fade' },
+        { time: 273.68, jp: '野暮なニュースに 一緒にムカついて', en: 'Getting angry together at pointless news.', mood: 'final', anim: 'tremble' },
+        { time: 279.34, jp: 'ダメ映画で笑って バラエティ見て泣いて', en: 'Laughing at bad movies, crying at variety shows,', mood: 'final', anim: 'fade' },
+        { time: 284.44, jp: 'はしゃぎまわる 少し寂しい二人がいた', en: 'We frolicked around, two slightly lonely people.', mood: 'final', anim: 'blur' },
+
+        { time: 290.29, jp: '時間は有限で 永遠みたいな嘘で', en: 'Time is finite, lies feel like eternity,', mood: 'final', anim: 'blur' },
+        { time: 295.59, jp: '儚い人生の一瞬に きみがいて', en: 'In a fleeting moment of life, you were there.', mood: 'final', anim: 'glow' },
+        { time: 300.95, jp: 'つまらない世界を 「つまらないね。」て笑って', en: 'Laughing at this boring world, saying "It\'s boring, huh."', mood: 'final', anim: 'tremble' },
+        { time: 306.64, jp: '肩を寄せ合う 少し寂しい二人がいた', en: 'Shoulder to shoulder, two slightly lonely people.', mood: 'final', anim: 'glow' },
+
+        { time: 312.02, jp: 'きみもぼくと同じくらい悪い人でよかった', en: "I'm glad you're just as evil of a person as I am.", mood: 'final', anim: 'glow' },
+        { time: 323.13, jp: '明日もまた 生きていたい 君を好きでよかった', en: "I want to live again tomorrow. I'm glad I fell in love with you.", mood: 'final', anim: 'glow' },
+
+        { time: 334.67, jp: '', en: '', mood: 'final', type: 'gap' }, // FINAL GAP
+      ];
+
+      // =======================================================
+      // LOGIC ENGINE
+      // =======================================================
+      const audio = document.getElementById('audio-player');
+      const overlay = document.getElementById('overlay');
+      const endingScreen = document.getElementById('ending-screen');
+      const replayBtn = document.getElementById('replay-btn');
+      const finalFooter = document.getElementById('final-footer');
+      const lyricContainer = document.getElementById('lyric-container');
+      const songNav = document.getElementById('song-nav');
+      const jpDisplay = document.getElementById('jp-text');
+      const enDisplay = document.getElementById('en-text');
+      const body = document.body;
+
+      let currentLineIndex = -1;
+
+      overlay.addEventListener('click', () => {
+        overlay.classList.add('hidden');
+        audio.play().catch((e) => alert('Please allow audio autoplay'));
+        // Start Intro Memories immediately
+        startMemories(1500);
+        songNav.classList.add('nav-hidden');
+      });
+
+      audio.addEventListener('timeupdate', () => {
+        const currentTime = audio.currentTime;
+        let activeIndex = -1;
+
+        for (let i = 0; i < lyrics.length; i++) {
+          if (currentTime >= lyrics[i].time) activeIndex = i;
+          else break;
+        }
+
+        if (activeIndex !== -1 && activeIndex !== currentLineIndex) {
+          renderLyric(lyrics[activeIndex]);
+          currentLineIndex = activeIndex;
+        }
+      });
+
+      function renderLyric(line) {
+        // Mood Change
+        body.className = `mood-${line.mood || 'night'}`;
+
+        // GAP HANDLING
+        if (line.type === 'gap') {
+          jpDisplay.innerText = '';
+          enDisplay.innerText = '';
+          startMemories(800); // Start showing random words
+        } else {
+          stopMemories(); // Stop random words when lyrics appear
+
+          // Text Animations
+          jpDisplay.className = ''; // Reset anims
+          void jpDisplay.offsetWidth; // Trigger reflow
+          jpDisplay.classList.add(`anim-${line.anim || 'fade'}`);
+
+          jpDisplay.innerText = line.jp;
+          enDisplay.innerText = line.en;
+        }
+      }
+
+      audio.addEventListener('ended', () => {
+        stopMemories();
+        lyricContainer.style.opacity = '0';
+        endingScreen.classList.add('visible');
+        finalFooter.classList.add('visible');
+        songNav.classList.remove('nav-hidden');
+      });
+
+      replayBtn.addEventListener('click', () => {
+        endingScreen.classList.remove('visible');
+        finalFooter.classList.remove('visible');
+        songNav.classList.add('nav-hidden');
+        lyricContainer.style.opacity = '1';
+        audio.currentTime = 0;
+        audio.play();
+        currentLineIndex = -1;
+        renderLyric(lyrics[0]);
+      });
+    </script>
+  </body>
+</html>
