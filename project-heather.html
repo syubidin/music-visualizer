@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>Heather - Conan Gray | Interactive</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Reenie+Beanie&family=Cinzel:wght@400;700&family=Cutive+Mono&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700;1,900&family=Reenie+Beanie&family=Cinzel:wght@400;700&family=Cutive+Mono&display=swap" rel="stylesheet" />
 
     <link
       rel="icon"
@@ -15,9 +15,9 @@
     <style>
       :root {
         --bg-void: #08090a;
-        --bg-cold: #151b24;
-        --bg-heather: #606060; /* The Sweater Gray */
-        --bg-bloom: #e8e8e8; /* Blinding Light */
+        --bg-cold: #121820;
+        --bg-heather: #555;
+        --bg-bloom: #f0f0f0;
         --angel-glow: #fffacd;
         --text-main: #e2e2e2;
       }
@@ -43,13 +43,13 @@
         justify-content: center;
         align-items: center;
         text-align: center;
-        transition: background-color 2.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+        transition: background-color 2s cubic-bezier(0.25, 0.8, 0.25, 1);
         user-select: none;
       }
 
       /* --- ATMOSPHERE LAYERS --- */
 
-      /* 1. Cinematic Grain (Optimized opacity) */
+      /* 1. Cinematic Grain */
       body::after {
         content: '';
         position: absolute;
@@ -57,7 +57,7 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.06'/%3E%3C/svg%3E");
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.05'/%3E%3C/svg%3E");
         pointer-events: none;
         z-index: 10;
         opacity: 0.6;
@@ -71,22 +71,22 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background: radial-gradient(circle, transparent 40%, rgba(2, 5, 10, 0.95) 130%);
+        background: radial-gradient(circle, transparent 30%, rgba(0, 0, 0, 0.95) 120%);
         pointer-events: none;
         z-index: 9;
         transition: opacity 2s;
       }
 
-      /* 3. The "Heather" Bloom Light (God Ray) */
+      /* 3. The "Heather" Bloom Light */
       #angel-bloom {
         position: absolute;
         top: -50%;
         left: -50%;
         width: 200%;
         height: 200%;
-        background: radial-gradient(circle, rgba(255, 250, 220, 0.15), transparent 60%);
+        background: radial-gradient(circle, rgba(255, 250, 220, 0.2), transparent 70%);
         opacity: 0;
-        transition: opacity 3s ease, transform 10s linear;
+        transition: opacity 2s ease, transform 10s linear;
         z-index: 1;
         pointer-events: none;
       }
@@ -122,11 +122,11 @@
       .breath-word {
         position: absolute;
         font-family: 'Reenie Beanie', cursive;
-        font-size: 2rem;
-        color: rgba(255, 255, 255, 0.2);
-        animation: floatBreath 5s ease-out forwards;
-        /* Reduced blur for clarity */
-        filter: blur(0.5px);
+        font-size: 2.2rem;
+        color: rgba(255, 255, 255, 0.25);
+        animation: floatBreath 5.5s ease-out forwards;
+        /* Reduced blur so it's readable */
+        filter: blur(0px);
         text-shadow: 0 0 5px rgba(255, 255, 255, 0.1);
       }
 
@@ -171,13 +171,13 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background: #0a0a0c;
+        background: #08090a;
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
         z-index: 200;
-        transition: opacity 1.5s ease;
+        transition: opacity 1.5s ease, visibility 1.5s;
       }
       #overlay h1 {
         font-size: 4rem;
@@ -194,21 +194,22 @@
         animation: pulse 3s infinite;
       }
 
+      /* --- ENDING SCREEN (Fixed) --- */
       #ending-screen {
         position: absolute;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
-        background: #151515;
-        z-index: 150;
+        background: #111;
+        z-index: 5000; /* Super high Z-index */
         opacity: 0;
-        pointer-events: none;
+        visibility: hidden; /* Start hidden */
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        transition: opacity 3s ease;
+        transition: opacity 2s ease, visibility 0s 0s; /* Instant visibility toggle, slow opacity */
       }
       #ending-screen h1 {
         font-family: 'Reenie Beanie', cursive;
@@ -220,10 +221,10 @@
       #replay-btn {
         background: transparent;
         border: 1px solid rgba(255, 255, 255, 0.3);
-        color: #888;
+        color: #bbb;
         padding: 12px 40px;
         font-family: 'Playfair Display', serif;
-        letter-spacing: 1px;
+        letter-spacing: 2px;
         cursor: pointer;
         transition: 0.4s;
       }
@@ -233,22 +234,31 @@
         background: rgba(255, 255, 255, 0.05);
       }
 
+      /* Fixed Footer */
       #final-footer {
         position: fixed;
         bottom: 30px;
         width: 100%;
         text-align: center;
         font-family: 'Cinzel', serif;
-        font-size: 0.7rem;
-        color: #555;
+        font-size: 0.8rem;
+        color: #444;
         letter-spacing: 3px;
-        z-index: 1000;
+        z-index: 6000; /* Above ending screen */
         opacity: 0;
         transition: opacity 2s ease 1s;
       }
-      .footer-visible {
+
+      /* Show Classes */
+      .show-ending {
         opacity: 1 !important;
+        visibility: visible !important;
+        pointer-events: auto !important;
       }
+      .show-footer {
+        opacity: 1 !important;
+        color: #888 !important;
+      } /* Make brighter when shown */
 
       /* --- LYRIC STAGE --- */
       #lyric-stage {
@@ -270,7 +280,7 @@
         text-align: center;
         opacity: 0;
         pointer-events: none;
-        transition: opacity 1.2s ease, transform 1.2s ease, filter 1.2s ease;
+        transition: opacity 1s ease, transform 1.2s ease, filter 1.2s ease;
         will-change: opacity, transform;
       }
       .lyric-wrapper.active {
@@ -286,7 +296,7 @@
 
       .en-line {
         display: block;
-        font-size: 2.2rem;
+        font-size: 2.3rem;
         font-weight: 400;
         line-height: 1.3;
         margin-bottom: 12px;
@@ -302,33 +312,45 @@
 
       /* --- MOODS & STYLES --- */
 
-      /* 1. HEATHER (Angelic/Perfect) */
+      /* Background Moods */
+      .mood-void {
+        background-color: #08090a;
+      }
+      .mood-cold {
+        background-color: #121820;
+      }
+      .mood-heather {
+        background-color: #555;
+      }
+      .mood-dark {
+        background-color: #000;
+      }
+      .mood-wish {
+        background-color: #1c1c1c;
+      }
+
+      /* Lyric Styles */
       .style-heather .en-line {
         color: var(--angel-glow);
-        text-shadow: 0 0 25px rgba(255, 250, 205, 0.5);
+        text-shadow: 0 0 35px rgba(255, 250, 205, 0.7);
         font-style: italic;
         transform: scale(1.05);
         font-weight: 700;
       }
-      .mood-heather {
-        background-color: var(--bg-heather) !important;
-      }
       .mood-heather #angel-bloom {
-        opacity: 0.6;
+        opacity: 0.7;
         animation: rotateLight 20s linear infinite;
       }
 
-      /* 2. COLD (Blue/Lonely) */
       .style-cold .en-line {
         color: #b0c4de;
-        text-shadow: 0 0 10px rgba(176, 196, 222, 0.3);
+        text-shadow: 0 0 15px rgba(176, 196, 222, 0.3);
         animation: shiver 0.2s infinite;
       }
       .mood-cold {
         background-color: var(--bg-cold) !important;
       }
 
-      /* 3. POLYESTER (Rough/Cheap) */
       .style-static .en-line {
         font-family: 'Cutive Mono', monospace;
         color: #999;
@@ -337,7 +359,6 @@
         opacity: 0.9;
       }
 
-      /* 4. DEAD (Glitch/Dark) */
       .style-dark .en-line {
         color: #111;
         text-shadow: -1px -1px 0 #333;
@@ -349,34 +370,35 @@
         background-color: #000 !important;
       }
 
-      /* 5. CLIMAX BLOOM (Overexposure) */
+      /* --- THE CLIMAX (OVEREXPOSURE) --- */
       .mood-bloom {
         background-color: var(--bg-bloom) !important;
+        animation: screenShake 0.2s infinite; /* Whole screen shakes */
       }
       .mood-bloom .vignette {
         opacity: 0;
-      } /* Remove dark corners */
+      }
       .mood-bloom #angel-bloom {
         opacity: 1;
-        transform: scale(2);
-        background: radial-gradient(circle, rgba(255, 250, 220, 0.8), transparent 80%);
+        transform: scale(2.5);
+        background: radial-gradient(circle, rgba(255, 255, 240, 0.9), transparent 80%);
       }
       .mood-bloom .particle {
-        background: #333;
-      } /* Invert particles */
+        background: #000;
+      }
 
-      /* The Climax Text Style */
       .style-bloom .en-line {
         color: #000;
-        font-size: 3.5rem;
+        font-size: 3.8rem;
         font-weight: 900;
         font-style: italic;
-        text-shadow: 0 0 30px rgba(255, 250, 205, 1);
-        animation: breathe 3s ease-in-out infinite;
+        text-shadow: 0 0 60px rgba(255, 215, 0, 0.8), 2px 2px 0px rgba(0, 0, 0, 0.2);
+        animation: breathe 0.2s ease-in-out infinite alternate;
       }
       .style-bloom .jp-line {
-        color: #555;
+        color: #333;
         font-weight: bold;
+        letter-spacing: 4px;
       }
 
       /* --- KEYFRAMES --- */
@@ -404,15 +426,15 @@
       @keyframes floatBreath {
         0% {
           opacity: 0;
-          transform: translateY(10px) scale(0.9);
+          transform: translateY(20px) scale(0.9);
         }
         20% {
-          opacity: 0.6;
-        }
+          opacity: 0.7;
+        } /* Higher opacity */
         100% {
           opacity: 0;
-          transform: translateY(-40px) scale(1.1);
-          filter: blur(2px);
+          transform: translateY(-50px) scale(1.2);
+          filter: blur(4px);
         }
       }
       @keyframes shiver {
@@ -449,12 +471,23 @@
           transform: scale(1);
         }
         50% {
-          transform: scale(1.05);
+          transform: scale(1.02);
         }
       }
       @keyframes pulse {
         50% {
           opacity: 0.3;
+        }
+      }
+      @keyframes screenShake {
+        0% {
+          transform: translate(1px, 1px);
+        }
+        50% {
+          transform: translate(-1px, -1px);
+        }
+        100% {
+          transform: translate(1px, -1px);
         }
       }
 
@@ -463,7 +496,7 @@
           font-size: 1.8rem;
         }
         .style-bloom .en-line {
-          font-size: 2.5rem;
+          font-size: 2.2rem;
         }
       }
     </style>
@@ -490,12 +523,12 @@
     <div id="overlay">
       <h1>Heather</h1>
       <p style="opacity: 0.6; font-family: 'Cinzel', serif">CONAN GRAY</p>
-      <p style="font-size: 0.7rem; margin-top: 40px; letter-spacing: 3px; color: #888">[ TAP TO REMEMBER ]</p>
+      <p style="font-size: 0.6rem; margin-top: 40px; letter-spacing: 3px; color: #888">[ CLICK TO REMEMBER ]</p>
     </div>
 
     <div id="ending-screen">
       <h1>I wish I were Heather.</h1>
-      <p style="font-family: 'Cinzel', serif; font-size: 0.7rem; color: #666; margin-top: 15px; letter-spacing: 2px">BUT I AM NOT.</p>
+      <p style="font-family: 'Cinzel', serif; font-size: 0.7rem; color: #666; margin-top: 15px; letter-spacing: 2px">SHE'S SUCH AN ANGEL</p>
       <button id="replay-btn">Replay Memory</button>
     </div>
 
@@ -520,7 +553,7 @@
       let currentLineIndex = -1;
       let breathInterval;
 
-      // --- PARTICLES (Snow/Dust) ---
+      // --- PARTICLES ---
       function spawnParticle() {
         const p = document.createElement('div');
         p.className = 'particle';
@@ -542,7 +575,7 @@
         el.className = 'breath-word';
         el.innerText = text || thoughts[Math.floor(Math.random() * thoughts.length)];
         el.style.left = `${15 + Math.random() * 70}%`;
-        el.style.top = `${20 + Math.random() * 60}%`;
+        el.style.top = `${25 + Math.random() * 50}%`;
         el.style.transform = `rotate(${Math.random() * 20 - 10}deg)`;
         breathLayer.appendChild(el);
         setTimeout(() => el.remove(), 6000);
@@ -617,7 +650,7 @@
         { time: 158.96, type: 'gap', note: '( am i invisible? )' },
 
         // CLIMAX
-        { time: 168.02, jp: 'ヘザーになれたらよかった', en: 'WISH I WERE HEATHER', type: 'bloom' }, // IMPACT!
+        { time: 168.02, jp: 'ヘザーになれたらよかった', en: 'WISH I WERE HEATHER', type: 'bloom' }, // BLINDING LIGHT
 
         { time: 170.61, jp: 'どうして私にキスなんてしたの？', en: 'Why would you ever kiss me?', type: 'cold' },
         { time: 175.45, jp: '私は半分も可愛くないのに', en: "I'm not even half as pretty", type: 'cold' },
@@ -632,7 +665,7 @@
 
       overlay.addEventListener('click', () => {
         overlay.style.opacity = '0';
-        setTimeout(() => (overlay.style.display = 'none'), 1500);
+        overlay.style.visibility = 'hidden';
         songNav.classList.add('nav-hidden');
         audio.play();
         startBreathMode("it's getting colder...");
@@ -654,15 +687,16 @@
       function renderLyric(line) {
         // MOOD HANDLER
         if (line.type === 'bloom') {
-          document.body.className = 'mood-bloom'; // OVEREXPOSURE
+          document.body.classList.add('mood-bloom');
         } else {
+          document.body.classList.remove('mood-bloom');
           document.body.className = `mood-${line.type || 'void'}`;
         }
 
         // GAP HANDLER
         if (line.type === 'gap') {
           startBreathMode(line.note);
-          // Graceful exit for current lyric
+          // Clear active text
           const activeWrapper = lyricStage.querySelector('.lyric-wrapper.active');
           if (activeWrapper) {
             activeWrapper.classList.remove('active');
@@ -675,8 +709,9 @@
         }
       }
 
-      // INJECTION METHOD (Smooth Transition)
+      // INJECTION METHOD (Layout Stability)
       function injectLine(jpText, enText, styleClass) {
+        // Clean up old lines
         const oldLines = lyricStage.querySelectorAll('.lyric-wrapper.active');
         oldLines.forEach((el) => {
           el.classList.remove('active');
@@ -699,7 +734,7 @@
         wrapper.appendChild(jpSpan);
         lyricStage.appendChild(wrapper);
 
-        void wrapper.offsetWidth; // Trigger reflow
+        void wrapper.offsetWidth; // Force Reflow
         wrapper.classList.add('active');
       }
 
@@ -707,14 +742,17 @@
         stopBreathMode();
         lyricStage.innerHTML = '';
         document.body.className = 'mood-void';
-        endingScreen.classList.add('visible-block');
-        finalFooter.classList.add('footer-visible');
+        document.body.classList.remove('mood-bloom');
+
+        // Show Ending and Footer
+        endingScreen.classList.add('show-ending');
+        finalFooter.classList.add('show-footer');
         songNav.classList.remove('nav-hidden');
       });
 
       replayBtn.addEventListener('click', () => {
-        endingScreen.classList.remove('visible-block');
-        finalFooter.classList.remove('footer-visible');
+        endingScreen.classList.remove('show-ending');
+        finalFooter.classList.remove('show-footer');
         songNav.classList.add('nav-hidden');
 
         lyricStage.innerHTML = '';
