@@ -435,8 +435,11 @@
         mote.style.width = `${size}px`;
         mote.style.height = `${size}px`;
         mote.style.left = `${Math.random() * 100}%`;
+
         // Faster dust during climax
-        const duration = document.body.classList.contains('mood-climax') ? Math.random() * 5 + 5 : Math.random() * 10 + 10;
+        const isClimax = document.body.classList.contains('mood-climax');
+        const duration = isClimax ? Math.random() * 5 + 5 : Math.random() * 10 + 10;
+
         mote.style.animationDuration = `${duration}s`;
         dustContainer.appendChild(mote);
         setTimeout(() => mote.remove(), duration * 1000);
@@ -446,7 +449,7 @@
       // --- DATA ---
       const lyrics = [
         { time: 0, text: '', type: 'gap' },
-        // INTRO (Poetry)
+        // INTRO
         { time: 2.58, text: 'Teruntuk kamu, hidup dan matiku', type: 'intro' },
         { time: 6.57, text: 'Aku tak tahu lagi harus dengan kata apa aku menuliskannya\nAtau dengan kalimat apa aku mengungkapkannya', type: 'intro' },
         { time: 14.92, text: 'Karena untuk keberkian kalinya\nKau buat aku kembali percaya akan kata cinta', type: 'intro' },
@@ -468,7 +471,7 @@
 
         { time: 123.88, text: '', type: 'gap' },
 
-        // VERSE 2 & CHORUS 2
+        // VERSE 2
         { time: 130.61, text: 'Aku pernah berfikir tentang\nHidupku tanpa ada dirimu', type: 'normal' },
         { time: 140.65, text: 'Dapatkah lebih indah dari\nYang kujalani sampai kini?', type: 'normal' },
         { time: 150.82, text: "Aku s'lalu bermimpi tentang\nIndah hari tua bersamamu", type: 'normal' },
@@ -480,11 +483,11 @@
 
         { time: 207.5, text: '', type: 'gap' },
 
-        // BRIDGE & CLIMAX START
+        // BRIDGE
         { time: 210.07, text: 'Untukmu hidup dan matiku', type: 'intro' },
-        { time: 217.12, text: '', type: 'gap' }, // Solo
+        { time: 217.12, text: '', type: 'gap' },
 
-        // CLIMAX (Mood change triggered by 'build' type)
+        // CLIMAX START
         { time: 223.55, text: 'Bila musim berganti\nSampai waktu terhenti', type: 'build' },
         { time: 233.43, text: "Walau dunia membenci\nKu 'kan tetap di sini", type: 'build' },
         { time: 243.46, text: 'Bila habis sudah waktu ini\n(Bila musim berganti)', type: 'chorus' },
@@ -500,7 +503,7 @@
         { time: 283.6, text: 'Karena telah kuhabiskan', type: 'intro' },
         { time: 286.73, text: 'Sisa cintaku hanya untukmu', type: 'intro' },
 
-        // FINAL SMALL MESSAGE
+        // FINAL MESSAGE
         { time: 291.0, text: '(selamanya...)', type: 'outro-message' },
         { time: 294.0, text: '', type: 'gap' },
       ];
@@ -553,8 +556,9 @@
       }
 
       function renderLyric(line) {
-        // CLIMAX MOOD TRIGGER
-        if (line.type === 'build' || (currentTime > 223 && line.type !== 'gap' && line.type !== 'intro' && line.type !== 'outro-message')) {
+        // FIX: Gunakan 'audio.currentTime' secara langsung, bukan variabel lokal 'currentTime'
+        // Logic untuk Climax Mood
+        if (line.type === 'build' || (audio.currentTime > 223 && line.type !== 'gap' && line.type !== 'intro' && line.type !== 'outro-message')) {
           document.body.classList.add('mood-climax');
         } else if (line.type === 'intro' || line.type === 'gap' || line.type === 'outro-message') {
           document.body.classList.remove('mood-climax');
@@ -568,7 +572,7 @@
         let speed = 70;
         if (line.text.length > 30) speed = 40;
         if (line.type === 'intro') speed = 55;
-        if (line.type === 'outro-message') speed = 100; // Slow type for final message
+        if (line.type === 'outro-message') speed = 150; // Lebih lambat untuk pesan terakhir
 
         textContainer.className = '';
         if (line.type === 'highlight') textContainer.classList.add('highlight');
