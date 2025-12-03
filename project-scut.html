@@ -14,9 +14,9 @@
 
     <style>
       :root {
-        --bg-paper: #f4eadd; /* Slightly warmer vintage paper */
-        --ink-color: #2b2b2b; /* Faded black/sepia ink */
-        --ink-red: #8a2be2;
+        --bg-paper: #f4eadd;
+        --ink-color: #1a1a1a; /* Darker, richer black */
+        --ink-red: #9e2a2b; /* Deep, dried blood/seal red */
         --wax-red: #9e2a2b;
       }
 
@@ -34,11 +34,11 @@
         justify-content: center;
         align-items: center;
         text-align: center;
-        transition: background-color 1s ease;
+        transition: background-color 2s ease;
       }
 
-      /* --- ATMOSPHERE LAYERS --- */
-      /* 1. Paper Texture & Noise */
+      /* --- ATMOSPHERE LAYERS (ENHANCED) --- */
+      /* 1. Paper Texture */
       body::before {
         content: '';
         position: absolute;
@@ -46,12 +46,13 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.6' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.1'/%3E%3C/svg%3E");
+        /* A finer, more realistic paper noise */
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 250 250' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.12'/%3E%3C/svg%3E");
         pointer-events: none;
         z-index: 0;
         mix-blend-mode: multiply;
       }
-      /* 2. Vignette & Creases */
+      /* 2. Deep Vignette */
       body::after {
         content: '';
         position: absolute;
@@ -59,10 +60,11 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background: radial-gradient(circle at center, transparent 50%, rgba(60, 50, 40, 0.3) 100%);
+        /* Deeper, warmer vignette focusing the center */
+        background: radial-gradient(circle at center, transparent 40%, rgba(50, 40, 30, 0.5) 100%);
         pointer-events: none;
         z-index: 1;
-        box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.1);
+        transition: background 3s ease;
       }
       /* 3. Floating Paper Dust */
       #paper-dust {
@@ -76,7 +78,7 @@
       }
       .dust-mote {
         position: absolute;
-        background: rgba(100, 90, 80, 0.3);
+        background: rgba(90, 80, 70, 0.4);
         border-radius: 50%;
         animation: floatDust linear infinite;
       }
@@ -103,7 +105,7 @@
       .nav-home,
       .nav-x {
         color: var(--ink-color);
-        opacity: 0.7;
+        opacity: 0.6;
         transition: all 0.3s ease;
         text-decoration: none;
         display: flex;
@@ -114,7 +116,6 @@
       .nav-x:hover {
         opacity: 1;
         transform: scale(1.05);
-        filter: blur(0.5px); /* Ink bleed effect on hover */
       }
 
       /* --- MAIN CONTENT --- */
@@ -128,11 +129,9 @@
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        /* Slight rotation for realism */
         transform: rotate(-0.5deg);
         transition: transform 0.1s;
       }
-      /* The physical impact of typing */
       .typing-shake {
         animation: typeShake 0.1s ease-in-out;
       }
@@ -143,7 +142,9 @@
         min-height: 1.8rem;
         white-space: pre-wrap;
         position: relative;
-        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1); /* Ink press depth */
+        /* Deeper shadow for realistic ink press */
+        text-shadow: 1px 2px 3px rgba(0, 0, 0, 0.2), 0 0 1px rgba(0, 0, 0, 0.1);
+        transition: all 0.5s ease;
       }
 
       .cursor {
@@ -157,34 +158,35 @@
         margin-left: 4px;
       }
 
-      /* --- DECORATIONS: DOODLES & INK --- */
-      #decoration-layer {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        z-index: 5;
-        pointer-events: none;
-        mix-blend-mode: multiply;
+      /* --- STYLES & MOODS --- */
+      .highlight {
+        color: var(--ink-red);
+        /* Ink bleed effect for highlights */
+        text-shadow: 0 0 2px rgba(158, 42, 43, 0.5), 1px 2px 2px rgba(0, 0, 0, 0.2);
       }
-      .doodle path {
-        fill: none;
-        stroke: rgba(43, 43, 43, 0.2);
-        stroke-width: 2.5;
-        stroke-linecap: round;
-        stroke-linejoin: round;
-        stroke-dasharray: 1000;
-        stroke-dashoffset: 1000;
-        animation: drawDoodle 3s ease-out forwards;
+      .faded {
+        opacity: 0.7;
+        font-size: 1.4rem;
+        font-style: italic;
       }
-      .ink-blot {
-        position: absolute;
-        border-radius: 50%;
-        background: radial-gradient(circle, rgba(43, 43, 43, 0.2) 0%, transparent 70%);
-        filter: url(#ink-spread); /* SVG filter for organic edge */
-        opacity: 0;
-        animation: spreadInk 4s ease-out forwards;
+      .outro-message {
+        font-size: 1.2rem;
+        opacity: 0.6;
+        font-style: italic;
+        letter-spacing: 2px;
+      }
+
+      /* CLIMAX MODE (Final Chorus) */
+      body.mood-climax {
+        background-color: #e8dccf; /* Slightly darker paper */
+      }
+      body.mood-climax::after {
+        /* Dramatic, dark vignette focusing intense light on center */
+        background: radial-gradient(circle at center, transparent 30%, rgba(30, 20, 10, 0.8) 100%);
+      }
+      body.mood-climax #typewriter-text {
+        /* Text pops more */
+        text-shadow: 2px 3px 4px rgba(0, 0, 0, 0.3), 0 0 1px rgba(0, 0, 0, 0.2);
       }
 
       /* --- OVERLAY --- */
@@ -194,7 +196,7 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background: #e8dec8; /* A slightly darker cover paper */
+        background: #e8dec8;
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -202,7 +204,7 @@
         z-index: 200;
         cursor: pointer;
         transition: opacity 1.2s ease;
-        box-shadow: inset 0 0 150px rgba(0, 0, 0, 0.2);
+        box-shadow: inset 0 0 150px rgba(0, 0, 0, 0.3);
       }
       #overlay h1 {
         font-size: 3rem;
@@ -258,9 +260,9 @@
         margin: 30px 0;
         position: relative;
       }
-      /* Wax Seal Decoration */
+      /* Wax Seal */
       #signature::after {
-        content: 'V'; /* Initial */
+        content: 'V';
         position: absolute;
         right: -40px;
         bottom: -20px;
@@ -275,7 +277,7 @@
         font-family: 'Cinzel', serif;
         font-size: 1.5rem;
         box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.3), 0 4px 6px rgba(0, 0, 0, 0.2);
-        border: 3px solid rgba(138, 43, 226, 0.2);
+        border: 3px solid rgba(158, 42, 43, 0.3);
         transform: rotate(10deg);
       }
 
@@ -319,25 +321,10 @@
         transform: translateY(0);
       }
 
-      /* --- STYLES & ANIMATIONS --- */
-      .highlight {
-        color: var(--ink-red);
-        text-shadow: 0 0 2px var(--ink-red);
-      }
-      .faded {
-        opacity: 0.6;
-        font-size: 1.4rem;
-        font-style: italic;
-      }
-
+      /* --- ANIMATIONS --- */
       @keyframes blink {
         50% {
           opacity: 0;
-        }
-      }
-      @keyframes drawDoodle {
-        to {
-          stroke-dashoffset: 0;
         }
       }
       @keyframes floatDust {
@@ -353,28 +340,18 @@
           opacity: 0;
         }
       }
-      @keyframes spreadInk {
-        0% {
-          transform: scale(0);
-          opacity: 0.8;
-        }
-        100% {
-          transform: scale(3);
-          opacity: 0;
-        }
-      }
       @keyframes typeShake {
         0% {
           transform: rotate(-0.5deg) translate(0, 0);
         }
         25% {
-          transform: rotate(-0.5deg) translate(1px, 1px);
+          transform: rotate(-0.5deg) translate(0.5px, 0.5px);
         }
         50% {
-          transform: rotate(-0.5deg) translate(-1px, -0.5px);
+          transform: rotate(-0.5deg) translate(-0.5px, -0.2px);
         }
         75% {
-          transform: rotate(-0.5deg) translate(0.5px, 1px);
+          transform: rotate(-0.5deg) translate(0.2px, 0.5px);
         }
         100% {
           transform: rotate(-0.5deg) translate(0, 0);
@@ -397,13 +374,6 @@
     </style>
   </head>
   <body>
-    <svg style="position: absolute; width: 0; height: 0; overflow: hidden">
-      <filter id="ink-spread">
-        <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="3" result="noise" />
-        <feDisplacementMap in="SourceGraphic" in2="noise" scale="15" />
-      </filter>
-    </svg>
-
     <nav id="song-nav">
       <a href="index.html" class="nav-home">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -418,7 +388,6 @@
     </nav>
 
     <div id="paper-dust"></div>
-    <div id="decoration-layer"></div>
 
     <div id="overlay">
       <h1>SURAT CINTA</h1>
@@ -437,7 +406,7 @@
     <div id="final-footer">from: syuby</div>
 
     <audio id="audio-player">
-      <source src="scut.mp3" type="audio/mpeg" />
+      <source src="starla.mp3" type="audio/mpeg" />
     </audio>
 
     <div id="paper-sheet">
@@ -449,7 +418,6 @@
       const overlay = document.getElementById('overlay');
       const paperSheet = document.getElementById('paper-sheet');
       const textContainer = document.getElementById('typewriter-text');
-      const decorationLayer = document.getElementById('decoration-layer');
       const dustContainer = document.getElementById('paper-dust');
       const endingScreen = document.getElementById('ending-screen');
       const finalFooter = document.getElementById('final-footer');
@@ -458,7 +426,6 @@
 
       let currentLineIndex = -1;
       let typeInterval;
-      let decorationInterval;
 
       // --- ATMOSPHERE: PAPER DUST ---
       function createDust() {
@@ -468,56 +435,13 @@
         mote.style.width = `${size}px`;
         mote.style.height = `${size}px`;
         mote.style.left = `${Math.random() * 100}%`;
-        mote.style.animationDuration = `${Math.random() * 10 + 10}s`;
+        // Faster dust during climax
+        const duration = document.body.classList.contains('mood-climax') ? Math.random() * 5 + 5 : Math.random() * 10 + 10;
+        mote.style.animationDuration = `${duration}s`;
         dustContainer.appendChild(mote);
-        setTimeout(() => mote.remove(), 20000);
+        setTimeout(() => mote.remove(), duration * 1000);
       }
       setInterval(createDust, 800);
-
-      // --- DECORATIONS: DOODLES & INK ---
-      const doodlePaths = ['M10,10 Q50,60 90,10 T180,50', 'M30,30 C30,30 60,70 60,30 C60,-10 30,30 30,30', 'M20,60 L150,65', 'M70,70 A30,30 0 1,0 130,70 A30,30 0 1,0 70,70', 'M40,40 L60,60 M60,40 L40,60', 'M10,80 Q50,120 90,80'];
-
-      function spawnDecoration(isInk) {
-        const x = Math.random() * 80 + 10;
-        const y = Math.random() * 80 + 10;
-
-        if (isInk && Math.random() > 0.6) {
-          // Ink Blot
-          const blot = document.createElement('div');
-          blot.className = 'ink-blot';
-          const size = Math.random() * 100 + 50;
-          blot.style.width = `${size}px`;
-          blot.style.height = `${size}px`;
-          blot.style.left = `${x}%`;
-          blot.style.top = `${y}%`;
-          decorationLayer.appendChild(blot);
-          setTimeout(() => blot.remove(), 5000);
-        } else {
-          // Doodle
-          const svgNS = 'http://www.w3.org/2000/svg';
-          const svg = document.createElementNS(svgNS, 'svg');
-          svg.setAttribute('width', '200');
-          svg.setAttribute('height', '150');
-          svg.classList.add('doodle');
-          svg.style.left = `${x}%`;
-          svg.style.top = `${y}%`;
-          svg.style.transform = `translate(-50%, -50%) rotate(${Math.random() * 40 - 20}deg)`;
-
-          const path = document.createElementNS(svgNS, 'path');
-          path.setAttribute('d', doodlePaths[Math.floor(Math.random() * doodlePaths.length)]);
-          svg.appendChild(path);
-          decorationLayer.appendChild(svg);
-          setTimeout(() => svg.remove(), 4000);
-        }
-      }
-
-      function startDecorating(intense = false) {
-        if (!decorationInterval) decorationInterval = setInterval(() => spawnDecoration(intense), intense ? 800 : 1500);
-      }
-      function stopDecorating() {
-        clearInterval(decorationInterval);
-        decorationInterval = null;
-      }
 
       // --- DATA ---
       const lyrics = [
@@ -530,7 +454,7 @@
         { time: 26.64, text: 'Ketika hati yang mudah rapuh ini\nDiuji oleh duniawi, diuji oleh materi untuk kesekian kali', type: 'intro' },
         { time: 35.21, text: 'Lagi, lagi, dan lagi', type: 'highlight' },
 
-        { time: 40.1, text: '', type: 'gap-long' }, // More ink blots here
+        { time: 40.1, text: '', type: 'gap' },
 
         // VERSE 1
         { time: 65.66, text: 'Kutuliskan kenangan tentang\nCaraku menemukan dirimu', type: 'normal' },
@@ -556,9 +480,11 @@
 
         { time: 207.5, text: '', type: 'gap' },
 
-        // BRIDGE & CLIMAX
+        // BRIDGE & CLIMAX START
         { time: 210.07, text: 'Untukmu hidup dan matiku', type: 'intro' },
-        { time: 217.12, text: '', type: 'gap-long' }, // Solo
+        { time: 217.12, text: '', type: 'gap' }, // Solo
+
+        // CLIMAX (Mood change triggered by 'build' type)
         { time: 223.55, text: 'Bila musim berganti\nSampai waktu terhenti', type: 'build' },
         { time: 233.43, text: "Walau dunia membenci\nKu 'kan tetap di sini", type: 'build' },
         { time: 243.46, text: 'Bila habis sudah waktu ini\n(Bila musim berganti)', type: 'chorus' },
@@ -573,7 +499,10 @@
         // OUTRO
         { time: 283.6, text: 'Karena telah kuhabiskan', type: 'intro' },
         { time: 286.73, text: 'Sisa cintaku hanya untukmu', type: 'intro' },
-        { time: 290.02, text: '', type: 'gap' },
+
+        // FINAL SMALL MESSAGE
+        { time: 291.0, text: '(selamanya...)', type: 'outro-message' },
+        { time: 294.0, text: '', type: 'gap' },
       ];
 
       overlay.addEventListener('click', () => {
@@ -581,7 +510,6 @@
         setTimeout(() => (overlay.style.display = 'none'), 1200);
         songNav.classList.add('nav-hidden');
         audio.play();
-        startDecorating(false);
       });
 
       audio.addEventListener('timeupdate', () => {
@@ -611,9 +539,9 @@
             char === '\n' ? (span.innerHTML = '<br>') : (span.textContent = char);
             textContainer.insertBefore(span, cursor);
 
-            // Physical Impact Animation
+            // Physical Impact Animation (Subtle shake)
             paperSheet.classList.remove('typing-shake');
-            void paperSheet.offsetWidth; // Trigger reflow
+            void paperSheet.offsetWidth;
             paperSheet.classList.add('typing-shake');
 
             i++;
@@ -625,26 +553,33 @@
       }
 
       function renderLyric(line) {
-        if (line.type.includes('gap')) {
-          startDecorating(line.type === 'gap-long'); // Intense decorating for long gaps
+        // CLIMAX MOOD TRIGGER
+        if (line.type === 'build' || (currentTime > 223 && line.type !== 'gap' && line.type !== 'intro' && line.type !== 'outro-message')) {
+          document.body.classList.add('mood-climax');
+        } else if (line.type === 'intro' || line.type === 'gap' || line.type === 'outro-message') {
+          document.body.classList.remove('mood-climax');
+        }
+
+        if (line.type === 'gap') {
           textContainer.innerHTML = '<span class="cursor"></span>';
           return;
         }
-        stopDecorating();
 
         let speed = 70;
         if (line.text.length > 30) speed = 40;
         if (line.type === 'intro') speed = 55;
+        if (line.type === 'outro-message') speed = 100; // Slow type for final message
 
         textContainer.className = '';
         if (line.type === 'highlight') textContainer.classList.add('highlight');
         if (line.type === 'intro') textContainer.classList.add('faded');
+        if (line.type === 'outro-message') textContainer.classList.add('outro-message');
 
         typeWriter(line.text, speed);
       }
 
       audio.addEventListener('ended', () => {
-        stopDecorating();
+        document.body.classList.remove('mood-climax');
         textContainer.innerHTML = '';
         endingScreen.classList.add('visible-block');
         finalFooter.classList.add('footer-visible');
@@ -655,12 +590,12 @@
         endingScreen.classList.remove('visible-block');
         finalFooter.classList.remove('footer-visible');
         songNav.classList.add('nav-hidden');
+        document.body.classList.remove('mood-climax');
 
         audio.currentTime = 0;
         audio.play();
         currentLineIndex = -1;
         renderLyric(lyrics[0]);
-        decorationLayer.innerHTML = ''; // Clear old decorations
       });
     </script>
   </body>
