@@ -2,9 +2,9 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>Heather - Conan Gray | Interactive</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Reenie+Beanie&family=Cinzel:wght@400&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Reenie+Beanie&family=Cinzel:wght@400;700&family=Cutive+Mono&display=swap" rel="stylesheet" />
 
     <link
       rel="icon"
@@ -14,12 +14,18 @@
 
     <style>
       :root {
-        --bg-void: #0a0a0c;
-        --bg-cold: #1c252e;
-        --bg-heather: #7a7a7a;
+        --bg-void: #08090a;
+        --bg-cold: #151b24;
+        --bg-heather: #606060; /* The Sweater Gray */
+        --bg-bloom: #e8e8e8; /* Blinding Light */
         --angel-glow: #fffacd;
-        --static-color: #a0a0a0;
         --text-main: #e2e2e2;
+      }
+
+      /* --- MOBILE LOCK & RESET --- */
+      * {
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
       }
 
       body,
@@ -31,17 +37,19 @@
         background-color: var(--bg-void);
         color: var(--text-main);
         font-family: 'Playfair Display', serif;
-        overflow: hidden;
+        overflow: hidden; /* No scroll */
+        position: fixed; /* Lock bounce on iOS */
         display: flex;
         justify-content: center;
         align-items: center;
         text-align: center;
-        transition: background-color 3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        transition: background-color 2.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+        user-select: none;
       }
 
       /* --- ATMOSPHERE LAYERS --- */
 
-      /* 1. Cinematic Grain */
+      /* 1. Cinematic Grain (Optimized opacity) */
       body::after {
         content: '';
         position: absolute;
@@ -49,10 +57,11 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E");
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.06'/%3E%3C/svg%3E");
         pointer-events: none;
         z-index: 10;
-        opacity: 0.5;
+        opacity: 0.6;
+        mix-blend-mode: overlay;
       }
 
       /* 2. Cold Vignette */
@@ -62,24 +71,24 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background: radial-gradient(circle, transparent 40%, rgba(5, 10, 20, 0.9) 120%);
+        background: radial-gradient(circle, transparent 40%, rgba(2, 5, 10, 0.95) 130%);
         pointer-events: none;
         z-index: 9;
+        transition: opacity 2s;
       }
 
-      /* 3. The "Heather" Bloom Light */
+      /* 3. The "Heather" Bloom Light (God Ray) */
       #angel-bloom {
         position: absolute;
         top: -50%;
         left: -50%;
         width: 200%;
         height: 200%;
-        background: radial-gradient(circle, rgba(255, 250, 205, 0.2), transparent 70%);
+        background: radial-gradient(circle, rgba(255, 250, 220, 0.15), transparent 60%);
         opacity: 0;
-        transition: opacity 3s ease;
+        transition: opacity 3s ease, transform 10s linear;
         z-index: 1;
         pointer-events: none;
-        animation: rotateLight 40s linear infinite;
       }
 
       /* 4. Snow/Dust */
@@ -114,9 +123,11 @@
         position: absolute;
         font-family: 'Reenie Beanie', cursive;
         font-size: 2rem;
-        color: rgba(255, 255, 255, 0.15);
-        animation: floatBreath 6s ease-out forwards;
-        filter: blur(1px);
+        color: rgba(255, 255, 255, 0.2);
+        animation: floatBreath 5s ease-out forwards;
+        /* Reduced blur for clarity */
+        filter: blur(0.5px);
+        text-shadow: 0 0 5px rgba(255, 255, 255, 0.1);
       }
 
       /* --- UI ELEMENTS --- */
@@ -140,9 +151,9 @@
       }
       .nav-home,
       .nav-x {
-        color: #aaa;
+        color: #888;
         text-decoration: none;
-        opacity: 0.6;
+        opacity: 0.7;
         transition: 0.3s;
         display: flex;
         gap: 10px;
@@ -176,10 +187,11 @@
         text-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
       }
       #overlay p {
-        font-size: 0.8rem;
+        font-size: 0.7rem;
         letter-spacing: 4px;
         color: #666;
-        margin-top: 20px;
+        margin-top: 30px;
+        animation: pulse 3s infinite;
       }
 
       #ending-screen {
@@ -243,110 +255,128 @@
         position: relative;
         z-index: 50;
         width: 85%;
-        max-width: 900px;
+        max-width: 800px;
         height: 300px;
         display: flex;
         justify-content: center;
         align-items: center;
+        perspective: 1000px;
       }
 
-      /* Lyric Element */
+      /* Lyric Element Wrapper */
       .lyric-wrapper {
         position: absolute;
         width: 100%;
         text-align: center;
         opacity: 0;
         pointer-events: none;
-        transition: opacity 1.5s ease, transform 1.5s ease, filter 1.5s ease;
+        transition: opacity 1.2s ease, transform 1.2s ease, filter 1.2s ease;
         will-change: opacity, transform;
       }
       .lyric-wrapper.active {
         opacity: 1;
-        transform: scale(1);
+        transform: scale(1) translateZ(0);
         filter: blur(0);
       }
       .lyric-wrapper.exit {
         opacity: 0;
-        transform: scale(1.1) translateY(-20px);
-        filter: blur(8px);
+        transform: scale(1.05) translateZ(-50px);
+        filter: blur(6px);
       }
 
       .en-line {
         display: block;
-        font-size: 2.5rem;
+        font-size: 2.2rem;
         font-weight: 400;
         line-height: 1.3;
-        margin-bottom: 10px;
+        margin-bottom: 12px;
       }
       .jp-line {
         display: block;
         font-size: 1rem;
-        color: #666;
-        font-weight: 400;
+        color: #777;
+        font-weight: 300;
         letter-spacing: 1px;
         font-family: sans-serif;
       }
 
       /* --- MOODS & STYLES --- */
 
-      /* Background Moods */
-      .mood-void {
-        background-color: #0a0a0c;
-      }
-      .mood-cold {
-        background-color: #1a222b;
-      }
-      .mood-heather {
-        background-color: #555;
-      } /* Grey sweater color */
-      .mood-dark {
-        background-color: #000;
-      }
-      .mood-wish {
-        background-color: #222;
-      }
-
-      /* Lyric Styles */
+      /* 1. HEATHER (Angelic/Perfect) */
       .style-heather .en-line {
         color: var(--angel-glow);
-        text-shadow: 0 0 30px rgba(255, 250, 205, 0.6);
+        text-shadow: 0 0 25px rgba(255, 250, 205, 0.5);
         font-style: italic;
-        transform: scale(1.1);
+        transform: scale(1.05);
         font-weight: 700;
       }
-      .style-heather body {
-        /* Angelic Light Bloom */
+      .mood-heather {
+        background-color: var(--bg-heather) !important;
+      }
+      .mood-heather #angel-bloom {
+        opacity: 0.6;
+        animation: rotateLight 20s linear infinite;
       }
 
+      /* 2. COLD (Blue/Lonely) */
       .style-cold .en-line {
-        color: #a9cce3;
-        text-shadow: 0 0 10px rgba(169, 204, 227, 0.2);
+        color: #b0c4de;
+        text-shadow: 0 0 10px rgba(176, 196, 222, 0.3);
         animation: shiver 0.2s infinite;
       }
+      .mood-cold {
+        background-color: var(--bg-cold) !important;
+      }
 
+      /* 3. POLYESTER (Rough/Cheap) */
       .style-static .en-line {
-        font-family: monospace;
-        color: #888;
-        letter-spacing: -2px;
-        text-shadow: 2px 0 0 rgba(0, 0, 0, 0.5);
-        opacity: 0.8;
+        font-family: 'Cutive Mono', monospace;
+        color: #999;
+        letter-spacing: -1px;
+        text-shadow: 2px 0 0 rgba(0, 0, 0, 0.8);
+        opacity: 0.9;
       }
 
+      /* 4. DEAD (Glitch/Dark) */
       .style-dark .en-line {
-        color: #222;
-        text-shadow: -1px -1px 0 #444;
-        font-weight: 700;
-        letter-spacing: 3px;
+        color: #111;
+        text-shadow: -1px -1px 0 #333;
+        font-weight: 900;
+        letter-spacing: 4px;
+        animation: flicker 0.1s infinite;
+      }
+      .mood-dark {
+        background-color: #000 !important;
       }
 
-      /* CLIMAX BLOOM EFFECT */
-      body.bloom-active #angel-bloom {
-        opacity: 1;
-        transform: scale(1.5);
+      /* 5. CLIMAX BLOOM (Overexposure) */
+      .mood-bloom {
+        background-color: var(--bg-bloom) !important;
       }
-      body.bloom-active .lyric-wrapper {
-        text-shadow: 0 0 50px white;
-        color: white;
+      .mood-bloom .vignette {
+        opacity: 0;
+      } /* Remove dark corners */
+      .mood-bloom #angel-bloom {
+        opacity: 1;
+        transform: scale(2);
+        background: radial-gradient(circle, rgba(255, 250, 220, 0.8), transparent 80%);
+      }
+      .mood-bloom .particle {
+        background: #333;
+      } /* Invert particles */
+
+      /* The Climax Text Style */
+      .style-bloom .en-line {
+        color: #000;
+        font-size: 3.5rem;
+        font-weight: 900;
+        font-style: italic;
+        text-shadow: 0 0 30px rgba(255, 250, 205, 1);
+        animation: breathe 3s ease-in-out infinite;
+      }
+      .style-bloom .jp-line {
+        color: #555;
+        font-weight: bold;
       }
 
       /* --- KEYFRAMES --- */
@@ -374,15 +404,15 @@
       @keyframes floatBreath {
         0% {
           opacity: 0;
-          transform: translateY(20px) scale(0.8);
+          transform: translateY(10px) scale(0.9);
         }
         20% {
-          opacity: 0.5;
+          opacity: 0.6;
         }
         100% {
           opacity: 0;
-          transform: translateY(-50px) scale(1.2);
-          filter: blur(5px);
+          transform: translateY(-40px) scale(1.1);
+          filter: blur(2px);
         }
       }
       @keyframes shiver {
@@ -402,15 +432,38 @@
           transform: translate(0, 0);
         }
       }
-
-      .visible-block {
-        opacity: 1 !important;
-        pointer-events: auto !important;
+      @keyframes flicker {
+        0% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.7;
+        }
+        100% {
+          opacity: 1;
+        }
+      }
+      @keyframes breathe {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.05);
+        }
+      }
+      @keyframes pulse {
+        50% {
+          opacity: 0.3;
+        }
       }
 
       @media (max-width: 600px) {
         .en-line {
           font-size: 1.8rem;
+        }
+        .style-bloom .en-line {
+          font-size: 2.5rem;
         }
       }
     </style>
@@ -436,13 +489,13 @@
 
     <div id="overlay">
       <h1>Heather</h1>
-      <p style="opacity: 0.5">CONAN GRAY</p>
-      <p style="font-size: 0.6rem; margin-top: 40px; letter-spacing: 3px">[ CLICK TO REMEMBER ]</p>
+      <p style="opacity: 0.6; font-family: 'Cinzel', serif">CONAN GRAY</p>
+      <p style="font-size: 0.7rem; margin-top: 40px; letter-spacing: 3px; color: #888">[ TAP TO REMEMBER ]</p>
     </div>
 
     <div id="ending-screen">
       <h1>I wish I were Heather.</h1>
-      <p style="font-family: 'Cinzel', serif; font-size: 0.8rem; color: #555; margin-top: 10px">SHE'S SUCH AN ANGEL</p>
+      <p style="font-family: 'Cinzel', serif; font-size: 0.7rem; color: #666; margin-top: 15px; letter-spacing: 2px">BUT I AM NOT.</p>
       <button id="replay-btn">Replay Memory</button>
     </div>
 
@@ -467,7 +520,7 @@
       let currentLineIndex = -1;
       let breathInterval;
 
-      // --- PARTICLES ---
+      // --- PARTICLES (Snow/Dust) ---
       function spawnParticle() {
         const p = document.createElement('div');
         p.className = 'particle';
@@ -482,14 +535,13 @@
       setInterval(spawnParticle, 300);
 
       // --- GAP FILLER: BREATH TEXT ---
-      // Specific thoughts for specific moments
-      const randomThoughts = ['why her?', 'so pretty', 'it hurts', 'polyester', 'invisible', 'cold', 'blue'];
+      const thoughts = ['why her?', 'so pretty', 'it hurts', 'polyester', 'invisible', 'cold', 'blue', 'please'];
 
       function spawnBreath(text) {
         const el = document.createElement('div');
         el.className = 'breath-word';
-        el.innerText = text || randomThoughts[Math.floor(Math.random() * randomThoughts.length)];
-        el.style.left = `${20 + Math.random() * 60}%`;
+        el.innerText = text || thoughts[Math.floor(Math.random() * thoughts.length)];
+        el.style.left = `${15 + Math.random() * 70}%`;
         el.style.top = `${20 + Math.random() * 60}%`;
         el.style.transform = `rotate(${Math.random() * 20 - 10}deg)`;
         breathLayer.appendChild(el);
@@ -498,9 +550,8 @@
 
       function startBreathMode(specificText = null) {
         if (!breathInterval) {
-          // Immediate spawn
           spawnBreath(specificText);
-          breathInterval = setInterval(() => spawnBreath(specificText), 2000);
+          breathInterval = setInterval(() => spawnBreath(specificText), 2200);
         }
       }
       function stopBreathMode() {
@@ -565,8 +616,8 @@
 
         { time: 158.96, type: 'gap', note: '( am i invisible? )' },
 
-        // OUTRO
-        { time: 168.02, jp: 'ヘザーになれたらよかった', en: 'Wish I were Heather', type: 'bloom' }, // CLIMAX BLOOM
+        // CLIMAX
+        { time: 168.02, jp: 'ヘザーになれたらよかった', en: 'WISH I WERE HEATHER', type: 'bloom' }, // IMPACT!
 
         { time: 170.61, jp: 'どうして私にキスなんてしたの？', en: 'Why would you ever kiss me?', type: 'cold' },
         { time: 175.45, jp: '私は半分も可愛くないのに', en: "I'm not even half as pretty", type: 'cold' },
@@ -584,7 +635,7 @@
         setTimeout(() => (overlay.style.display = 'none'), 1500);
         songNav.classList.add('nav-hidden');
         audio.play();
-        startBreathMode("it's getting colder..."); // Initial thought
+        startBreathMode("it's getting colder...");
       });
 
       audio.addEventListener('timeupdate', () => {
@@ -601,19 +652,17 @@
       });
 
       function renderLyric(line) {
-        // 1. SET BACKGROUND MOOD
-        // If it's a bloom event, special class
+        // MOOD HANDLER
         if (line.type === 'bloom') {
-          document.body.classList.add('bloom-active');
+          document.body.className = 'mood-bloom'; // OVEREXPOSURE
         } else {
-          document.body.classList.remove('bloom-active');
           document.body.className = `mood-${line.type || 'void'}`;
         }
 
-        // 2. HANDLE GAP VS LYRIC
+        // GAP HANDLER
         if (line.type === 'gap') {
           startBreathMode(line.note);
-          // Clear any lingering lyric text gracefully
+          // Graceful exit for current lyric
           const activeWrapper = lyricStage.querySelector('.lyric-wrapper.active');
           if (activeWrapper) {
             activeWrapper.classList.remove('active');
@@ -626,9 +675,8 @@
         }
       }
 
-      // INJECTION METHOD (Fixes Jitter)
+      // INJECTION METHOD (Smooth Transition)
       function injectLine(jpText, enText, styleClass) {
-        // Mark old line for exit
         const oldLines = lyricStage.querySelectorAll('.lyric-wrapper.active');
         oldLines.forEach((el) => {
           el.classList.remove('active');
@@ -636,7 +684,6 @@
           setTimeout(() => el.remove(), 1500);
         });
 
-        // Create new line
         const wrapper = document.createElement('div');
         wrapper.className = `lyric-wrapper ${styleClass}`;
 
@@ -652,15 +699,14 @@
         wrapper.appendChild(jpSpan);
         lyricStage.appendChild(wrapper);
 
-        // Force reflow for animation
-        void wrapper.offsetWidth;
+        void wrapper.offsetWidth; // Trigger reflow
         wrapper.classList.add('active');
       }
 
       audio.addEventListener('ended', () => {
         stopBreathMode();
-        lyricStage.innerHTML = ''; // Clean slate
-        document.body.classList.remove('bloom-active');
+        lyricStage.innerHTML = '';
+        document.body.className = 'mood-void';
         endingScreen.classList.add('visible-block');
         finalFooter.classList.add('footer-visible');
         songNav.classList.remove('nav-hidden');
@@ -671,9 +717,7 @@
         finalFooter.classList.remove('footer-visible');
         songNav.classList.add('nav-hidden');
 
-        lyricStage.innerHTML = ''; // Hard reset lyrics
-        document.body.className = 'mood-void'; // Reset bg
-
+        lyricStage.innerHTML = '';
         audio.currentTime = 0;
         audio.play();
         currentLineIndex = -1;

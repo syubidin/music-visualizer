@@ -2,8 +2,8 @@
 <html lang="id">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Surat Cinta Untuk Starla - Virgoun | Interactive Letter</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Surat Cinta Untuk Starla - Virgoun</title>
     <link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Reenie+Beanie&family=Cinzel:wght@700&display=swap" rel="stylesheet" />
 
     <link
@@ -15,9 +15,17 @@
     <style>
       :root {
         --bg-paper: #f4eadd;
-        --ink-color: #1a1a1a; /* Darker, richer black */
-        --ink-red: #9e2a2b; /* Deep, dried blood/seal red */
-        --wax-red: #9e2a2b;
+        --bg-climax: #2e1a1a; /* Darkened room for climax */
+        --ink-main: #1a1a1a;
+        --ink-climax: #ffcccc; /* Glowing text color */
+        --highlight-color: #8a2be2;
+        --shadow-paper: rgba(0, 0, 0, 0.2);
+      }
+
+      /* RESET & MOBILE LOCK */
+      * {
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
       }
 
       body,
@@ -27,18 +35,20 @@
         width: 100%;
         height: 100%;
         background-color: var(--bg-paper);
-        color: var(--ink-color);
+        color: var(--ink-main);
         font-family: 'Special Elite', monospace;
-        overflow: hidden;
+        overflow: hidden; /* Prevent scrolling */
+        position: fixed; /* Lock body for iOS */
         display: flex;
         justify-content: center;
         align-items: center;
         text-align: center;
-        transition: background-color 2s ease;
+        transition: background-color 2s cubic-bezier(0.25, 0.8, 0.25, 1);
       }
 
-      /* --- ATMOSPHERE LAYERS (ENHANCED) --- */
-      /* 1. Paper Texture */
+      /* --- ATMOSPHERE LAYERS --- */
+
+      /* 1. Paper Grain Texture */
       body::before {
         content: '';
         position: absolute;
@@ -46,44 +56,150 @@
         left: 0;
         width: 100%;
         height: 100%;
-        /* A finer, more realistic paper noise */
-        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 250 250' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.12'/%3E%3C/svg%3E");
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.5' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.15'/%3E%3C/svg%3E");
         pointer-events: none;
         z-index: 0;
         mix-blend-mode: multiply;
       }
-      /* 2. Deep Vignette */
-      body::after {
-        content: '';
+
+      /* 2. Vignette (Focus Light) */
+      .vignette {
         position: absolute;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
-        /* Deeper, warmer vignette focusing the center */
-        background: radial-gradient(circle at center, transparent 40%, rgba(50, 40, 30, 0.5) 100%);
+        background: radial-gradient(circle, transparent 50%, rgba(40, 30, 20, 0.4) 120%);
         pointer-events: none;
-        z-index: 1;
-        transition: background 3s ease;
-      }
-      /* 3. Floating Paper Dust */
-      #paper-dust {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        top: 0;
-        left: 0;
         z-index: 2;
+        transition: background 2s ease;
+      }
+
+      /* 3. Floating Dust Particles */
+      #dust-container {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
         pointer-events: none;
       }
-      .dust-mote {
+      .dust {
         position: absolute;
-        background: rgba(90, 80, 70, 0.4);
+        background: #8b7d6b;
         border-radius: 50%;
+        opacity: 0.4;
         animation: floatDust linear infinite;
       }
 
-      /* --- NAVBAR --- */
+      /* --- MAIN STAGE: THE PAPER --- */
+      #stage-wrapper {
+        position: relative;
+        z-index: 10;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        perspective: 1000px; /* Enable 3D */
+      }
+
+      #paper-sheet {
+        width: 85%;
+        max-width: 800px;
+        min-height: 300px;
+        padding: 40px;
+        /* Styling to look like a physical paper */
+        background: rgba(255, 255, 255, 0); /* Transparent initially to blend */
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+
+        /* The 3D Floating Animation */
+        transform-style: preserve-3d;
+        animation: breathePaper 8s ease-in-out infinite;
+        transition: transform 1s cubic-bezier(0.175, 0.885, 0.32, 1.275), filter 0.5s ease;
+        will-change: transform;
+      }
+
+      /* --- TYPOGRAPHY --- */
+      #typewriter-text {
+        font-size: 1.8rem;
+        line-height: 1.6;
+        min-height: 2rem;
+        white-space: pre-wrap;
+        position: relative;
+        text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);
+        transition: color 0.5s, text-shadow 0.5s, font-size 0.5s;
+      }
+
+      .cursor {
+        display: inline-block;
+        width: 3px;
+        height: 1.5em;
+        background-color: currentColor;
+        opacity: 0.7;
+        animation: blink 1s steps(2, start) infinite;
+        vertical-align: text-bottom;
+        margin-left: 2px;
+      }
+
+      /* --- MOOD CLASSES (Applied to Body/Paper) --- */
+
+      /* 1. INTRO (Faded, distant) */
+      .mood-intro #typewriter-text {
+        font-size: 1.4rem;
+        color: #555;
+        font-style: italic;
+      }
+
+      /* 2. VERSE (Standard Typewriter) */
+      .mood-verse #typewriter-text {
+        font-size: 1.8rem;
+        color: var(--ink-main);
+      }
+
+      /* 3. CHORUS (Emphasized) */
+      .mood-chorus #typewriter-text {
+        font-size: 2rem;
+        color: var(--ink-main);
+        font-weight: bold;
+        text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.2);
+      }
+
+      /* 4. CLIMAX (THE BURNING INK) */
+      body.mood-climax {
+        background-color: var(--bg-climax);
+      }
+
+      .mood-climax .vignette {
+        background: radial-gradient(circle, transparent 20%, #000 130%);
+      }
+
+      .mood-climax #paper-sheet {
+        transform: scale(1.1) rotate(0deg) translateZ(50px); /* Zoom in 3D */
+        filter: contrast(1.2);
+      }
+
+      .mood-climax #typewriter-text {
+        color: #ffb3b3; /* Pale red glow */
+        text-shadow: 0 0 10px rgba(255, 50, 50, 0.8), 0 0 20px rgba(255, 0, 0, 0.4);
+        font-size: 2.2rem;
+      }
+
+      .mood-climax .cursor {
+        background-color: #ff0000;
+        box-shadow: 0 0 10px #ff0000;
+      }
+
+      /* 5. HIGHLIGHT (Red Ink) */
+      span.highlight {
+        color: #9e2a2b;
+        font-weight: bold;
+        text-shadow: 0 0 2px rgba(158, 42, 43, 0.3);
+      }
+
+      /* --- UI ELEMENTS --- */
       #song-nav {
         position: fixed;
         top: 0;
@@ -104,92 +220,20 @@
       }
       .nav-home,
       .nav-x {
-        color: var(--ink-color);
+        color: #333;
         opacity: 0.6;
-        transition: all 0.3s ease;
+        transition: 0.3s;
         text-decoration: none;
         display: flex;
-        align-items: center;
         gap: 10px;
+        align-items: center;
       }
       .nav-home:hover,
       .nav-x:hover {
         opacity: 1;
-        transform: scale(1.05);
+        transform: scale(1.1);
       }
 
-      /* --- MAIN CONTENT --- */
-      #paper-sheet {
-        position: relative;
-        z-index: 20;
-        width: 85%;
-        max-width: 850px;
-        min-height: 300px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        transform: rotate(-0.5deg);
-        transition: transform 0.1s;
-      }
-      .typing-shake {
-        animation: typeShake 0.1s ease-in-out;
-      }
-
-      #typewriter-text {
-        font-size: 1.8rem;
-        line-height: 1.8;
-        min-height: 1.8rem;
-        white-space: pre-wrap;
-        position: relative;
-        /* Deeper shadow for realistic ink press */
-        text-shadow: 1px 2px 3px rgba(0, 0, 0, 0.2), 0 0 1px rgba(0, 0, 0, 0.1);
-        transition: all 0.5s ease;
-      }
-
-      .cursor {
-        display: inline-block;
-        width: 3px;
-        height: 1.6rem;
-        background-color: var(--ink-color);
-        opacity: 0.7;
-        animation: blink 1s steps(2, start) infinite;
-        vertical-align: text-bottom;
-        margin-left: 4px;
-      }
-
-      /* --- STYLES & MOODS --- */
-      .highlight {
-        color: var(--ink-red);
-        /* Ink bleed effect for highlights */
-        text-shadow: 0 0 2px rgba(158, 42, 43, 0.5), 1px 2px 2px rgba(0, 0, 0, 0.2);
-      }
-      .faded {
-        opacity: 0.7;
-        font-size: 1.4rem;
-        font-style: italic;
-      }
-      .outro-message {
-        font-size: 1.2rem;
-        opacity: 0.6;
-        font-style: italic;
-        letter-spacing: 2px;
-      }
-
-      /* CLIMAX MODE (Final Chorus) */
-      body.mood-climax {
-        background-color: #e8dccf; /* Slightly darker paper */
-      }
-      body.mood-climax::after {
-        /* Dramatic, dark vignette focusing intense light on center */
-        background: radial-gradient(circle at center, transparent 30%, rgba(30, 20, 10, 0.8) 100%);
-      }
-      body.mood-climax #typewriter-text {
-        /* Text pops more */
-        text-shadow: 2px 3px 4px rgba(0, 0, 0, 0.3), 0 0 1px rgba(0, 0, 0, 0.2);
-      }
-
-      /* --- OVERLAY --- */
       #overlay {
         position: absolute;
         top: 0;
@@ -202,42 +246,23 @@
         justify-content: center;
         align-items: center;
         z-index: 200;
-        cursor: pointer;
         transition: opacity 1.2s ease;
-        box-shadow: inset 0 0 150px rgba(0, 0, 0, 0.3);
+        box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.2);
       }
       #overlay h1 {
-        font-size: 3rem;
-        margin-bottom: 15px;
-        color: var(--ink-color);
-        border-bottom: 3px double var(--ink-color);
-        padding-bottom: 15px;
-        letter-spacing: 2px;
-      }
-      #overlay p {
-        font-family: 'Reenie Beanie', cursive;
-        font-size: 1.8rem;
-        color: #555;
-        transform: rotate(-3deg);
-        margin-top: 20px;
-      }
-      .click-hint {
-        font-family: 'Special Elite';
-        font-size: 0.9rem;
-        margin-top: 50px !important;
-        transform: rotate(0deg) !important;
-        opacity: 0.6;
-        animation: pulse 2s infinite;
+        font-size: 2.5rem;
+        border-bottom: 2px solid #333;
+        padding-bottom: 10px;
+        margin-bottom: 10px;
       }
 
-      /* --- ENDING --- */
       #ending-screen {
         position: absolute;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
-        background: rgba(244, 234, 221, 0.98);
+        background: rgba(244, 234, 221, 0.95);
         z-index: 150;
         opacity: 0;
         pointer-events: none;
@@ -247,55 +272,43 @@
         align-items: center;
         transition: opacity 2s ease;
       }
-      #ending-content {
-        text-align: center;
-        transform: translateY(20px);
-        transition: transform 2s ease;
-      }
       #signature {
         font-family: 'Reenie Beanie', cursive;
-        font-size: 3.5rem;
-        color: var(--ink-color);
-        transform: rotate(-4deg);
-        margin: 30px 0;
+        font-size: 3rem;
+        margin: 20px 0;
+        transform: rotate(-3deg);
         position: relative;
       }
-      /* Wax Seal */
       #signature::after {
         content: 'V';
         position: absolute;
-        right: -40px;
-        bottom: -20px;
-        width: 50px;
-        height: 50px;
-        background: var(--wax-red);
+        right: -30px;
+        bottom: -15px;
+        width: 40px;
+        height: 40px;
+        background: #9e2a2b;
         border-radius: 50%;
+        color: rgba(255, 255, 255, 0.7);
         display: flex;
         justify-content: center;
         align-items: center;
-        color: rgba(255, 255, 255, 0.8);
         font-family: 'Cinzel', serif;
-        font-size: 1.5rem;
-        box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.3), 0 4px 6px rgba(0, 0, 0, 0.2);
-        border: 3px solid rgba(158, 42, 43, 0.3);
-        transform: rotate(10deg);
+        font-size: 1.2rem;
+        box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5);
+        border: 2px dashed rgba(255, 255, 255, 0.2);
       }
-
       #replay-btn {
         background: transparent;
-        border: 2px solid var(--ink-color);
-        color: var(--ink-color);
-        padding: 12px 35px;
+        border: 2px solid #333;
+        color: #333;
+        padding: 10px 30px;
         font-family: 'Special Elite', monospace;
-        font-size: 1rem;
         cursor: pointer;
         transition: 0.3s;
-        position: relative;
-        overflow: hidden;
       }
       #replay-btn:hover {
-        background: var(--ink-color);
-        color: var(--bg-paper);
+        background: #333;
+        color: #fff;
       }
 
       #final-footer {
@@ -305,20 +318,14 @@
         text-align: center;
         font-family: 'Special Elite', monospace;
         font-size: 0.8rem;
-        color: #777;
+        color: #666;
         z-index: 1000;
         opacity: 0;
         transition: opacity 2s ease 1s;
       }
-      .footer-visible {
-        opacity: 1 !important;
-      }
       .visible-block {
         opacity: 1 !important;
         pointer-events: auto !important;
-      }
-      .visible-block #ending-content {
-        transform: translateY(0);
       }
 
       /* --- ANIMATIONS --- */
@@ -336,39 +343,44 @@
           opacity: 0.8;
         }
         100% {
-          transform: translateY(150px) rotate(360deg);
+          transform: translateY(200px) rotate(180deg);
           opacity: 0;
         }
       }
-      @keyframes typeShake {
+      @keyframes breathePaper {
         0% {
-          transform: rotate(-0.5deg) translate(0, 0);
-        }
-        25% {
-          transform: rotate(-0.5deg) translate(0.5px, 0.5px);
+          transform: rotate(-0.5deg) translateY(0);
         }
         50% {
-          transform: rotate(-0.5deg) translate(-0.5px, -0.2px);
-        }
-        75% {
-          transform: rotate(-0.5deg) translate(0.2px, 0.5px);
+          transform: rotate(0.5deg) translateY(-5px);
         }
         100% {
-          transform: rotate(-0.5deg) translate(0, 0);
+          transform: rotate(-0.5deg) translateY(0);
         }
       }
-      @keyframes pulse {
+      @keyframes typeHit {
+        0% {
+          transform: scale(1);
+        }
         50% {
-          opacity: 0.3;
+          transform: scale(1.002);
+        }
+        100% {
+          transform: scale(1);
         }
       }
 
+      /* Mobile Adjustments */
       @media (max-width: 600px) {
         #typewriter-text {
           font-size: 1.3rem;
         }
-        #overlay h1 {
-          font-size: 2rem;
+        .mood-climax #typewriter-text {
+          font-size: 1.5rem;
+        }
+        #paper-sheet {
+          width: 90%;
+          padding: 20px;
         }
       }
     </style>
@@ -387,21 +399,20 @@
       </a>
     </nav>
 
-    <div id="paper-dust"></div>
+    <div class="vignette"></div>
+    <div id="dust-container"></div>
 
     <div id="overlay">
       <h1>SURAT CINTA</h1>
       <p>untuk Starla...</p>
-      <p class="click-hint">[ CLICK TO BREAK SEAL ]</p>
+      <p style="font-family: 'Special Elite'; font-size: 0.8rem; margin-top: 40px; opacity: 0.6">[ CLICK TO READ ]</p>
     </div>
 
     <div id="ending-screen">
-      <div id="ending-content">
-        <h1 style="font-size: 1.8rem; margin-bottom: 20px; font-family: 'Cinzel', serif">Telah Habis.</h1>
-        <p style="font-family: 'Special Elite'; margin-bottom: 10px">Terima kasih telah membaca.</p>
-        <div id="signature">Sincerely, Virgoun.</div>
-        <button id="replay-btn">Read Again</button>
-      </div>
+      <h1 style="font-family: 'Cinzel', serif; font-size: 1.5rem; margin-bottom: 20px">Telah Habis.</h1>
+      <p>Terima kasih telah membaca.</p>
+      <div id="signature">Sincerely, Virgoun.</div>
+      <button id="replay-btn">Read Again</button>
     </div>
     <div id="final-footer">from: syuby</div>
 
@@ -409,8 +420,10 @@
       <source src="scut.mp3" type="audio/mpeg" />
     </audio>
 
-    <div id="paper-sheet">
-      <div id="typewriter-text"><span class="cursor"></span></div>
+    <div id="stage-wrapper">
+      <div id="paper-sheet">
+        <div id="typewriter-text"><span class="cursor"></span></div>
+      </div>
     </div>
 
     <script>
@@ -418,33 +431,29 @@
       const overlay = document.getElementById('overlay');
       const paperSheet = document.getElementById('paper-sheet');
       const textContainer = document.getElementById('typewriter-text');
-      const dustContainer = document.getElementById('paper-dust');
+      const dustContainer = document.getElementById('dust-container');
       const endingScreen = document.getElementById('ending-screen');
       const finalFooter = document.getElementById('final-footer');
       const replayBtn = document.getElementById('replay-btn');
       const songNav = document.getElementById('song-nav');
+      const body = document.body;
 
       let currentLineIndex = -1;
       let typeInterval;
 
-      // --- ATMOSPHERE: PAPER DUST ---
+      // --- PARTICLES ---
       function createDust() {
         const mote = document.createElement('div');
-        mote.className = 'dust-mote';
-        const size = Math.random() * 4 + 1;
+        mote.className = 'dust';
+        const size = Math.random() * 3 + 1;
         mote.style.width = `${size}px`;
         mote.style.height = `${size}px`;
         mote.style.left = `${Math.random() * 100}%`;
-
-        // Faster dust during climax
-        const isClimax = document.body.classList.contains('mood-climax');
-        const duration = isClimax ? Math.random() * 5 + 5 : Math.random() * 10 + 10;
-
-        mote.style.animationDuration = `${duration}s`;
+        mote.style.animationDuration = `${Math.random() * 15 + 10}s`; // Slow floating
         dustContainer.appendChild(mote);
-        setTimeout(() => mote.remove(), duration * 1000);
+        setTimeout(() => mote.remove(), 25000);
       }
-      setInterval(createDust, 800);
+      setInterval(createDust, 1000);
 
       // --- DATA ---
       const lyrics = [
@@ -476,6 +485,8 @@
         { time: 140.65, text: 'Dapatkah lebih indah dari\nYang kujalani sampai kini?', type: 'normal' },
         { time: 150.82, text: "Aku s'lalu bermimpi tentang\nIndah hari tua bersamamu", type: 'normal' },
         { time: 160.73, text: 'Tetap cantik rambut panjangmu\nMeskipun nanti tak hitam lagi', type: 'normal' },
+
+        // CHORUS 2
         { time: 169.04, text: 'Bila habis sudah waktu ini\nTak lagi berpijak pada dunia', type: 'chorus' },
         { time: 178.6, text: 'Telah aku habiskan\nSisa hidupku hanya untukmu', type: 'highlight' },
         { time: 188.82, text: "Dan t'lah habis sudah cinta ini\nTak lagi tersisa untuk dunia", type: 'chorus' },
@@ -487,24 +498,22 @@
         { time: 210.07, text: 'Untukmu hidup dan matiku', type: 'intro' },
         { time: 217.12, text: '', type: 'gap' },
 
-        // CLIMAX START
+        // CLIMAX
         { time: 223.55, text: 'Bila musim berganti\nSampai waktu terhenti', type: 'build' },
         { time: 233.43, text: "Walau dunia membenci\nKu 'kan tetap di sini", type: 'build' },
-        { time: 243.46, text: 'Bila habis sudah waktu ini\n(Bila musim berganti)', type: 'chorus' },
-        { time: 248.79, text: 'Tak lagi berpijak pada dunia\n(Sampai waktu berhenti)', type: 'chorus' },
-        { time: 253.78, text: 'Telah aku habiskan\n(Walau dunia membenci)', type: 'chorus' },
-        { time: 257.91, text: "Sisa hidupku hanya untukmu\n(Ku 'kan tetap di sini)", type: 'highlight' },
-        { time: 263.89, text: 'Telah habis sudah cinta ini\n(Bila musim berganti)', type: 'chorus' },
-        { time: 268.37, text: 'Tak lagi tersisa untuk dunia\n(Sampai waktu terhenti)', type: 'chorus' },
-        { time: 273.44, text: 'Karena telah kuhabiskan\n(Walau dunia membenci)', type: 'highlight' },
-        { time: 276.89, text: "Sisa cintaku hanya untukmu\n(Ku 'kan tetap di sini)", type: 'highlight' },
+        { time: 243.46, text: 'Bila habis sudah waktu ini\n(Bila musim berganti)', type: 'climax' },
+        { time: 248.79, text: 'Tak lagi berpijak pada dunia\n(Sampai waktu berhenti)', type: 'climax' },
+        { time: 253.78, text: 'Telah aku habiskan\n(Walau dunia membenci)', type: 'climax' },
+        { time: 257.91, text: "Sisa hidupku hanya untukmu\n(Ku 'kan tetap di sini)", type: 'climax' },
+        { time: 263.89, text: 'Telah habis sudah cinta ini\n(Bila musim berganti)', type: 'climax' },
+        { time: 268.37, text: 'Tak lagi tersisa untuk dunia\n(Sampai waktu terhenti)', type: 'climax' },
+        { time: 273.44, text: 'Karena telah kuhabiskan\n(Walau dunia membenci)', type: 'climax' },
+        { time: 276.89, text: "Sisa cintaku hanya untukmu\n(Ku 'kan tetap di sini)", type: 'climax' },
 
         // OUTRO
         { time: 283.6, text: 'Karena telah kuhabiskan', type: 'intro' },
         { time: 286.73, text: 'Sisa cintaku hanya untukmu', type: 'intro' },
-
-        // FINAL MESSAGE
-        { time: 291.0, text: '(selamanya...)', type: 'outro-message' },
+        { time: 291.0, text: '(selamanya...)', type: 'intro' },
         { time: 294.0, text: '', type: 'gap' },
       ];
 
@@ -512,7 +521,7 @@
         overlay.style.opacity = '0';
         setTimeout(() => (overlay.style.display = 'none'), 1200);
         songNav.classList.add('nav-hidden');
-        audio.play();
+        audio.play().catch((e) => alert('Please interact to play audio'));
       });
 
       audio.addEventListener('timeupdate', () => {
@@ -528,7 +537,6 @@
         }
       });
 
-      // --- ENHANCED TYPEWRITER ---
       function typeWriter(text, speed = 50) {
         textContainer.innerHTML = '<span class="cursor"></span>';
         const cursor = textContainer.querySelector('.cursor');
@@ -539,51 +547,54 @@
           if (i < text.length) {
             const char = text.charAt(i);
             const span = document.createElement('span');
+
+            // Highlight logic inside text
+            if (textContainer.parentElement.classList.contains('mood-highlight')) {
+              span.classList.add('highlight');
+            }
+
             char === '\n' ? (span.innerHTML = '<br>') : (span.textContent = char);
             textContainer.insertBefore(span, cursor);
 
-            // Physical Impact Animation (Subtle shake)
-            paperSheet.classList.remove('typing-shake');
-            void paperSheet.offsetWidth;
-            paperSheet.classList.add('typing-shake');
+            // Micro-animation on paper when typing
+            paperSheet.style.animation = 'none';
+            paperSheet.offsetHeight; /* trigger reflow */
+            paperSheet.style.animation = 'typeHit 0.1s ease-out';
 
             i++;
           } else {
             clearInterval(typeInterval);
-            paperSheet.classList.remove('typing-shake');
           }
         }, speed);
       }
 
       function renderLyric(line) {
-        // FIX: Gunakan 'audio.currentTime' secara langsung, bukan variabel lokal 'currentTime'
-        // Logic untuk Climax Mood
-        if (line.type === 'build' || (audio.currentTime > 223 && line.type !== 'gap' && line.type !== 'intro' && line.type !== 'outro-message')) {
-          document.body.classList.add('mood-climax');
-        } else if (line.type === 'intro' || line.type === 'gap' || line.type === 'outro-message') {
-          document.body.classList.remove('mood-climax');
+        // CLIMAX CHECK
+        if (line.type === 'climax' || line.type === 'build') {
+          body.classList.add('mood-climax');
+        } else {
+          body.classList.remove('mood-climax');
         }
+
+        // MOOD CLASSES FOR PAPER SHEET
+        paperSheet.className = ''; // Reset
+        if (line.type !== 'gap') paperSheet.classList.add(`mood-${line.type}`);
 
         if (line.type === 'gap') {
           textContainer.innerHTML = '<span class="cursor"></span>';
           return;
         }
 
-        let speed = 70;
-        if (line.text.length > 30) speed = 40;
-        if (line.type === 'intro') speed = 55;
-        if (line.type === 'outro-message') speed = 150; // Lebih lambat untuk pesan terakhir
-
-        textContainer.className = '';
-        if (line.type === 'highlight') textContainer.classList.add('highlight');
-        if (line.type === 'intro') textContainer.classList.add('faded');
-        if (line.type === 'outro-message') textContainer.classList.add('outro-message');
+        let speed = 60;
+        if (line.text.length > 40) speed = 35; // Faster for long text
+        if (line.type === 'intro') speed = 50;
+        if (line.type === 'climax') speed = 40;
 
         typeWriter(line.text, speed);
       }
 
       audio.addEventListener('ended', () => {
-        document.body.classList.remove('mood-climax');
+        body.classList.remove('mood-climax');
         textContainer.innerHTML = '';
         endingScreen.classList.add('visible-block');
         finalFooter.classList.add('footer-visible');
@@ -594,7 +605,7 @@
         endingScreen.classList.remove('visible-block');
         finalFooter.classList.remove('footer-visible');
         songNav.classList.add('nav-hidden');
-        document.body.classList.remove('mood-climax');
+        body.classList.remove('mood-climax');
 
         audio.currentTime = 0;
         audio.play();
