@@ -5,32 +5,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>Bokura dake no Shudaika - Centimillimental | Interactive</title>
 
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700;900&family=Rock+Salt&family=Inter:wght@300;600&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;600;900&family=Rock+Salt&family=Inter:wght@300;500&display=swap" rel="stylesheet" />
 
     <link
       rel="icon"
       type="image/svg+xml"
-      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='0' y='0' width='64' height='64' rx='16' fill='%2387CEEB'/%3E%3Cpath d='M18 32L18 32 M27 20L27 44 M36 14L36 50 M45 20L45 44 M54 32L54 32' stroke='%23ffffff' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='0' y='0' width='64' height='64' rx='16' fill='%232c3e50'/%3E%3Cpath d='M18 32L18 32 M27 20L27 44 M36 14L36 50 M45 20L45 44 M54 32L54 32' stroke='%23ffffff' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E"
     />
 
     <style>
       :root {
-        --sky-morning: #87ceeb;
-        --sky-noon: #4682b4;
-        --sky-twilight: #2c3e50;
-        --sky-bridge: #1a0b0b; /* Dark red/black for despair */
-        --sky-sunrise: #ffecd2;
+        /* Mood Colors */
+        --bg-somber: #2c3e50;
+        --bg-deep-sad: #1a1a2e;
+        --bg-despair: #0f0505;
+        --bg-acceptance: #4a6fa5;
+        --bg-climax: #fffaf0;
 
-        --text-light: #fff;
-        --text-dark: #333;
-        --accent-blue: #00bfff;
-        --string-color: rgba(255, 255, 255, 0.4);
+        --text-light: #e0e0e0;
+        --text-dim: #a0a0a0;
+        --string-color: rgba(255, 255, 255, 0.3);
       }
 
-      /* RESET & MOBILE LOCK */
       * {
         box-sizing: border-box;
         -webkit-tap-highlight-color: transparent;
+        touch-action: none;
       }
 
       body,
@@ -39,7 +39,7 @@
         padding: 0;
         width: 100%;
         height: 100%;
-        background-color: var(--sky-morning);
+        background-color: var(--bg-somber);
         color: var(--text-light);
         font-family: 'Noto Serif JP', serif;
         overflow: hidden;
@@ -48,43 +48,38 @@
         justify-content: center;
         align-items: center;
         text-align: center;
-        transition: background-color 1.5s ease;
+        transition: background-color 2s cubic-bezier(0.25, 0.8, 0.25, 1);
       }
 
-      /* --- BACKGROUND LAYERS --- */
-      #sky-gradient {
+      /* --- ATMOSPHERE LAYERS --- */
+      body::after {
+        content: '';
         position: absolute;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
-        background: linear-gradient(180deg, rgba(255, 255, 255, 0.2) 0%, rgba(0, 0, 0, 0.1) 100%);
-        z-index: 0;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
         pointer-events: none;
+        z-index: 10;
+        opacity: 0.4;
+        mix-blend-mode: overlay;
       }
 
-      /* Clouds */
-      #cloud-layer {
+      .vignette {
         position: absolute;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
-        z-index: 1;
+        background: radial-gradient(circle, transparent 30%, rgba(0, 0, 0, 0.8) 120%);
         pointer-events: none;
-        opacity: 0.6;
-      }
-      .cloud {
-        position: absolute;
-        background: #fff;
-        border-radius: 50%;
-        filter: blur(20px);
-        opacity: 0.8;
-        animation: floatCloud linear infinite;
+        z-index: 9;
+        transition: opacity 2s;
       }
 
-      /* --- GAP FILLER: GUITAR STRINGS --- */
-      #guitar-strings {
+      /* --- GAP FILLER 1: BROKEN THREADS --- */
+      #broken-threads {
         position: absolute;
         top: 0;
         left: 0;
@@ -96,19 +91,84 @@
         z-index: 2;
         pointer-events: none;
         opacity: 0;
-        transition: opacity 0.5s ease;
+        transition: opacity 0.5s;
       }
-      .string {
+      .thread-container {
+        position: relative;
         width: 100%;
         height: 2px;
-        background: var(--string-color);
-        transform-origin: center;
+        overflow: hidden;
       }
-      .vibrating {
-        animation: vibrate 0.1s infinite;
+      .thread-left,
+      .thread-right {
+        position: absolute;
+        height: 100%;
+        background: var(--string-color);
+        width: 50%;
+        top: 0;
+        transition: transform 0.5s ease-in;
+      }
+      .thread-left {
+        left: 0;
+        transform-origin: left;
+      }
+      .thread-right {
+        right: 0;
+        transform-origin: right;
+      }
+      .snapped .thread-left {
+        transform: rotate(-5deg) translateX(-10px);
+        opacity: 0;
+      }
+      .snapped .thread-right {
+        transform: rotate(5deg) translateX(10px);
+        opacity: 0;
       }
 
-      /* --- UI ELEMENTS --- */
+      /* --- GAP FILLER 2: STATIC NOISE --- */
+      #static-noise {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.99' numOctaves='5' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.15'/%3E%3C/svg%3E");
+        z-index: 3;
+        pointer-events: none;
+        opacity: 0;
+        mix-blend-mode: screen;
+        animation: staticShift 0.2s steps(4) infinite;
+      }
+
+      /* --- GAP FILLER 3: OUTRO TYPEWRITER --- */
+      #outro-container {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 80%;
+        max-width: 600px;
+        z-index: 60;
+        pointer-events: none;
+      }
+      #outro-text {
+        font-family: 'Noto Serif JP', serif;
+        font-size: 1.4rem;
+        color: #555;
+        font-weight: 600;
+        min-height: 1.5em;
+      }
+      .cursor {
+        display: inline-block;
+        width: 2px;
+        height: 1.2em;
+        background: #555;
+        animation: blink 1s infinite;
+        vertical-align: bottom;
+        margin-left: 2px;
+      }
+
+      /* --- UI --- */
       #song-nav {
         position: fixed;
         top: 0;
@@ -129,19 +189,18 @@
       }
       .nav-home,
       .nav-x {
-        color: #fff;
+        color: #ccc;
         text-decoration: none;
-        opacity: 0.8;
+        opacity: 0.7;
         transition: 0.3s;
         display: flex;
         gap: 10px;
         align-items: center;
-        text-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
       }
       .nav-home:hover,
       .nav-x:hover {
         opacity: 1;
-        transform: scale(1.1);
+        color: #fff;
       }
 
       #overlay {
@@ -150,26 +209,25 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background: rgba(135, 206, 235, 0.9);
+        background: #1a1a2e;
+        z-index: 200;
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        z-index: 200;
         transition: opacity 1.5s ease;
       }
       #overlay h1 {
-        font-family: 'Rock Salt', cursive;
-        font-size: 2.5rem;
+        font-family: 'Noto Serif JP', serif;
+        font-size: 2.2rem;
         color: #fff;
-        text-shadow: 2px 2px 0 var(--accent-blue);
-        margin-bottom: 20px;
-        transform: rotate(-3deg);
+        margin-bottom: 15px;
       }
       #overlay p {
         font-family: 'Inter', sans-serif;
         font-size: 0.8rem;
-        letter-spacing: 2px;
+        letter-spacing: 3px;
+        opacity: 0.6;
       }
 
       #ending-screen {
@@ -178,7 +236,7 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+        background: #fffaf0;
         z-index: 150;
         opacity: 0;
         pointer-events: none;
@@ -186,27 +244,27 @@
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        transition: opacity 2s ease;
+        transition: opacity 3s ease;
       }
       #ending-screen h1 {
         color: #333;
         font-family: 'Noto Serif JP', serif;
-        font-size: 1.8rem;
+        font-size: 2rem;
         margin-bottom: 10px;
       }
       #ending-screen p {
         color: #666;
-        font-size: 0.9rem;
+        font-size: 1rem;
         margin-bottom: 30px;
         font-style: italic;
       }
       #replay-btn {
         background: transparent;
-        border: 2px solid #333;
+        border: 1px solid #333;
         color: #333;
-        padding: 10px 40px;
+        padding: 12px 40px;
         font-family: 'Inter', sans-serif;
-        font-weight: bold;
+        letter-spacing: 1px;
         cursor: pointer;
         transition: 0.3s;
       }
@@ -232,7 +290,7 @@
         pointer-events: auto !important;
       }
 
-      /* --- LYRICS CONTAINER --- */
+      /* --- LYRICS --- */
       #lyric-container {
         position: relative;
         z-index: 50;
@@ -247,126 +305,99 @@
       }
 
       .line {
-        transition: all 0.5s ease;
+        transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         opacity: 0;
         transform: translateY(20px);
-        margin-bottom: 8px;
+        margin-bottom: 10px;
+        filter: blur(2px);
       }
-
       .jp {
-        font-size: 2.2rem;
-        font-weight: 700;
-        color: #fff;
-        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        font-size: 2rem;
+        font-weight: 300;
+        color: var(--text-light);
+        text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
       }
       .en {
         font-family: 'Inter', sans-serif;
         font-size: 1rem;
-        color: rgba(255, 255, 255, 0.9);
+        color: var(--text-dim);
         font-weight: 300;
       }
       .id {
         font-family: 'Inter', sans-serif;
         font-size: 0.9rem;
-        color: rgba(255, 255, 255, 0.7);
+        color: rgba(255, 255, 255, 0.5);
         font-style: italic;
       }
-
       .line.show {
         opacity: 1;
-        transform: translateY(0);
+        transform: translateY(0) translateZ(0);
+        filter: blur(0);
       }
 
-      /* --- MOODS & ANIMATIONS --- */
-
-      /* 1. Normal (Morning) */
-      .mood-morning {
-        background-color: var(--sky-morning);
+      /* --- MOODS --- */
+      .mood-somber {
+        background-color: var(--bg-somber);
+      }
+      .mood-deep-sadness {
+        background-color: var(--bg-deep-sad);
       }
 
-      /* 2. Run/Energetic (Noon) */
-      .mood-run {
-        background-color: var(--sky-noon);
-      }
-      .mood-run .jp {
-        transform: skewX(-10deg);
-      } /* Speed effect */
-
-      /* 3. Sad/Twilight */
-      .mood-twilight {
-        background-color: var(--sky-twilight);
-      }
-      .mood-twilight .jp {
-        text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-      }
-
-      /* 4. Bridge (Despair) */
       .mood-despair {
-        background-color: var(--sky-bridge);
+        background-color: var(--bg-despair);
       }
-      .mood-despair #cloud-layer {
-        opacity: 0;
+      .mood-despair .vignette {
+        opacity: 1;
       }
       .mood-despair .jp {
         font-family: 'Rock Salt', cursive;
         font-size: 1.8rem;
-        color: #ff4444;
-        animation: shake 0.1s infinite;
-      }
-      .mood-despair .en,
-      .mood-despair .id {
-        color: #aaa;
+        color: #d32f2f;
+        animation: roughShake 0.1s infinite;
       }
 
-      /* 5. Climax (Sunrise/Hope) */
-      .mood-sunrise {
-        background-color: var(--sky-sunrise);
+      .mood-acceptance {
+        background-color: var(--bg-acceptance);
       }
-      .mood-sunrise .jp {
+
+      .mood-final-climax {
+        background-color: var(--bg-climax);
+      }
+      .mood-final-climax .vignette {
+        opacity: 0;
+      }
+      .mood-final-climax .jp {
         color: #333;
-        font-size: 2.8rem;
-        text-shadow: 2px 2px 0px rgba(255, 165, 0, 0.5);
-        animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        font-size: 3.5rem;
+        font-weight: 900;
+        text-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
+        animation: intensePulse 2s infinite alternate;
       }
-      .mood-sunrise .en {
+      .mood-final-climax .en {
         color: #555;
-        font-weight: bold;
+        font-weight: 600;
       }
-      .mood-sunrise .id {
+      .mood-final-climax .id {
         color: #777;
       }
 
-      /* Emphasis */
+      /* Highlight */
       .highlight {
-        font-size: 3rem !important;
-        color: #fff200 !important;
-        text-shadow: 0 0 15px rgba(255, 165, 0, 0.8) !important;
+        color: #b0c4de !important;
+        font-style: italic;
+        text-shadow: 0 0 10px rgba(176, 196, 222, 0.5) !important;
       }
 
       /* Keyframes */
-      @keyframes floatCloud {
-        from {
-          transform: translateX(100vw);
-        }
-        to {
-          transform: translateX(-100vw);
-        }
-      }
-      @keyframes vibrate {
+      @keyframes staticShift {
         0% {
-          transform: translateY(0);
-        }
-        25% {
-          transform: translateY(2px);
-        }
-        75% {
-          transform: translateY(-2px);
+          background-position: 0 0;
         }
         100% {
-          transform: translateY(0);
+          background-position: 100px 100px;
         }
       }
-      @keyframes shake {
+      @keyframes roughShake {
         0% {
           transform: translate(1px, 1px);
         }
@@ -377,14 +408,17 @@
           transform: translate(1px, -1px);
         }
       }
-      @keyframes popIn {
+      @keyframes intensePulse {
         0% {
-          transform: scale(0.5);
-          opacity: 0;
+          transform: scale(1);
         }
         100% {
-          transform: scale(1);
-          opacity: 1;
+          transform: scale(1.02);
+        }
+      }
+      @keyframes blink {
+        50% {
+          opacity: 0;
         }
       }
 
@@ -392,16 +426,13 @@
         .jp {
           font-size: 1.5rem;
         }
-        .mood-sunrise .jp {
-          font-size: 1.8rem;
-        }
-        .highlight {
-          font-size: 2rem !important;
+        .mood-final-climax .jp {
+          font-size: 2.2rem;
         }
       }
     </style>
   </head>
-  <body class="mood-morning">
+  <body class="mood-somber">
     <nav id="song-nav">
       <a href="index.html" class="nav-home">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -415,21 +446,32 @@
       </a>
     </nav>
 
-    <div id="sky-gradient"></div>
-    <div id="cloud-layer"></div>
-    <div id="guitar-strings">
-      <div class="string"></div>
-      <div class="string"></div>
-      <div class="string"></div>
-      <div class="string"></div>
-      <div class="string"></div>
-      <div class="string"></div>
+    <div class="vignette"></div>
+
+    <div id="broken-threads">
+      <div class="thread-container">
+        <div class="thread-left"></div>
+        <div class="thread-right"></div>
+      </div>
+      <div class="thread-container">
+        <div class="thread-left"></div>
+        <div class="thread-right"></div>
+      </div>
+      <div class="thread-container">
+        <div class="thread-left"></div>
+        <div class="thread-right"></div>
+      </div>
+    </div>
+    <div id="static-noise"></div>
+
+    <div id="outro-container">
+      <div id="outro-text"></div>
     </div>
 
     <div id="overlay">
       <h1>僕らだけの主題歌</h1>
       <p>CENTIMILLIMENTAL</p>
-      <p style="margin-top: 30px; font-size: 0.7rem; opacity: 0.7">[ CLICK TO START ]</p>
+      <p style="margin-top: 40px; font-size: 0.7rem; opacity: 0.5">[ CLICK TO BEGIN ]</p>
     </div>
 
     <div id="ending-screen">
@@ -457,119 +499,151 @@
       const lineJp = document.getElementById('line-jp');
       const lineEn = document.getElementById('line-en');
       const lineId = document.getElementById('line-id');
-      const strings = document.getElementById('guitar-strings');
+
+      const brokenThreads = document.getElementById('broken-threads');
+      const staticNoise = document.getElementById('static-noise');
+      const outroContainer = document.getElementById('outro-text');
+
       const endingScreen = document.getElementById('ending-screen');
       const finalFooter = document.getElementById('final-footer');
       const replayBtn = document.getElementById('replay-btn');
       const songNav = document.getElementById('song-nav');
 
       let currentLineIndex = -1;
+      let outroSequence = null;
 
-      // --- CLOUDS ---
-      const cloudLayer = document.getElementById('cloud-layer');
-      for (let i = 0; i < 6; i++) {
-        const c = document.createElement('div');
-        c.className = 'cloud';
-        const size = Math.random() * 200 + 100;
-        c.style.width = `${size}px`;
-        c.style.height = `${size}px`;
-        c.style.left = `${Math.random() * 100}%`;
-        c.style.top = `${Math.random() * 80}%`;
-        c.style.animationDuration = `${Math.random() * 20 + 20}s`;
-        cloudLayer.appendChild(c);
-      }
-
-      // --- GAP FILLER: STRINGS VIBRATION ---
-      function activateStrings() {
-        strings.style.opacity = '1';
-        const strEls = document.querySelectorAll('.string');
-        strEls.forEach((s) => {
-          s.style.animationDelay = `${Math.random()}s`;
-          s.classList.add('vibrating');
+      // --- GAP CONTROL ---
+      function activateThreads() {
+        brokenThreads.style.opacity = '1';
+        document.querySelectorAll('.thread-container').forEach((c, i) => {
+          setTimeout(() => c.classList.add('snapped'), i * 200);
         });
       }
-      function deactivateStrings() {
-        strings.style.opacity = '0';
-        const strEls = document.querySelectorAll('.string');
-        strEls.forEach((s) => s.classList.remove('vibrating'));
+      function deactivateThreads() {
+        brokenThreads.style.opacity = '0';
+        document.querySelectorAll('.thread-container').forEach((c) => c.classList.remove('snapped'));
       }
 
-      // --- LYRIC DATA (Trilingual) ---
+      function activateStatic() {
+        staticNoise.style.opacity = '1';
+      }
+      function deactivateStatic() {
+        staticNoise.style.opacity = '0';
+      }
+
+      // --- OUTRO TYPEWRITER ---
+      const outroMessages = ['Even if it hurts...', 'Even if it fades...', 'I will remember.', 'This blue spring.', 'This pain.', 'It was all proof.', 'Proof that we lived.'];
+
+      async function typeOutro() {
+        outroContainer.innerHTML = ''; // Clear
+        for (const msg of outroMessages) {
+          // If stopped (e.g. replay clicked), break loop
+          if (!outroSequence) break;
+
+          // Type In
+          outroContainer.innerHTML = `<span class='cursor'></span>`;
+          let currentText = '';
+          const cursor = outroContainer.querySelector('.cursor');
+
+          for (let i = 0; i < msg.length; i++) {
+            currentText += msg[i];
+            outroContainer.innerHTML = currentText + `<span class='cursor'></span>`;
+            await new Promise((r) => setTimeout(r, 80)); // Typing speed
+          }
+
+          await new Promise((r) => setTimeout(r, 1500)); // Wait reading time
+
+          // Clear for next line
+          outroContainer.innerHTML = '';
+          await new Promise((r) => setTimeout(r, 500)); // Fade out gap
+        }
+      }
+
+      function startOutro() {
+        outroSequence = true;
+        typeOutro();
+      }
+      function stopOutro() {
+        outroSequence = false;
+        outroContainer.innerHTML = '';
+      }
+
+      // --- LYRIC DATA ---
       const lyrics = [
-        { time: 0, type: 'gap' },
-        { time: 1.78, jp: 'もう戻れないね', en: "We can't go back, can we?", id: 'Kita tak bisa kembali lagi ya', type: 'morning' },
-        { time: 4.86, type: 'gap' },
+        { time: 0, type: 'gap-threads' },
+        { time: 1.78, jp: 'もう戻れないね', en: "We can't go back, can we?", id: 'Kita tak bisa kembali lagi ya', type: 'somber' },
+        { time: 4.86, type: 'gap-threads' },
 
         // VERSE 1
-        { time: 9.57, jp: '春を待つ僕らの 青い痛みを', en: 'Our blue pain waiting for spring', id: 'Luka biru kita yang menanti musim semi', type: 'morning' },
-        { time: 18.83, jp: '愛や夢で ごちゃ混ぜにして走った', en: 'Mixed with love and dreams, we ran', id: 'Bercampur cinta dan mimpi, kita berlari', type: 'run' },
-        { time: 26.53, jp: 'ぼやけていくのに 消えはしないような', en: 'Blurring out but never disappearing', id: 'Memudar namun takkan menghilang', type: 'twilight' },
-        { time: 31.72, jp: 'じゃれ合いの中でついた傷を', en: 'The wounds we got while playing around', id: 'Luka yang didapat saat bercanda tawa', type: 'twilight' },
+        { time: 9.57, jp: '春を待つ僕らの 青い痛みを', en: 'Our blue pain waiting for spring', id: 'Luka biru kita yang menanti musim semi', type: 'deep-sadness' },
+        { time: 18.83, jp: '愛や夢で ごちゃ混ぜにして走った', en: 'Mixed with love and dreams, we ran', id: 'Bercampur cinta dan mimpi, kita berlari', type: 'acceptance' },
+        { time: 26.53, jp: 'ぼやけていくのに 消えはしないような', en: 'Blurring out but never disappearing', id: 'Memudar namun takkan menghilang', type: 'deep-sadness' },
+        { time: 31.72, jp: 'じゃれ合いの中でついた傷を', en: 'The wounds we got while playing around', id: 'Luka yang didapat saat bercanda tawa', type: 'deep-sadness' },
 
-        { time: 36.91, jp: '重ねた場所とは 違う所から', en: 'From a place different where we layered them', id: 'Dari tempat yang berbeda dari yang kita lalui', type: 'twilight' },
-        { time: 41.59, jp: '歩き出すから', en: "I'll start walking", id: 'Aku akan mulai melangkah', type: 'morning' },
-        { time: 44.11, jp: '泣きじゃくった日々を背に', en: 'Leaving the days of sobbing behind', id: 'Meninggalkan hari-hari penuh tangis', type: 'run' },
-        { time: 47.63, jp: '僕は行くよ', en: 'I will go', id: 'Aku akan pergi', type: 'run' },
+        { time: 36.91, jp: '重ねた場所とは 違う所から', en: 'From a place different where we layered them', id: 'Dari tempat yang berbeda dari yang kita lalui', type: 'deep-sadness' },
+        { time: 41.59, jp: '歩き出すから', en: "I'll start walking", id: 'Aku akan mulai melangkah', type: 'acceptance' },
+        { time: 44.11, jp: '泣きじゃくった日々を背に', en: 'Leaving the days of sobbing behind', id: 'Meninggalkan hari-hari penuh tangis', type: 'acceptance' },
+        { time: 47.63, jp: '僕は行くよ', en: 'I will go', id: 'Aku akan pergi', type: 'acceptance' },
 
         // CHORUS 1
-        { time: 52.87, jp: 'ねぇ 見ててよ', en: 'Hey, watch me', id: 'Hei, lihatlah aku', type: 'sunrise' },
-        { time: 57.55, jp: '可笑しくて 笑った', en: 'It was funny, so we laughed', id: 'Itu lucu, jadi kita tertawa', type: 'sunrise' },
-        { time: 60.52, jp: 'すれ違い 怒った', en: 'Passed each other, got angry', id: 'Berselisih jalan, menjadi marah', type: 'sunrise' },
+        { time: 52.87, jp: 'ねぇ 見ててよ', en: 'Hey, watch me', id: 'Hei, lihatlah aku', type: 'acceptance' },
+        { time: 57.55, jp: '可笑しくて 笑った', en: 'It was funny, so we laughed', id: 'Itu lucu, jadi kita tertawa', type: 'acceptance' },
+        { time: 60.52, jp: 'すれ違い 怒った', en: 'Passed each other, got angry', id: 'Berselisih jalan, menjadi marah', type: 'acceptance' },
         { time: 63.22, jp: 'あなたとの夢を叶えてくるよ', en: "I'll go make our dreams come true", id: 'Kan kuwujudkan mimpi bersamamu', type: 'highlight' },
 
-        { time: 68.58, jp: '悲しいとき すごく辛いとき', en: "When sad, when it's really painful", id: 'Saat sedih, saat sangat menyakitkan', type: 'twilight' },
-        { time: 78.59, jp: '思い出す記憶を 過ごした時間を', en: 'The memories I recall, the time we spent', id: 'Kenangan yang kuingat, waktu yang kita habiskan', type: 'twilight' },
-        { time: 84.2, jp: 'この心の背もたれにして', en: "I'll use them as a backrest for this heart", id: 'Kan kujadikan sandaran hati ini', type: 'morning' },
+        { time: 68.58, jp: '悲しいとき すごく辛いとき', en: "When sad, when it's really painful", id: 'Saat sedih, saat sangat menyakitkan', type: 'deep-sadness' },
+        { time: 78.59, jp: '思い出す記憶を 過ごした時間を', en: 'The memories I recall, the time we spent', id: 'Kenangan yang kuingat, waktu yang kita habiskan', type: 'deep-sadness' },
+        { time: 84.2, jp: 'この心の背もたれにして', en: "I'll use them as a backrest for this heart", id: 'Kan kujadikan sandaran hati ini', type: 'somber' },
 
-        { time: 92.23, type: 'gap' }, // INTERLUDE
+        { time: 92.23, type: 'gap-threads' },
 
         // VERSE 2
-        { time: 101.46, jp: '今度後ろを振り向くときは', en: 'Next time I look back', id: 'Lain kali saat kumenoleh ke belakang', type: 'morning' },
-        { time: 108.96, jp: '森の奥深く 迷い込んでても', en: 'Even if lost deep in the forest', id: 'Meski tersesat jauh di dalam hutan', type: 'twilight' },
-        { time: 114.29, jp: '差し込む朝日に夜明けを知る', en: 'Knowing dawn by the morning sun shining in', id: 'Mengetahui fajar dari mentari yang menyinar', type: 'sunrise' },
+        { time: 101.46, jp: '今度後ろを振り向くときは', en: 'Next time I look back', id: 'Lain kali saat kumenoleh ke belakang', type: 'somber' },
+        { time: 108.96, jp: '森の奥深く 迷い込んでても', en: 'Even if lost deep in the forest', id: 'Meski tersesat jauh di dalam hutan', type: 'deep-sadness' },
+        { time: 114.29, jp: '差し込む朝日に夜明けを知る', en: 'Knowing dawn by the morning sun shining in', id: 'Mengetahui fajar dari mentari yang menyinar', type: 'acceptance' },
 
-        { time: 119.62, jp: 'たとえ見えなくても', en: "Even if I can't see it", id: 'Meski tak terlihat', type: 'twilight' },
-        { time: 122.38, jp: '過去 未来 今が手を繋いで', en: 'Past, future, and present holding hands', id: 'Masa lalu, depan, dan kini bergandengan', type: 'run' },
-        { time: 127.08, jp: '次の夜を照らしてる', en: 'Illuminating the next night', id: 'Menerangi malam berikutnya', type: 'sunrise' },
+        { time: 119.62, jp: 'たとえ見えなくても', en: "Even if I can't see it", id: 'Meski tak terlihat', type: 'deep-sadness' },
+        { time: 122.38, jp: '過去 未来 今が手を繋いで', en: 'Past, future, and present holding hands', id: 'Masa lalu, depan, dan kini bergandengan', type: 'acceptance' },
+        { time: 127.08, jp: '次の夜を照らしてる', en: 'Illuminating the next night', id: 'Menerangi malam berikutnya', type: 'acceptance' },
 
         // CHORUS 2
         { time: 130.16, jp: 'ここにいるよ', en: 'I am here', id: 'Aku di sini', type: 'highlight' },
-        { time: 135.24, jp: 'そばに来てよ', en: 'Come to my side', id: 'Datanglah padaku', type: 'sunrise' },
-        { time: 140.14, jp: '置き去りの願いも まだ残してるんだ', en: 'Wishes left behind still remain', id: 'Harapan yang tertinggal masih tersisa', type: 'twilight' },
-        { time: 145.84, jp: '何食わぬ顔で生きていても', en: 'Even if living with an innocent face', id: 'Meski hidup dengan wajah tak berdosa', type: 'twilight' },
+        { time: 135.24, jp: 'そばに来てよ', en: 'Come to my side', id: 'Datanglah padaku', type: 'acceptance' },
+        { time: 140.14, jp: '置き去りの願いも まだ残してるんだ', en: 'Wishes left behind still remain', id: 'Harapan yang tertinggal masih tersisa', type: 'deep-sadness' },
+        { time: 145.84, jp: '何食わぬ顔で生きていても', en: 'Even if living with an innocent face', id: 'Meski hidup dengan wajah tak berdosa', type: 'deep-sadness' },
 
-        { time: 151.17, jp: '会いたいとき 抱きしめたいとき', en: 'When I want to see you, want to hug you', id: 'Saat rindu, saat ingin memelukmu', type: 'twilight' },
-        { time: 161.05, jp: '思い出す記憶を 過ごした時間を', en: 'The memories I recall, the time we spent', id: 'Kenangan yang kuingat, waktu yang kita habiskan', type: 'twilight' },
-        { time: 166.89, jp: '見えぬ未来の灯りにして', en: 'Making them the light of the unseen future', id: 'Menjadikannya cahaya masa depan yang tak terlihat', type: 'morning' },
+        { time: 151.17, jp: '会いたいとき 抱きしめたいとき', en: 'When I want to see you, want to hug you', id: 'Saat rindu, saat ingin memelukmu', type: 'deep-sadness' },
+        { time: 161.05, jp: '思い出す記憶を 過ごした時間を', en: 'The memories I recall, the time we spent', id: 'Kenangan yang kuingat, waktu yang kita habiskan', type: 'deep-sadness' },
+        { time: 166.89, jp: '見えぬ未来の灯りにして', en: 'Making them the light of the unseen future', id: 'Menjadikannya cahaya masa depan yang tak terlihat', type: 'somber' },
 
-        { time: 174.91, type: 'gap' }, // SOLO
+        { time: 174.91, type: 'gap-static' }, // STATIC
 
-        // BRIDGE (DESPAIR / CLIMAX START)
+        // BRIDGE
         { time: 192.68, jp: 'もう消えたい 逃げたいと', en: 'Wanting to disappear, wanting to run', id: 'Ingin menghilang, ingin lari', type: 'despair' },
         { time: 194.33, jp: '叫んだ絶望の中を', en: 'Screaming inside despair', id: 'Berteriak dalam keputusasaan', type: 'despair' },
         { time: 197.76, jp: '出会いも奇跡さえも恨んだ', en: 'Resenting encounters and even miracles', id: 'Membenci pertemuan bahkan keajaiban', type: 'despair' },
         { time: 200.0, jp: '最低なあの日を', en: 'That worst day', id: 'Hari terburuk itu', type: 'despair' },
 
-        { time: 203.07, jp: '無かった事には出来ないのだから', en: "Because I can't pretend it didn't happen", id: 'Karena tak bisa kuanggap tak terjadi', type: 'twilight' },
-        { time: 205.88, jp: 'それでも生きて良かったって', en: "'I'm glad I lived after all'", id: "'Syukurlah aku tetap hidup'", type: 'morning' },
-        { time: 208.81, jp: 'せめて最後に思えますように', en: 'Hoping to think that at the very end', id: 'Semoga setidaknya itu yang kupikirkan di akhir nanti', type: 'sunrise' },
+        { time: 203.07, jp: '無かった事には出来ないのだから', en: "Because I can't pretend it didn't happen", id: 'Karena tak bisa kuanggap tak terjadi', type: 'deep-sadness' },
+        { time: 205.88, jp: 'それでも生きて良かったって', en: "'I'm glad I lived after all'", id: "'Syukurlah aku tetap hidup'", type: 'somber' },
+        { time: 208.81, jp: 'せめて最後に思えますように', en: 'Hoping to think that at the very end', id: 'Semoga setidaknya itu yang kupikirkan di akhir nanti', type: 'acceptance' },
 
-        { time: 219.57, jp: 'もう戻れないね', en: "We can't go back, can we?", id: 'Kita tak bisa kembali lagi ya', type: 'morning' },
+        { time: 219.57, jp: 'もう戻れないね', en: "We can't go back, can we?", id: 'Kita tak bisa kembali lagi ya', type: 'somber' },
 
-        // FINAL CHORUS (EXPLOSION)
-        { time: 229.6, jp: '僕は行くよ', en: 'I will go', id: 'Aku akan pergi', type: 'run' },
-        { time: 234.95, jp: 'ねぇ 見ててよ', en: 'Hey, watch me', id: 'Hei, lihatlah aku', type: 'sunrise' },
-        { time: 239.84, jp: 'あなたより大事なもの探してくるよ', en: "I'll go find something more important than you", id: 'Kan kucari sesuatu yang lebih berharga darimu', type: 'highlight' },
-        { time: 245.55, jp: '何よりも大事なあなたのために', en: 'For the sake of you, who is more important than anything', id: 'Demi dirimu yang lebih berharga dari segalanya', type: 'highlight' },
+        // FINAL CHORUS
+        { time: 229.6, jp: '僕は行くよ', en: 'I will go', id: 'Aku akan pergi', type: 'final-climax' },
+        { time: 234.95, jp: 'ねぇ 見ててよ', en: 'Hey, watch me', id: 'Hei, lihatlah aku', type: 'final-climax' },
+        { time: 239.84, jp: 'あなたより大事なもの探してくるよ', en: "I'll go find something more important than you", id: 'Kan kucari sesuatu yang lebih berharga darimu', type: 'final-climax' },
+        { time: 245.55, jp: '何よりも大事なあなたのために', en: 'For the sake of you, who is more important than anything', id: 'Demi dirimu yang lebih berharga dari segalanya', type: 'final-climax' },
 
-        { time: 250.77, jp: '会いたいとき 抱きしめたいとき', en: 'When I want to see you, want to hug you', id: 'Saat rindu, saat ingin memelukmu', type: 'sunrise' },
-        { time: 260.77, jp: '思い出す記憶を 過ごした時間を', en: 'The memories I recall, the time we spent', id: 'Kenangan yang kuingat, waktu yang kita habiskan', type: 'sunrise' },
-        { time: 266.54, jp: 'この心の背もたれにして', en: "I'll use them as a backrest for this heart", id: 'Kan kujadikan sandaran hati ini', type: 'morning' },
+        { time: 250.77, jp: '会いたいとき 抱きしめたいとき', en: 'When I want to see you, want to hug you', id: 'Saat rindu, saat ingin memelukmu', type: 'final-climax' },
+        { time: 260.77, jp: '思い出す記憶を 過ごした時間を', en: 'The memories I recall, the time we spent', id: 'Kenangan yang kuingat, waktu yang kita habiskan', type: 'final-climax' },
+        { time: 266.54, jp: 'この心の背もたれにして', en: "I'll use them as a backrest for this heart", id: 'Kan kujadikan sandaran hati ini', type: 'final-climax' },
 
-        { time: 273.98, jp: '何回も歌うよ 大事な思いを', en: "I'll sing it many times, these precious feelings", id: 'Kan kunyanyikan berkali-kali, perasaan berharga ini', type: 'run' },
-        { time: 279.58, jp: '僕らだけの 主題歌にして', en: 'Making it our own theme song', id: 'Menjadikannya lagu tema kita semata', type: 'highlight' },
+        { time: 273.98, jp: '何回も歌うよ 大事な思いを', en: "I'll sing it many times, these precious feelings", id: 'Kan kunyanyikan berkali-kali, perasaan berharga ini', type: 'final-climax' },
+        { time: 279.58, jp: '僕らだけの 主題歌にして', en: 'Making it our own theme song', id: 'Menjadikannya lagu tema kita semata', type: 'final-climax' },
 
-        { time: 286.48, type: 'gap' },
+        { time: 286.48, type: 'gap-outro' }, // OUTRO TYPER
       ];
 
       overlay.addEventListener('click', () => {
@@ -577,7 +651,7 @@
         setTimeout(() => (overlay.style.display = 'none'), 1500);
         songNav.classList.add('nav-hidden');
         audio.play();
-        activateStrings(); // Start Intro Gap
+        activateThreads();
       });
 
       audio.addEventListener('timeupdate', () => {
@@ -594,28 +668,40 @@
       });
 
       function renderLyric(line) {
-        // MOOD
-        if (line.type && line.type !== 'gap') {
+        // MOOD HANDLER
+        if (line.type && !line.type.startsWith('gap')) {
           document.body.className = `mood-${line.type}`;
         }
 
-        // GAP HANDLING
-        if (line.type === 'gap') {
-          lineJp.classList.remove('show');
-          lineEn.classList.remove('show');
-          lineId.classList.remove('show');
-          activateStrings();
+        // --- GAP HANDLERS ---
+        if (line.type === 'gap-threads') {
+          hideLyrics();
+          clearGaps();
+          activateThreads();
+          return;
+        }
+        if (line.type === 'gap-static') {
+          hideLyrics();
+          clearGaps();
+          activateStatic();
+          return;
+        }
+        if (line.type === 'gap-outro') {
+          hideLyrics();
+          clearGaps();
+          document.body.className = 'mood-final-climax'; // Keep bright background
+          startOutro();
           return;
         }
 
-        deactivateStrings();
+        // LYRIC RENDER
+        clearGaps();
 
         setTimeout(() => {
           lineJp.innerText = line.jp;
           lineEn.innerText = line.en;
           lineId.innerText = line.id;
 
-          // Reset specific styling
           lineJp.className = 'line jp';
           if (line.type === 'highlight') lineJp.classList.add('highlight');
 
@@ -625,12 +711,20 @@
         }, 100);
       }
 
-      audio.addEventListener('ended', () => {
-        deactivateStrings();
+      function hideLyrics() {
         lineJp.classList.remove('show');
         lineEn.classList.remove('show');
         lineId.classList.remove('show');
+      }
 
+      function clearGaps() {
+        deactivateThreads();
+        deactivateStatic();
+        // Don't stop outro here, it handles itself
+      }
+
+      audio.addEventListener('ended', () => {
+        stopOutro();
         endingScreen.classList.add('visible-block');
         endingScreen.style.opacity = '1';
         endingScreen.style.pointerEvents = 'auto';
