@@ -25,6 +25,7 @@ Each song features a unique visual identity, custom CSS keyframe animations, and
 | **About You**                | The 1975                | _Cinematic Noir_   | Film grain, focus pulling gaps, fading outro monologue.   |
 | **Drown**                    | Bring Me The Horizon    | _Cursed Broadcast_ | CRT Scanlines, chromatic aberration, water submersion.    |
 | **Surat Cinta Untuk Starla** | Virgoun                 | _Vintage Letter_   | Typewriter effect, hand-drawn doodles, paper texture.     |
+| **Multo**                    | Cup of Joe              | _Haunted Room_     | Flickering lights, ghostly whispers, multilingual lyrics. |
 
 ## 🛠️ Technical Highlights
 
@@ -61,6 +62,7 @@ I do not own the rights to any of the musical recordings or lyrics featured in t
 - **The 1975** (_About You_)
 - **Bring Me The Horizon** (_Drown_)
 - **Virgoun** (_Surat Cinta Untuk Starla_)
+- **Cup of Joe** (_Multo_)
 
 _If you are a copyright holder and wish for a track to be removed, please contact me and I will take it down immediately._
 
