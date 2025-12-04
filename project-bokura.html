@@ -77,7 +77,7 @@
         transition: opacity 2s;
       }
 
-      /* --- GAP FILLER 1: BLUE SHARDS (Broken Memories) --- */
+      /* --- GAP FILLER 1: BLUE SHARDS --- */
       #shard-layer {
         position: absolute;
         top: 0;
@@ -97,14 +97,14 @@
         animation: floatShard linear infinite;
       }
 
-      /* --- GAP FILLER 2: THE VOID PULSE (Despair) --- */
+      /* --- GAP FILLER 2: THE VOID PULSE --- */
       #void-layer {
         position: absolute;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
-        background: radial-gradient(circle at center, transparent 10%, #000 80%);
+        background: radial-gradient(circle at center, transparent 10%, #000 90%);
         z-index: 8;
         pointer-events: none;
         opacity: 0;
@@ -114,7 +114,7 @@
         animation: voidPulse 0.3s infinite alternate;
       }
 
-      /* --- GAP FILLER 3: OUTRO TYPEWRITER --- */
+      /* --- TYPEWRITER CONTAINERS --- */
       #outro-container,
       #final-focus-container {
         position: absolute;
@@ -126,22 +126,22 @@
         z-index: 60;
         pointer-events: none;
       }
-      #outro-text,
-      #final-focus-text {
+      #outro-text {
+        font-size: 1.3rem;
+        color: #555;
         font-family: 'Noto Serif JP', serif;
         font-weight: 600;
         min-height: 1.5em;
       }
-      #outro-text {
-        font-size: 1.3rem;
-        color: #555;
-      }
+
       #final-focus-text {
         font-size: 2.5rem;
         color: #333;
         font-weight: 900;
         text-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+        font-family: 'Noto Serif JP', serif;
       }
+
       .cursor,
       .cursor-final {
         display: inline-block;
@@ -389,12 +389,30 @@
       }
 
       /* Keyframes */
-      @keyframes staticShift {
+      @keyframes floatShard {
         0% {
-          background-position: 0 0;
+          transform: translateY(120vh) rotate(0deg);
+          opacity: 0;
+        }
+        20% {
+          opacity: 0.6;
+        }
+        80% {
+          opacity: 0.6;
         }
         100% {
-          background-position: 100px 100px;
+          transform: translateY(-20vh) rotate(360deg);
+          opacity: 0;
+        }
+      }
+      @keyframes voidPulse {
+        0% {
+          transform: scale(1);
+          opacity: 0.8;
+        }
+        100% {
+          transform: scale(1.1);
+          opacity: 1;
         }
       }
       @keyframes roughShake {
@@ -428,32 +446,6 @@
         }
         100% {
           transform: translateY(0);
-          opacity: 1;
-        }
-      }
-      @keyframes floatShard {
-        0% {
-          transform: translateY(120vh) rotate(0deg);
-          opacity: 0;
-        }
-        20% {
-          opacity: 0.6;
-        }
-        80% {
-          opacity: 0.6;
-        }
-        100% {
-          transform: translateY(-20vh) rotate(360deg);
-          opacity: 0;
-        }
-      }
-      @keyframes voidPulse {
-        0% {
-          transform: scale(1);
-          opacity: 0.8;
-        }
-        100% {
-          transform: scale(1.1);
           opacity: 1;
         }
       }
@@ -621,75 +613,75 @@
       // --- LYRICS DATA ---
       const lyrics = [
         { time: 0, type: 'gap-shards' },
-        { time: 1.78, jp: 'もう戻れないね', en: "We can't go back, can we?", id: 'Kita tak bisa kembali lagi ya', type: 'somber' },
+        { time: 0.74, jp: 'もう戻れないね', en: "We can't go back, can we?", id: 'Kita tak bisa kembali lagi ya', type: 'somber' },
         { time: 4.86, type: 'gap-shards' },
 
         // VERSE 1
-        { time: 9.57, jp: '春を待つ僕らの 青い痛みを', en: 'Our blue pain waiting for spring', id: 'Luka biru kita yang menanti musim semi', type: 'deep-sadness' },
-        { time: 18.83, jp: '愛や夢で ごちゃ混ぜにして走った', en: 'Mixed with love and dreams, we ran', id: 'Bercampur cinta dan mimpi, kita berlari', type: 'acceptance' },
-        { time: 26.53, jp: 'ぼやけていくのに 消えはしないような', en: 'Blurring out but never disappearing', id: 'Memudar namun takkan menghilang', type: 'deep-sadness' },
-        { time: 31.72, jp: 'じゃれ合いの中でついた傷を', en: 'The wounds we got while playing around', id: 'Luka yang didapat saat bercanda tawa', type: 'deep-sadness' },
-        { time: 36.91, jp: '重ねた場所とは 違う所から', en: 'From a place different where we layered them', id: 'Dari tempat yang berbeda dari yang kita lalui', type: 'deep-sadness' },
-        { time: 41.59, jp: '歩き出すから', en: "I'll start walking", id: 'Aku akan mulai melangkah', type: 'acceptance' },
-        { time: 44.11, jp: '泣きじゃくった日々を背に', en: 'Leaving the days of sobbing behind', id: 'Meninggalkan hari-hari penuh tangis', type: 'acceptance' },
-        { time: 47.63, jp: '僕は行くよ', en: 'I will go', id: 'Aku akan pergi', type: 'acceptance' },
+        { time: 9.25, jp: '春を待つ僕らの 青い痛みを', en: 'Our blue pain waiting for spring', id: 'Luka biru kita yang menanti musim semi', type: 'deep-sadness' },
+        { time: 18.11, jp: '愛や夢で ごちゃ混ぜにして走った', en: 'Mixed with love and dreams, we ran', id: 'Bercampur cinta dan mimpi, kita berlari', type: 'acceptance' },
+        { time: 25.97, jp: 'ぼやけていくのに 消えはしないような', en: 'Blurring out but never disappearing', id: 'Memudar namun takkan menghilang', type: 'deep-sadness' },
+        { time: 31.17, jp: 'じゃれ合いの中でついた傷を', en: 'The wounds we got while playing around', id: 'Luka yang didapat saat bercanda tawa', type: 'deep-sadness' },
+        { time: 36.66, jp: '重ねた場所とは 違う所から', en: 'From a place different where we layered them', id: 'Dari tempat yang berbeda dari yang kita lalui', type: 'deep-sadness' },
+        { time: 41.11, jp: '歩き出すから', en: "I'll start walking", id: 'Aku akan mulai melangkah', type: 'acceptance' },
+        { time: 43.67, jp: '泣きじゃくった日々を背に', en: 'Leaving the days of sobbing behind', id: 'Meninggalkan hari-hari penuh tangis', type: 'acceptance' },
+        { time: 47.0, jp: '僕は行くよ', en: 'I will go', id: 'Aku akan pergi', type: 'acceptance' },
 
         // CHORUS 1
-        { time: 52.87, jp: 'ねぇ 見ててよ', en: 'Hey, watch me', id: 'Hei, lihatlah aku', type: 'acceptance' },
-        { time: 57.55, jp: '可笑しくて 笑った', en: 'It was funny, so we laughed', id: 'Itu lucu, jadi kita tertawa', type: 'acceptance' },
-        { time: 60.52, jp: 'すれ違い 怒った', en: 'Passed each other, got angry', id: 'Berselisih jalan, menjadi marah', type: 'acceptance' },
-        { time: 63.22, jp: 'あなたとの夢を叶えてくるよ', en: "I'll go make our dreams come true", id: 'Kan kuwujudkan mimpi bersamamu', type: 'highlight' },
-        { time: 68.58, jp: '悲しいとき すごく辛いとき', en: "When sad, when it's really painful", id: 'Saat sedih, saat sangat menyakitkan', type: 'deep-sadness' },
-        { time: 78.59, jp: '思い出す記憶を 過ごした時間を', en: 'The memories I recall, the time we spent', id: 'Kenangan yang kuingat, waktu yang kita habiskan', type: 'deep-sadness' },
-        { time: 84.2, jp: 'この心の背もたれにして', en: "I'll use them as a backrest for this heart", id: 'Kan kujadikan sandaran hati ini', type: 'somber' },
+        { time: 52.06, jp: 'ねぇ 見ててよ', en: 'Hey, watch me', id: 'Hei, lihatlah aku', type: 'acceptance' },
+        { time: 57.13, jp: '可笑しくて 笑った', en: 'It was funny, so we laughed', id: 'Itu lucu, jadi kita tertawa', type: 'acceptance' },
+        { time: 59.98, jp: 'すれ違い 怒った', en: 'Passed each other, got angry', id: 'Berselisih jalan, menjadi marah', type: 'acceptance' },
+        { time: 62.46, jp: 'あなたとの夢を叶えてくるよ', en: "I'll go make our dreams come true", id: 'Kan kuwujudkan mimpi bersamamu', type: 'highlight' },
+        { time: 67.94, jp: '悲しいとき すごく辛いとき', en: "When sad, when it's really painful", id: 'Saat sedih, saat sangat menyakitkan', type: 'deep-sadness' },
+        { time: 78.0, jp: '思い出す記憶を 過ごした時間を', en: 'The memories I recall, the time we spent', id: 'Kenangan yang kuingat, waktu yang kita habiskan', type: 'deep-sadness' },
+        { time: 83.5, jp: 'この心の背もたれにして', en: "I'll use them as a backrest for this heart", id: 'Kan kujadikan sandaran hati ini', type: 'somber' },
 
-        { time: 92.23, type: 'gap-shards' },
+        { time: 91.28, type: 'gap-shards' },
 
         // VERSE 2
-        { time: 101.46, jp: '今度後ろを振り向くときは', en: 'Next time I look back', id: 'Lain kali saat kumenoleh ke belakang', type: 'somber' },
-        { time: 110.69, jp: '手でも振って 笑いあえたらいいな', en: 'I hope we can wave and laugh together', id: 'Kuharap kita bisa melambaikan tangan dan tertawa bersama', type: 'acceptance' },
-        { time: 118.19, jp: '森の奥深く 迷い込んでても', en: 'Even if lost deep in the forest', id: 'Meski tersesat jauh di dalam hutan', type: 'deep-sadness' },
-        { time: 123.52, jp: '差し込む朝日に夜明けを知る', en: 'Knowing dawn by the morning sun shining in', id: 'Mengetahui fajar dari mentari yang menyinar', type: 'acceptance' },
-        { time: 128.85, jp: 'たとえ見えなくても', en: "Even if I can't see it", id: 'Meski tak terlihat', type: 'deep-sadness' },
+        { time: 101.07, jp: '今度後ろを振り向くときは', en: 'Next time I look back', id: 'Lain kali saat kumenoleh ke belakang', type: 'somber' },
+        { time: 110.58, jp: '手でも振って 笑いあえたらいいな', en: 'I hope we can wave and laugh together', id: 'Kuharap kita bisa melambaikan tangan dan tertawa bersama', type: 'acceptance' },
+        { time: 118.65, jp: '森の奥深く 迷い込んでても', en: 'Even if lost deep in the forest', id: 'Meski tersesat jauh di dalam hutan', type: 'deep-sadness' },
+        { time: 123.9, jp: '差し込む朝日に夜明けを知る', en: 'Knowing dawn by the morning sun shining in', id: 'Mengetahui fajar dari mentari yang menyinar', type: 'acceptance' },
+        { time: 128.63, jp: 'たとえ見えなくても', en: "Even if I can't see it", id: 'Meski tak terlihat', type: 'deep-sadness' },
 
         // CHORUS 2
-        { time: 131.61, jp: '過去 未来 今が手を繋いで', en: 'Past, future, and present holding hands', id: 'Masa lalu, depan, dan kini bergandengan', type: 'acceptance' },
-        { time: 136.31, jp: '次の夜を照らしてる', en: 'Illuminating the next night', id: 'Menerangi malam berikutnya', type: 'acceptance' },
-        { time: 139.39, jp: 'ここにいるよ', en: 'I am here', id: 'Aku di sini', type: 'highlight' },
-        { time: 144.47, jp: 'そばに来てよ', en: 'Come to my side', id: 'Datanglah padaku', type: 'acceptance' },
+        { time: 131.2, jp: '過去 未来 今が手を繋いで', en: 'Past, future, and present holding hands', id: 'Masa lalu, depan, dan kini bergandengan', type: 'acceptance' },
+        { time: 136.73, jp: '次の夜を照らしてる', en: 'Illuminating the next night', id: 'Menerangi malam berikutnya', type: 'acceptance' },
+        { time: 139.77, jp: 'ここにいるよ', en: 'I am here', id: 'Aku di sini', type: 'highlight' },
+        { time: 144.67, jp: 'そばに来てよ', en: 'Come to my side', id: 'Datanglah padaku', type: 'acceptance' },
         { time: 149.37, jp: '置き去りの願いも まだ残してるんだ', en: 'Wishes left behind still remain', id: 'Harapan yang tertinggal masih tersisa', type: 'deep-sadness' },
-        { time: 155.07, jp: '何食わぬ顔で生きていても', en: 'Even if living with an innocent face', id: 'Meski hidup dengan wajah tak berdosa', type: 'deep-sadness' },
-        { time: 160.4, jp: '会いたいとき 抱きしめたいとき', en: 'When I want to see you, want to hug you', id: 'Saat rindu, saat ingin memelukmu', type: 'deep-sadness' },
-        { time: 170.28, jp: '思い出す記憶を 過ごした時間を', en: 'The memories I recall, the time we spent', id: 'Kenangan yang kuingat, waktu yang kita habiskan', type: 'deep-sadness' },
-        { time: 176.12, jp: '見えぬ未来の灯りにして', en: 'Making them the light of the unseen future', id: 'Menjadikannya cahaya masa depan yang tak terlihat', type: 'somber' },
+        { time: 155.66, jp: '何食わぬ顔で生きていても', en: 'Even if living with an innocent face', id: 'Meski hidup dengan wajah tak berdosa', type: 'deep-sadness' },
+        { time: 160.44, jp: '会いたいとき 抱きしめたいとき', en: 'When I want to see you, want to hug you', id: 'Saat rindu, saat ingin memelukmu', type: 'deep-sadness' },
+        { time: 170.09, jp: '思い出す記憶を 過ごした時間を', en: 'The memories I recall, the time we spent', id: 'Kenangan yang kuingat, waktu yang kita habiskan', type: 'deep-sadness' },
+        { time: 176.0, jp: '見えぬ未来の灯りにして', en: 'Making them the light of the unseen future', id: 'Menjadikannya cahaya masa depan yang tak terlihat', type: 'somber' },
 
-        { time: 184.14, type: 'gap-void' },
+        { time: 184.0, type: 'gap-void' }, // BRIDGE START
 
-        // BRIDGE
-        { time: 201.91, jp: 'もう消えたい 逃げたいと', en: 'Wanting to disappear, wanting to run', id: 'Ingin menghilang, ingin lari', type: 'despair' },
-        { time: 203.56, jp: '叫んだ絶望の中を', en: 'Screaming inside despair', id: 'Berteriak dalam keputusasaan', type: 'despair' },
-        { time: 206.99, jp: '出会いも奇跡さえも恨んだ', en: 'Resenting encounters and even miracles', id: 'Membenci pertemuan bahkan keajaiban', type: 'despair' },
-        { time: 209.23, jp: '最低なあの日を', en: 'That worst day', id: 'Hari terburuk itu', type: 'despair' },
-        { time: 212.3, jp: '無かった事には出来ないのだから', en: "Because I can't pretend it didn't happen", id: 'Karena tak bisa kuanggap tak terjadi', type: 'deep-sadness' },
-        { time: 215.11, jp: 'それでも生きて良かったって', en: "'I'm glad I lived after all'", id: "'Syukurlah aku tetap hidup'", type: 'somber' },
-        { time: 218.04, jp: 'せめて最後に思えますように', en: 'Hoping to think that at the very end', id: 'Semoga setidaknya itu yang kupikirkan di akhir nanti', type: 'acceptance' },
+        // BRIDGE (DESPAIR)
+        { time: 202.0, jp: 'もう消えたい 逃げたいと', en: 'Wanting to disappear, wanting to run', id: 'Ingin menghilang, ingin lari', type: 'despair' },
+        { time: 203.89, jp: '叫んだ絶望の中を', en: 'Screaming inside despair', id: 'Berteriak dalam keputusasaan', type: 'despair' },
+        { time: 207.36, jp: '出会いも奇跡さえも恨んだ', en: 'Resenting encounters and even miracles', id: 'Membenci pertemuan bahkan keajaiban', type: 'despair' },
+        { time: 209.78, jp: '最低なあの日を', en: 'That worst day', id: 'Hari terburuk itu', type: 'despair' },
+        { time: 212.35, jp: '無かった事には出来ないのだから', en: "Because I can't pretend it didn't happen", id: 'Karena tak bisa kuanggap tak terjadi', type: 'deep-sadness' },
+        { time: 215.23, jp: 'それでも生きて良かったって', en: "'I'm glad I lived after all'", id: "'Syukurlah aku tetap hidup'", type: 'somber' },
+        { time: 218.12, jp: 'せめて最後に思えますように', en: 'Hoping to think that at the very end', id: 'Semoga setidaknya itu yang kupikirkan di akhir nanti', type: 'acceptance' },
 
-        { time: 228.8, jp: 'もう戻れないね', en: "We can't go back, can we?", id: 'Kita tak bisa kembali lagi ya', type: 'somber' },
+        { time: 229.06, jp: 'もう戻れないね', en: "We can't go back, can we?", id: 'Kita tak bisa kembali lagi ya', type: 'somber' },
 
-        // FINAL CHORUS
-        { time: 238.83, jp: '僕は行くよ', en: 'I will go', id: 'Aku akan pergi', type: 'final-climax' },
-        { time: 244.18, jp: 'ねぇ 見ててよ', en: 'Hey, watch me', id: 'Hei, lihatlah aku', type: 'final-climax' },
-        { time: 249.07, jp: 'あなたより大事なもの探してくるよ', en: "I'll go find something more important than you", id: 'Kan kucari sesuatu yang lebih berharga darimu', type: 'final-climax' },
-        { time: 254.78, jp: '何よりも大事なあなたのために', en: 'For the sake of you, who is more important than anything', id: 'Demi dirimu yang lebih berharga dari segalanya', type: 'final-climax' },
-        { time: 260.0, jp: '会いたいとき 抱きしめたいとき', en: 'When I want to see you, want to hug you', id: 'Saat rindu, saat ingin memelukmu', type: 'final-climax' },
-        { time: 270.0, jp: '思い出す記憶を 過ごした時間を', en: 'The memories I recall, the time we spent', id: 'Kenangan yang kuingat, waktu yang kita habiskan', type: 'final-climax' },
-        { time: 275.77, jp: 'この心の背もたれにして', en: "I'll use them as a backrest for this heart", id: 'Kan kujadikan sandaran hati ini', type: 'final-climax' },
-        { time: 283.21, jp: '何回も歌うよ 大事な思いを', en: "I'll sing it many times, these precious feelings", id: 'Kan kunyanyikan berkali-kali, perasaan berharga ini', type: 'final-climax' },
+        // FINAL CHORUS (IMPACTFUL ACCEPTANCE)
+        { time: 239.27, jp: '僕は行くよ', en: 'I will go', id: 'Aku akan pergi', type: 'final-climax' },
+        { time: 244.69, jp: 'ねぇ 見ててよ', en: 'Hey, watch me', id: 'Hei, lihatlah aku', type: 'final-climax' },
+        { time: 249.35, jp: 'あなたより大事なもの探してくるよ', en: "I'll go find something more important than you", id: 'Kan kucari sesuatu yang lebih berharga darimu', type: 'final-climax' },
+        { time: 254.79, jp: '何よりも大事なあなたのために', en: 'For the sake of you, who is more important than anything', id: 'Demi dirimu yang lebih berharga dari segalanya', type: 'final-climax' },
+        { time: 260.39, jp: '会いたいとき 抱きしめたいとき', en: 'When I want to see you, want to hug you', id: 'Saat rindu, saat ingin memelukmu', type: 'final-climax' },
+        { time: 270.36, jp: '思い出す記憶を 過ごした時間を', en: 'The memories I recall, the time we spent', id: 'Kenangan yang kuingat, waktu yang kita habiskan', type: 'final-climax' },
+        { time: 275.75, jp: 'この心の背もたれにして', en: "I'll use them as a backrest for this heart", id: 'Kan kujadikan sandaran hati ini', type: 'final-climax' },
+        { time: 283.0, jp: '何回も歌うよ 大事な思いを', en: "I'll sing it many times, these precious feelings", id: 'Kan kunyanyikan berkali-kali, perasaan berharga ini', type: 'final-climax' },
 
-        // FINAL FOCUS
-        { time: 288.81, jp: '僕らだけの 主題歌にして', type: 'final-focus' },
+        // THE FINAL FOCUS LINE
+        { time: 288.47, jp: '僕らだけの 主題歌にして', type: 'final-focus' },
 
-        { time: 295.71, type: 'gap-outro' },
+        { time: 295.0, type: 'gap-outro' }, // OUTRO
       ];
 
       overlay.addEventListener('click', () => {
@@ -697,7 +689,7 @@
         setTimeout(() => (overlay.style.display = 'none'), 1500);
         songNav.classList.add('nav-hidden');
         audio.play();
-        activateShards();
+        activateShards(); // Start intro gap
       });
 
       audio.addEventListener('timeupdate', () => {
