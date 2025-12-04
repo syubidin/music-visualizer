@@ -15,20 +15,17 @@
 
     <style>
       :root {
-        /* Mood Colors - Somber to Acceptance */
-        --bg-somber: #2c3e50; /* Deep slate blue */
-        --bg-deep-sad: #1a1a2e; /* Dark indigo */
-        --bg-despair: #0f0505; /* Near black/red bridge */
-        --bg-acceptance: #5b7dad; /* Calmer blue */
-        --bg-climax: #fffaf0; /* Blinding white/gold acceptance */
+        /* Mood Colors */
+        --bg-somber: #2c3e50;
+        --bg-deep-sad: #1a1a2e;
+        --bg-despair: #0a0505;
+        --bg-acceptance: #5b7dad;
+        --bg-climax: #fffaf0;
 
         --text-light: #e0e0e0;
         --text-dim: #a0a0a0;
-        --accent-glow: #ffffff;
-        --string-color: rgba(255, 255, 255, 0.3);
       }
 
-      /* RESET & MOBILE LOCK */
       * {
         box-sizing: border-box;
         -webkit-tap-highlight-color: transparent;
@@ -80,70 +77,44 @@
         transition: opacity 2s;
       }
 
-      /* --- GAP FILLERS --- */
-      /* 1. Broken Threads */
-      #broken-threads {
+      /* --- GAP FILLER 1: BLUE SHARDS (Broken Memories) --- */
+      #shard-layer {
         position: absolute;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-evenly;
         z-index: 2;
+        pointer-events: none;
+        overflow: hidden;
+      }
+      .shard {
+        position: absolute;
+        background: linear-gradient(135deg, rgba(135, 206, 235, 0.4), rgba(255, 255, 255, 0.1));
+        backdrop-filter: blur(2px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+        animation: floatShard linear infinite;
+      }
+
+      /* --- GAP FILLER 2: THE VOID PULSE (Despair) --- */
+      #void-layer {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(circle at center, transparent 10%, #000 80%);
+        z-index: 8;
         pointer-events: none;
         opacity: 0;
         transition: opacity 0.5s;
       }
-      .thread-container {
-        position: relative;
-        width: 100%;
-        height: 2px;
-        overflow: hidden;
-      }
-      .thread-left,
-      .thread-right {
-        position: absolute;
-        height: 100%;
-        background: var(--string-color);
-        width: 50%;
-        top: 0;
-        transition: transform 0.5s ease-in;
-      }
-      .thread-left {
-        left: 0;
-        transform-origin: left;
-      }
-      .thread-right {
-        right: 0;
-        transform-origin: right;
-      }
-      .snapped .thread-left {
-        transform: rotate(-5deg) translateX(-10px);
-        opacity: 0;
-      }
-      .snapped .thread-right {
-        transform: rotate(5deg) translateX(10px);
-        opacity: 0;
+      .void-active {
+        animation: voidPulse 0.3s infinite alternate;
       }
 
-      /* 2. Static Noise */
-      #static-noise {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.99' numOctaves='5' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.15'/%3E%3C/svg%3E");
-        z-index: 3;
-        pointer-events: none;
-        opacity: 0;
-        mix-blend-mode: screen;
-        animation: staticShift 0.2s steps(4) infinite;
-      }
-
-      /* 3. Outro Typewriter Container */
+      /* --- GAP FILLER 3: OUTRO TYPEWRITER --- */
       #outro-container,
       #final-focus-container {
         position: absolute;
@@ -165,14 +136,12 @@
         font-size: 1.3rem;
         color: #555;
       }
-      /* Final Focus Specific Styles */
       #final-focus-text {
         font-size: 2.5rem;
         color: #333;
         font-weight: 900;
         text-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
       }
-
       .cursor,
       .cursor-final {
         display: inline-block;
@@ -393,7 +362,6 @@
         animation: floatUpSlight 6s ease-out forwards;
       }
 
-      /* Final Climax - Bright, calm, impactful. No pulsing. */
       .mood-final-climax {
         background-color: var(--bg-climax);
       }
@@ -404,7 +372,7 @@
         color: #333;
         font-size: 3.2rem;
         font-weight: 900;
-        text-shadow: 0 0 30px rgba(255, 215, 0, 0.6); /* Golden glow */
+        text-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
       }
       .mood-final-climax .en {
         color: #555;
@@ -414,11 +382,10 @@
         color: #777;
       }
 
-      /* Highlight */
       .highlight {
         color: #b0c4de !important;
         font-style: italic;
-        text-shadow: 0 0 15px rgba(176, 196, 222, 0.6) !important;
+        text-shadow: 0 0 10px rgba(176, 196, 222, 0.6) !important;
       }
 
       /* Keyframes */
@@ -464,6 +431,32 @@
           opacity: 1;
         }
       }
+      @keyframes floatShard {
+        0% {
+          transform: translateY(120vh) rotate(0deg);
+          opacity: 0;
+        }
+        20% {
+          opacity: 0.6;
+        }
+        80% {
+          opacity: 0.6;
+        }
+        100% {
+          transform: translateY(-20vh) rotate(360deg);
+          opacity: 0;
+        }
+      }
+      @keyframes voidPulse {
+        0% {
+          transform: scale(1);
+          opacity: 0.8;
+        }
+        100% {
+          transform: scale(1.1);
+          opacity: 1;
+        }
+      }
 
       @media (max-width: 600px) {
         .jp {
@@ -474,9 +467,6 @@
         }
         #final-focus-text {
           font-size: 1.8rem;
-        }
-        .cursor-final {
-          height: 1.8rem;
         }
       }
     </style>
@@ -497,21 +487,8 @@
 
     <div class="vignette"></div>
 
-    <div id="broken-threads">
-      <div class="thread-container">
-        <div class="thread-left"></div>
-        <div class="thread-right"></div>
-      </div>
-      <div class="thread-container">
-        <div class="thread-left"></div>
-        <div class="thread-right"></div>
-      </div>
-      <div class="thread-container">
-        <div class="thread-left"></div>
-        <div class="thread-right"></div>
-      </div>
-    </div>
-    <div id="static-noise"></div>
+    <div id="shard-layer"></div>
+    <div id="void-layer"></div>
 
     <div id="outro-container">
       <div id="outro-text"></div>
@@ -553,8 +530,8 @@
       const lineEn = document.getElementById('line-en');
       const lineId = document.getElementById('line-id');
 
-      const brokenThreads = document.getElementById('broken-threads');
-      const staticNoise = document.getElementById('static-noise');
+      const shardLayer = document.getElementById('shard-layer');
+      const voidLayer = document.getElementById('void-layer');
       const outroContainer = document.getElementById('outro-text');
       const finalFocusContainer = document.getElementById('final-focus-text');
 
@@ -565,55 +542,65 @@
 
       let currentLineIndex = -1;
       let outroSequence = null;
+      let shardInterval;
 
-      // --- GAP CONTROL ---
-      function activateThreads() {
-        brokenThreads.style.opacity = '1';
-        document.querySelectorAll('.thread-container').forEach((c, i) => {
-          setTimeout(() => c.classList.add('snapped'), i * 200);
-        });
+      // --- GAP 1: BLUE SHARDS ---
+      function spawnShard() {
+        const shard = document.createElement('div');
+        shard.className = 'shard';
+        const size = Math.random() * 20 + 10;
+        shard.style.width = `${size}px`;
+        shard.style.height = `${size}px`;
+        shard.style.left = `${Math.random() * 100}%`;
+        shard.style.animationDuration = `${Math.random() * 5 + 5}s`;
+        shardLayer.appendChild(shard);
+        setTimeout(() => shard.remove(), 10000);
       }
-      function deactivateThreads() {
-        brokenThreads.style.opacity = '0';
-        document.querySelectorAll('.thread-container').forEach((c) => c.classList.remove('snapped'));
+      function activateShards() {
+        if (!shardInterval) shardInterval = setInterval(spawnShard, 300);
+      }
+      function deactivateShards() {
+        clearInterval(shardInterval);
+        shardInterval = null;
       }
 
-      function activateStatic() {
-        staticNoise.style.opacity = '1';
+      // --- GAP 2: VOID PULSE ---
+      function activateVoid() {
+        voidLayer.style.opacity = '1';
+        voidLayer.classList.add('void-active');
       }
-      function deactivateStatic() {
-        staticNoise.style.opacity = '0';
+      function deactivateVoid() {
+        voidLayer.style.opacity = '0';
+        voidLayer.classList.remove('void-active');
       }
 
-      // --- TYPEWRITER FUNCTIONS ---
+      // --- TYPEWRITER & OUTRO ---
       async function typeText(container, text, cursorClass = 'cursor') {
         container.innerHTML = `<span class='${cursorClass}'></span>`;
         let currentText = '';
         for (let i = 0; i < text.length; i++) {
-          if (outroSequence === false) return; // Emergency stop
+          if (outroSequence === false) return;
           currentText += text[i];
           container.innerHTML = currentText + `<span class='${cursorClass}'></span>`;
-          await new Promise((r) => setTimeout(r, 80)); // Typing speed
+          await new Promise((r) => setTimeout(r, 80));
         }
       }
 
-      // --- FINAL FOCUS LYRIC ---
       async function renderFinalFocus(text) {
-        lyricContainer.classList.add('hidden'); // Hide standard lyrics
+        lyricContainer.classList.add('hidden');
         finalFocusContainer.innerHTML = '';
         await typeText(finalFocusContainer, text, 'cursor-final');
       }
 
-      // --- OUTRO SEQUENCE ---
       const outroMessages = ['Even if it hurts...', 'Even if it fades...', 'I will remember.', 'This blue spring.', 'This pain.', 'It was all proof.', 'Proof that we lived.'];
       async function runOutroSequence() {
-        finalFocusContainer.innerHTML = ''; // Clear final lyric
+        finalFocusContainer.innerHTML = '';
         for (const msg of outroMessages) {
           if (!outroSequence) break;
           await typeText(outroContainer, msg);
-          await new Promise((r) => setTimeout(r, 1500)); // Read time
-          outroContainer.innerHTML = ''; // Clear for next
-          await new Promise((r) => setTimeout(r, 500)); // Pause
+          await new Promise((r) => setTimeout(r, 1500));
+          outroContainer.innerHTML = '';
+          await new Promise((r) => setTimeout(r, 500));
         }
       }
       function startOutro() {
@@ -626,11 +613,16 @@
         finalFocusContainer.innerHTML = '';
       }
 
-      // --- LYRIC DATA (Corrected with Missing Section) ---
+      function clearAllGaps() {
+        deactivateShards();
+        deactivateVoid();
+      }
+
+      // --- LYRICS DATA ---
       const lyrics = [
-        { time: 0, type: 'gap-threads' },
+        { time: 0, type: 'gap-shards' },
         { time: 1.78, jp: 'もう戻れないね', en: "We can't go back, can we?", id: 'Kita tak bisa kembali lagi ya', type: 'somber' },
-        { time: 4.86, type: 'gap-threads' },
+        { time: 4.86, type: 'gap-shards' },
 
         // VERSE 1
         { time: 9.57, jp: '春を待つ僕らの 青い痛みを', en: 'Our blue pain waiting for spring', id: 'Luka biru kita yang menanti musim semi', type: 'deep-sadness' },
@@ -651,9 +643,9 @@
         { time: 78.59, jp: '思い出す記憶を 過ごした時間を', en: 'The memories I recall, the time we spent', id: 'Kenangan yang kuingat, waktu yang kita habiskan', type: 'deep-sadness' },
         { time: 84.2, jp: 'この心の背もたれにして', en: "I'll use them as a backrest for this heart", id: 'Kan kujadikan sandaran hati ini', type: 'somber' },
 
-        { time: 92.23, type: 'gap-threads' },
+        { time: 92.23, type: 'gap-shards' },
 
-        // VERSE 2 (THE MISSING SECTION RESTORED)
+        // VERSE 2
         { time: 101.46, jp: '今度後ろを振り向くときは', en: 'Next time I look back', id: 'Lain kali saat kumenoleh ke belakang', type: 'somber' },
         { time: 110.69, jp: '手でも振って 笑いあえたらいいな', en: 'I hope we can wave and laugh together', id: 'Kuharap kita bisa melambaikan tangan dan tertawa bersama', type: 'acceptance' },
         { time: 118.19, jp: '森の奥深く 迷い込んでても', en: 'Even if lost deep in the forest', id: 'Meski tersesat jauh di dalam hutan', type: 'deep-sadness' },
@@ -671,9 +663,9 @@
         { time: 170.28, jp: '思い出す記憶を 過ごした時間を', en: 'The memories I recall, the time we spent', id: 'Kenangan yang kuingat, waktu yang kita habiskan', type: 'deep-sadness' },
         { time: 176.12, jp: '見えぬ未来の灯りにして', en: 'Making them the light of the unseen future', id: 'Menjadikannya cahaya masa depan yang tak terlihat', type: 'somber' },
 
-        { time: 184.14, type: 'gap-static' }, // BRIDGE START
+        { time: 184.14, type: 'gap-void' },
 
-        // BRIDGE (DESPAIR)
+        // BRIDGE
         { time: 201.91, jp: 'もう消えたい 逃げたいと', en: 'Wanting to disappear, wanting to run', id: 'Ingin menghilang, ingin lari', type: 'despair' },
         { time: 203.56, jp: '叫んだ絶望の中を', en: 'Screaming inside despair', id: 'Berteriak dalam keputusasaan', type: 'despair' },
         { time: 206.99, jp: '出会いも奇跡さえも恨んだ', en: 'Resenting encounters and even miracles', id: 'Membenci pertemuan bahkan keajaiban', type: 'despair' },
@@ -684,7 +676,7 @@
 
         { time: 228.8, jp: 'もう戻れないね', en: "We can't go back, can we?", id: 'Kita tak bisa kembali lagi ya', type: 'somber' },
 
-        // FINAL CHORUS (IMPACTFUL ACCEPTANCE - NO PULSE)
+        // FINAL CHORUS
         { time: 238.83, jp: '僕は行くよ', en: 'I will go', id: 'Aku akan pergi', type: 'final-climax' },
         { time: 244.18, jp: 'ねぇ 見ててよ', en: 'Hey, watch me', id: 'Hei, lihatlah aku', type: 'final-climax' },
         { time: 249.07, jp: 'あなたより大事なもの探してくるよ', en: "I'll go find something more important than you", id: 'Kan kucari sesuatu yang lebih berharga darimu', type: 'final-climax' },
@@ -694,10 +686,10 @@
         { time: 275.77, jp: 'この心の背もたれにして', en: "I'll use them as a backrest for this heart", id: 'Kan kujadikan sandaran hati ini', type: 'final-climax' },
         { time: 283.21, jp: '何回も歌うよ 大事な思いを', en: "I'll sing it many times, these precious feelings", id: 'Kan kunyanyikan berkali-kali, perasaan berharga ini', type: 'final-climax' },
 
-        // THE FINAL FOCUS LINE
+        // FINAL FOCUS
         { time: 288.81, jp: '僕らだけの 主題歌にして', type: 'final-focus' },
 
-        { time: 295.71, type: 'gap-outro' }, // OUTRO TYPER START
+        { time: 295.71, type: 'gap-outro' },
       ];
 
       overlay.addEventListener('click', () => {
@@ -705,7 +697,7 @@
         setTimeout(() => (overlay.style.display = 'none'), 1500);
         songNav.classList.add('nav-hidden');
         audio.play();
-        activateThreads();
+        activateShards();
       });
 
       audio.addEventListener('timeupdate', () => {
@@ -727,38 +719,39 @@
           document.body.className = `mood-${line.type}`;
         }
 
-        // --- SPECIAL HANDLERS ---
-        if (line.type === 'gap-threads') {
+        // GAPS
+        if (line.type === 'gap-shards') {
           hideLyrics();
-          clearGaps();
-          activateThreads();
+          clearAllGaps();
+          activateShards();
           return;
         }
-        if (line.type === 'gap-static') {
+        if (line.type === 'gap-void') {
           hideLyrics();
-          clearGaps();
-          activateStatic();
+          clearAllGaps();
+          activateVoid();
           return;
         }
         if (line.type === 'gap-outro') {
           hideLyrics();
-          clearGaps();
+          clearAllGaps();
+          document.body.className = 'mood-final-climax';
           startOutro();
           return;
         }
 
-        // FINAL FOCUS HANDLER
+        // FINAL FOCUS
         if (line.type === 'final-focus') {
           hideLyrics();
-          clearGaps();
-          document.body.className = 'mood-final-climax'; // Ensure bright bg
+          clearAllGaps();
+          document.body.className = 'mood-final-climax';
           renderFinalFocus(line.jp);
           return;
         }
 
-        // NORMAL LYRIC RENDER
-        clearGaps();
-        lyricContainer.classList.remove('hidden'); // Ensure visible
+        // NORMAL LYRIC
+        clearAllGaps();
+        lyricContainer.classList.remove('hidden');
 
         setTimeout(() => {
           lineJp.innerText = line.jp;
@@ -781,10 +774,9 @@
         lineId.classList.remove('show');
       }
 
-      function clearGaps() {
-        deactivateThreads();
-        deactivateStatic();
-        // Don't stop outro here
+      function clearAllGaps() {
+        deactivateShards();
+        deactivateVoid();
       }
 
       audio.addEventListener('ended', () => {
