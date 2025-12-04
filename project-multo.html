@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>Multo - Cup of Joe | Interactive</title>
 
-    <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,700;1,400&family=Special+Elite&family=Creepster&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,700;1,400&family=Special+Elite&display=swap" rel="stylesheet" />
 
     <link
       rel="icon"
@@ -77,7 +77,7 @@
         mix-blend-mode: screen;
       }
 
-      /* 3. Shadow Figures (Gap Filler) */
+      /* 3. Shadow Realm (Intro Gap) */
       #shadow-realm {
         position: absolute;
         width: 100%;
@@ -92,10 +92,29 @@
         position: absolute;
         width: 150px;
         height: 300px;
-        background: rgba(0, 0, 0, 0.8);
+        background: rgba(0, 0, 0, 0.9);
         filter: blur(20px);
         border-radius: 50%;
         animation: shadowPass 3s linear forwards;
+      }
+
+      /* 4. Message Realm (Outro Gap) */
+      #message-realm {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        z-index: 3;
+        pointer-events: none;
+      }
+      .ghost-message {
+        position: absolute;
+        font-family: 'Special Elite', cursive;
+        font-size: 1.5rem;
+        color: rgba(255, 255, 255, 0.2);
+        animation: fadeFloat 5s ease-out forwards;
+        text-shadow: 0 0 5px rgba(255, 255, 255, 0.1);
       }
 
       /* --- UI --- */
@@ -268,13 +287,11 @@
 
       /* --- MOODS & STYLES --- */
 
-      /* 1. Paranoid (Verse) - Dim, nervous */
       .mood-paranoid #flashlight {
         opacity: 0.3;
         animation: searchLight 10s infinite alternate;
       }
 
-      /* 2. Haunted (Pre-Chorus) - Flickering light */
       .mood-haunted #flashlight {
         opacity: 0.5;
         animation: flicker 0.15s infinite;
@@ -284,7 +301,6 @@
         letter-spacing: 1px;
       }
 
-      /* 3. CLIMAX (POLTERGEIST) - Violent */
       .mood-poltergeist {
         background-color: #0a0000;
       }
@@ -305,7 +321,7 @@
         font-weight: bold;
       }
 
-      /* 4. Highlight */
+      /* Highlight */
       .highlight-word {
         color: #b0c4de;
         text-shadow: 0 0 10px #b0c4de;
@@ -344,6 +360,21 @@
         100% {
           transform: translateX(150vw) scale(1.2);
           opacity: 0;
+        }
+      }
+
+      @keyframes fadeFloat {
+        0% {
+          opacity: 0;
+          transform: translateY(10px) rotate(0deg);
+        }
+        20% {
+          opacity: 0.6;
+        }
+        100% {
+          opacity: 0;
+          transform: translateY(-50px) rotate(5deg);
+          filter: blur(3px);
         }
       }
 
@@ -418,6 +449,7 @@
 
     <div id="flashlight"></div>
     <div id="shadow-realm"></div>
+    <div id="message-realm"></div>
     <div id="overlay">
       <h1>MULTO</h1>
       <p>[ CLICK TO ENTER THE ROOM ]</p>
@@ -447,7 +479,10 @@
       const tlLine = document.getElementById('tl-line');
       const enLine = document.getElementById('en-line');
       const idLine = document.getElementById('id-line');
+
       const shadowRealm = document.getElementById('shadow-realm');
+      const messageRealm = document.getElementById('message-realm');
+
       const endingScreen = document.getElementById('ending-screen');
       const finalFooter = document.getElementById('final-footer');
       const replayBtn = document.getElementById('replay-btn');
@@ -455,22 +490,15 @@
 
       let currentLineIndex = -1;
       let shadowInterval;
+      let messageInterval;
 
-      // --- GAP FILLER: THE SHADOWS ---
+      // --- GAP FILLER 1: THE SHADOWS (Intro/Middle) ---
       function spawnShadow() {
         const el = document.createElement('div');
         el.className = 'shadow-entity';
-
-        // Random start height
         el.style.top = `${Math.random() * 80}%`;
-
-        // Random direction (Left->Right or Right->Left)
         const direction = Math.random() > 0.5 ? 1 : -1;
-
-        // Adjust start position based on direction
         el.style.left = direction === 1 ? '-20%' : '120%';
-
-        // Customize animation via JS for direction
         const moveX = direction === 1 ? '150vw' : '-150vw';
 
         el.animate(
@@ -479,28 +507,45 @@
             { opacity: 0.6, offset: 0.5 },
             { transform: `translateX(${moveX}) scale(1.2)`, opacity: 0 },
           ],
-          {
-            duration: 2500 + Math.random() * 1000,
-            easing: 'linear',
-            fill: 'forwards',
-          }
+          { duration: 2000 + Math.random() * 1000, fill: 'forwards' }
         );
 
         shadowRealm.appendChild(el);
         setTimeout(() => el.remove(), 4000);
       }
 
-      function startShadows(intensity = 1500) {
-        if (!shadowInterval) shadowInterval = setInterval(spawnShadow, intensity);
+      function startShadows() {
+        if (!shadowInterval) shadowInterval = setInterval(spawnShadow, 1200);
       }
       function stopShadows() {
         clearInterval(shadowInterval);
         shadowInterval = null;
       }
 
+      // --- GAP FILLER 2: GHOST MESSAGES (Outro) ---
+      const ghosts = ['multo', 'nasaan ka?', 'bakit?', 'tama na', 'stop', 'mahal kita', 'umalis ka', 'ghost', 'dilim'];
+      function spawnMessage() {
+        const el = document.createElement('div');
+        el.className = 'ghost-message';
+        el.innerText = ghosts[Math.floor(Math.random() * ghosts.length)];
+        el.style.left = `${Math.random() * 80 + 10}%`;
+        el.style.top = `${Math.random() * 80 + 10}%`;
+        el.style.transform = `rotate(${Math.random() * 20 - 10}deg)`;
+        messageRealm.appendChild(el);
+        setTimeout(() => el.remove(), 5000);
+      }
+
+      function startMessages() {
+        if (!messageInterval) messageInterval = setInterval(spawnMessage, 1000);
+      }
+      function stopMessages() {
+        clearInterval(messageInterval);
+        messageInterval = null;
+      }
+
       // --- DATA ---
       const lyrics = [
-        { time: 0, type: 'gap' },
+        { time: 0, type: 'gap-shadow' },
 
         // VERSE 1
         { time: 22.16, tl: 'Humingang malalim, pumikit na muna', en: 'Take a deep breath, close your eyes first', id: 'Tarik napas dalam, pejamkan mata dulu', type: 'paranoid' },
@@ -520,11 +565,11 @@
 
         { time: 105.61, tl: 'Ako ay dahan-dahang nililibing nang buhay pa', en: 'I am slowly being buried alive', id: 'Aku perlahan dikubur hidup-hidup', type: 'paranoid' },
 
-        // CHORUS 1 (POLTERGEIST)
-        { time: 114.83, tl: 'Hindi na makalaya', en: "Can't break free anymore", id: 'Tak bisa bebas lagi', type: 'poltergeist' },
-        { time: 119.41, tl: "Dinadalaw mo 'ko bawat gabi", en: 'You visit me every night', id: 'Kau mengunjungiku tiap malam', type: 'poltergeist' },
-        { time: 124.07, tl: 'Wala mang nakikita', en: 'Even if nothing is seen', id: 'Meski tak ada yang terlihat', type: 'haunted' },
-        { time: 128.69, tl: "Haplos mo'y ramdam pa rin sa dilim", en: 'Your touch is still felt in the dark', id: 'Sentuhanmu masih terasa di gelap', type: 'haunted' },
+        // CHORUS 1
+        { time: 114.83, tl: 'Hindi na makalaya', en: "Can't break free anymore", id: 'Tak bisa bebas lagi', type: 'climax' },
+        { time: 119.41, tl: "Dinadalaw mo 'ko bawat gabi", en: 'You visit me every night', id: 'Kau mengunjungiku tiap malam', type: 'climax' },
+        { time: 124.07, tl: 'Wala mang nakikita', en: 'Even if nothing is seen', id: 'Meski tak ada yang terlihat', type: 'normal' },
+        { time: 128.69, tl: "Haplos mo'y ramdam pa rin sa dilim", en: 'Your touch is still felt in the dark', id: 'Sentuhanmu masih terasa di gelap', type: 'normal' },
 
         { time: 133.19, tl: 'Hindi na nananaginip', en: 'No longer dreaming', id: 'Tak lagi bermimpi', type: 'paranoid' },
         { time: 137.89, tl: 'Hindi na ma-makagising', en: 'Can no longer wake up', id: 'Tak bisa bangun lagi', type: 'paranoid' },
@@ -538,9 +583,9 @@
         { time: 161.84, tl: 'Hindi na ba ma-mamamayapa?', en: 'Will it never rest?', id: 'Takkan pernah damai?', type: 'haunted' },
         { time: 166.7, tl: 'Hindi na ba ma-mamamayapa?', en: 'Will it never rest?', id: 'Takkan pernah damai?', type: 'haunted' },
 
-        // CHORUS 2 (CHAOS)
-        { time: 170.39, tl: 'Hindi na makalaya', en: "Can't break free anymore", id: 'Tak bisa bebas lagi', type: 'poltergeist' },
-        { time: 174.62, tl: "Dinadalaw mo 'ko bawat gabi", en: 'You visit me every night', id: 'Kau mengunjungiku tiap malam', type: 'poltergeist' },
+        // CHORUS 2
+        { time: 170.39, tl: 'Hindi na makalaya', en: "Can't break free anymore", id: 'Tak bisa bebas lagi', type: 'climax' },
+        { time: 174.62, tl: "Dinadalaw mo 'ko bawat gabi", en: 'You visit me every night', id: 'Kau mengunjungiku tiap malam', type: 'climax' },
         { time: 179.38, tl: 'Wala mang nakikita', en: 'Even if nothing is seen', id: 'Meski tak ada yang terlihat', type: 'haunted' },
         { time: 183.95, tl: "Haplos mo'y ramdam pa rin sa dilim", en: 'Your touch is still felt in the dark', id: 'Sentuhanmu masih terasa di gelap', type: 'haunted' },
 
@@ -550,13 +595,13 @@
         { time: 197.62, tl: 'Pasindi na ng ilaw', en: 'TURN ON THE LIGHT', id: 'NYALAKAN LAMPUNYA', type: 'highlight' },
         { time: 202.49, tl: "MINUMULTO NA 'KO NG DAMDAMIN KO", en: "I'M BEING HAUNTED BY MY FEELINGS", id: 'AKU DIHANTUI PERASAANKU', type: 'poltergeist' },
 
-        // OUTRO (Fading)
+        // OUTRO
         { time: 208.37, tl: '(Makalaya) hindi mo ba ako lilisanin?', en: "(Break free) Won't you leave me?", id: '(Bebas) Takkan kau tinggalkan aku?', type: 'paranoid' },
         { time: 212.76, tl: "(Dinadalaw mo 'ko...) hindi pa ba sapat?", en: "(Visiting me...) Isn't it enough?", id: '(Mengunjungiku...) Belum cukupkah?', type: 'paranoid' },
         { time: 217.35, tl: '(Wala mang nakikita) hindi na ba ma-mamamayapa?', en: 'Will it never rest?', id: 'Takkan pernah damai?', type: 'haunted' },
         { time: 221.51, tl: "(Haplos mo'y ramdam...) hindi na ba ma-mamamayapa?", en: 'Will it never rest?', id: 'Takkan pernah damai?', type: 'haunted' },
 
-        { time: 226.65, type: 'gap' },
+        { time: 226.65, type: 'gap-message' },
       ];
 
       overlay.addEventListener('click', () => {
@@ -564,7 +609,7 @@
         setTimeout(() => (overlay.style.display = 'none'), 1500);
         songNav.classList.add('nav-hidden');
         audio.play();
-        startShadows(1000); // Start frequent shadows in intro
+        startShadows(1000);
       });
 
       audio.addEventListener('timeupdate', () => {
@@ -591,19 +636,31 @@
           tlLine.classList.remove('highlight-word');
         }
 
-        // GAP HANDLING
-        if (line.type === 'gap') {
+        // --- DISTINCT GAP HANDLER ---
+        if (line.type === 'gap-shadow') {
+          // Intro mode
           tlLine.classList.remove('show');
           enLine.classList.remove('show');
           idLine.classList.remove('show');
+          stopMessages();
           startShadows();
           return;
         }
 
-        // LYRIC RENDER
-        stopShadows();
+        if (line.type === 'gap-message') {
+          // Outro mode
+          tlLine.classList.remove('show');
+          enLine.classList.remove('show');
+          idLine.classList.remove('show');
+          stopShadows();
+          startMessages();
+          return;
+        }
 
-        // Small delay for clean transition
+        // NORMAL LYRIC RENDER
+        stopShadows();
+        stopMessages();
+
         setTimeout(() => {
           tlLine.innerHTML = line.tl;
           enLine.innerHTML = line.en;
@@ -617,6 +674,7 @@
 
       audio.addEventListener('ended', () => {
         stopShadows();
+        stopMessages();
         tlLine.classList.remove('show');
         enLine.classList.remove('show');
         idLine.classList.remove('show');
