@@ -2,899 +2,569 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Bokura dake no Shudaika - Centimillimental | Interactive</title>
-
+    
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;600;900&family=Rock+Salt&family=Inter:wght@300;500;700&display=swap" rel="stylesheet" />
-
-    <link
-      rel="icon"
-      type="image/svg+xml"
-      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='0' y='0' width='64' height='64' rx='16' fill='%232c3e50'/%3E%3Cpath d='M18 32L18 32 M27 20L27 44 M36 14L36 50 M45 20L45 44 M54 32L54 32' stroke='%23ffffff' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E"
-    />
+    
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='0' y='0' width='64' height='64' rx='16' fill='%232c3e50'/%3E%3Cpath d='M18 32L18 32 M27 20L27 44 M36 14L36 50 M45 20L45 44 M54 32L54 32' stroke='%23ffffff' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E">
 
     <style>
-      :root {
-        /* Mood Colors */
-        --bg-somber: #2c3e50;
-        --bg-deep-sad: #1a1a2e;
-        --bg-despair: #0a0505;
-        --bg-acceptance: #5b7dad;
-        --bg-climax: #fffaf0;
-
-        --text-light: #e0e0e0;
-        --text-dim: #a0a0a0;
-        --selection-bg: #333;
-        --selection-text: #fff;
-      }
-
-      * {
-        box-sizing: border-box;
-        -webkit-tap-highlight-color: transparent;
-        touch-action: none;
-      }
-
-      body,
-      html {
-        margin: 0;
-        padding: 0;
-        width: 100%;
-        height: 100%;
-        background-color: var(--bg-somber);
-        color: var(--text-light);
-        font-family: 'Noto Serif JP', serif;
-        overflow: hidden;
-        position: fixed;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        text-align: center;
-        transition: background-color 2.5s cubic-bezier(0.25, 0.8, 0.25, 1);
-      }
-
-      /* --- ATMOSPHERE LAYERS --- */
-      body::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
-        pointer-events: none;
-        z-index: 10;
-        opacity: 0.4;
-        mix-blend-mode: overlay;
-      }
-
-      .vignette {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: radial-gradient(circle, transparent 30%, rgba(0, 0, 0, 0.8) 120%);
-        pointer-events: none;
-        z-index: 9;
-        transition: opacity 2s;
-      }
-
-      /* --- GAP FILLER 1: BLUE SHARDS --- */
-      #shard-layer {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        z-index: 2;
-        pointer-events: none;
-        overflow: hidden;
-      }
-      .shard {
-        position: absolute;
-        background: linear-gradient(135deg, rgba(135, 206, 235, 0.4), rgba(255, 255, 255, 0.1));
-        backdrop-filter: blur(2px);
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
-        animation: floatShard linear infinite;
-      }
-
-      /* --- GAP FILLER 2: THE VOID PULSE --- */
-      #void-layer {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: radial-gradient(circle at center, transparent 10%, #000 90%);
-        z-index: 8;
-        pointer-events: none;
-        opacity: 0;
-        transition: opacity 0.5s;
-      }
-      .void-active {
-        animation: voidPulse 0.3s infinite alternate;
-      }
-
-      /* --- OUTRO TYPEWRITER CONTAINER --- */
-      #outro-container {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 85%;
-        max-width: 700px;
-        z-index: 60;
-        pointer-events: none;
-      }
-      #outro-text {
-        font-size: 1.3rem;
-        color: #555;
-        font-family: 'Noto Serif JP', serif;
-        font-weight: 600;
-        min-height: 1.5em;
-      }
-
-      /* --- FINAL FOCUS (HIGHLIGHT EFFECT) --- */
-      #final-focus-container {
-        position: absolute;
-        top: 45%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 90%;
-        max-width: 800px;
-        z-index: 70;
-        pointer-events: none;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-      }
-
-      #final-jp {
-        font-size: 3rem;
-        font-weight: 900;
-        color: #333;
-        font-family: 'Noto Serif JP', serif;
-        position: relative;
-        display: inline-block;
-        padding: 0 10px;
-        white-space: nowrap;
-      }
-
-      #final-jp::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        height: 100%;
-        width: 0%;
-        background-color: var(--selection-bg);
-        z-index: -1;
-        transition: width 1s cubic-bezier(0.22, 1, 0.36, 1);
-      }
-
-      #final-jp.selected {
-        color: var(--selection-text);
-      }
-      #final-jp.selected::after {
-        width: 100%;
-      }
-
-      #final-sub {
-        margin-top: 25px;
-        font-family: 'Inter', sans-serif;
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-        opacity: 0;
-        transition: opacity 2s ease;
-      }
-      .final-en {
-        font-size: 1.2rem;
-        color: #555;
-        font-weight: 700;
-      }
-      .final-id {
-        font-size: 1rem;
-        color: #888;
-        font-style: italic;
-      }
-
-      .cursor,
-      .cursor-final {
-        display: inline-block;
-        width: 2px;
-        height: 1.2em;
-        animation: blink 1s infinite;
-        vertical-align: bottom;
-        margin-left: 4px;
-      }
-      .cursor {
-        background: #555;
-      }
-      .cursor-final {
-        background: #333;
-        height: 3rem;
-      }
-
-      /* --- UI --- */
-      #song-nav {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        padding: 20px 30px;
-        z-index: 9999;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        transition: opacity 1s ease, transform 1s ease;
-        pointer-events: auto;
-      }
-      #song-nav.nav-hidden {
-        opacity: 0;
-        transform: translateY(-20px);
-        pointer-events: none;
-      }
-      .nav-home,
-      .nav-x {
-        color: #ccc;
-        text-decoration: none;
-        opacity: 0.7;
-        transition: 0.3s;
-        display: flex;
-        gap: 10px;
-        align-items: center;
-      }
-      .nav-home:hover,
-      .nav-x:hover {
-        opacity: 1;
-        color: #fff;
-      }
-
-      #overlay {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: #1a1a2e;
-        z-index: 200;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        transition: opacity 1.5s ease;
-      }
-      #overlay h1 {
-        font-family: 'Noto Serif JP', serif;
-        font-size: 2.2rem;
-        color: #fff;
-        margin-bottom: 15px;
-      }
-      #overlay p {
-        font-family: 'Inter', sans-serif;
-        font-size: 0.8rem;
-        letter-spacing: 3px;
-        opacity: 0.6;
-      }
-
-      #ending-screen {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: #fffaf0;
-        z-index: 150;
-        opacity: 0;
-        pointer-events: none;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        transition: opacity 3s ease;
-      }
-      #ending-screen h1 {
-        color: #333;
-        font-family: 'Noto Serif JP', serif;
-        font-size: 2rem;
-        margin-bottom: 10px;
-      }
-      #ending-screen p {
-        color: #666;
-        font-size: 1rem;
-        margin-bottom: 30px;
-        font-style: italic;
-      }
-      #replay-btn {
-        background: transparent;
-        border: 1px solid #333;
-        color: #333;
-        padding: 12px 40px;
-        font-family: 'Inter', sans-serif;
-        letter-spacing: 1px;
-        cursor: pointer;
-        transition: 0.3s;
-      }
-      #replay-btn:hover {
-        background: #333;
-        color: #fff;
-      }
-
-      #final-footer {
-        position: fixed;
-        bottom: 30px;
-        width: 100%;
-        text-align: center;
-        font-family: 'Inter', sans-serif;
-        font-size: 0.7rem;
-        color: #888;
-        z-index: 1000;
-        opacity: 0;
-        transition: opacity 2s ease 1s;
-      }
-      .visible-block {
-        opacity: 1 !important;
-        pointer-events: auto !important;
-      }
-
-      /* --- LYRICS CONTAINER --- */
-      #lyric-container {
-        position: relative;
-        z-index: 50;
-        width: 90%;
-        max-width: 1000px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        min-height: 300px;
-        perspective: 1000px;
-        transition: opacity 0.5s ease;
-      }
-      #lyric-container.hidden {
-        opacity: 0;
-        pointer-events: none;
-      }
-
-      .line {
-        transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        opacity: 0;
-        transform: translateY(20px);
-        margin-bottom: 10px;
-        filter: blur(4px);
-      }
-      .jp {
-        font-size: 2rem;
-        font-weight: 300;
-        color: var(--text-light);
-        text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
-      }
-      .en {
-        font-family: 'Inter', sans-serif;
-        font-size: 1rem;
-        color: var(--text-dim);
-        font-weight: 300;
-      }
-      .id {
-        font-family: 'Inter', sans-serif;
-        font-size: 0.9rem;
-        color: rgba(255, 255, 255, 0.5);
-        font-style: italic;
-      }
-      .line.show {
-        opacity: 1;
-        transform: translateY(0) translateZ(0);
-        filter: blur(0);
-      }
-
-      /* --- MOODS & ANIMATIONS --- */
-      .mood-somber {
-        background-color: var(--bg-somber);
-      }
-      .mood-deep-sadness {
-        background-color: var(--bg-deep-sad);
-      }
-      .mood-deep-sadness .jp {
-        animation: slowDrift 8s infinite alternate;
-      }
-
-      .mood-despair {
-        background-color: var(--bg-despair);
-      }
-      .mood-despair .vignette {
-        opacity: 1;
-      }
-      .mood-despair .jp {
-        font-family: 'Rock Salt', cursive;
-        font-size: 1.8rem;
-        color: #d32f2f;
-        animation: roughShake 0.1s infinite;
-      }
-
-      .mood-acceptance {
-        background-color: var(--bg-acceptance);
-      }
-      .mood-acceptance .jp {
-        animation: floatUpSlight 6s ease-out forwards;
-      }
-
-      .mood-final-climax {
-        background-color: var(--bg-climax);
-      }
-      .mood-final-climax .vignette {
-        opacity: 0;
-      }
-      .mood-final-climax .jp {
-        color: #333;
-        font-size: 3.2rem;
-        font-weight: 900;
-        text-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
-      }
-      .mood-final-climax .en {
-        color: #555;
-        font-weight: 600;
-      }
-      .mood-final-climax .id {
-        color: #777;
-      }
-
-      .highlight {
-        color: #b0c4de !important;
-        font-style: italic;
-        text-shadow: 0 0 10px rgba(176, 196, 222, 0.6) !important;
-      }
-
-      /* Keyframes */
-      @keyframes staticShift {
-        0% {
-          background-position: 0 0;
+        :root {
+            /* Mood Colors */
+            --bg-somber: #2c3e50; 
+            --bg-deep-sad: #1a1a2e; 
+            --bg-despair: #0a0505; 
+            --bg-acceptance: #5b7dad; 
+            --bg-climax: #fffaf0; 
+            
+            --text-light: #e0e0e0;
+            --text-dim: #a0a0a0;
+            --selection-bg: #333;
+            --selection-text: #fff;
         }
-        100% {
-          background-position: 100px 100px;
-        }
-      }
-      @keyframes roughShake {
-        0% {
-          transform: translate(1px, 1px);
-        }
-        50% {
-          transform: translate(-1px, -1px);
-        }
-        100% {
-          transform: translate(1px, -1px);
-        }
-      }
-      @keyframes blink {
-        50% {
-          opacity: 0;
-        }
-      }
-      @keyframes slowDrift {
-        0% {
-          transform: translateX(0);
-        }
-        100% {
-          transform: translateX(10px);
-        }
-      }
-      @keyframes floatUpSlight {
-        0% {
-          transform: translateY(10px);
-          opacity: 0;
-        }
-        100% {
-          transform: translateY(0);
-          opacity: 1;
-        }
-      }
-      @keyframes floatShard {
-        0% {
-          transform: translateY(120vh) rotate(0deg);
-          opacity: 0;
-        }
-        20% {
-          opacity: 0.6;
-        }
-        80% {
-          opacity: 0.6;
-        }
-        100% {
-          transform: translateY(-20vh) rotate(360deg);
-          opacity: 0;
-        }
-      }
-      @keyframes voidPulse {
-        0% {
-          transform: scale(1);
-          opacity: 0.8;
-        }
-        100% {
-          transform: scale(1.1);
-          opacity: 1;
-        }
-      }
 
-      @media (max-width: 600px) {
-        .jp {
-          font-size: 1.5rem;
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; touch-action: none; }
+        
+        body, html {
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            background-color: var(--bg-somber);
+            color: var(--text-light);
+            font-family: 'Noto Serif JP', serif;
+            overflow: hidden; position: fixed;
+            display: flex; justify-content: center; align-items: center; text-align: center;
+            transition: background-color 2.5s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
-        .mood-final-climax .jp {
-          font-size: 2.2rem;
+
+        /* --- ATMOSPHERE LAYERS --- */
+        body::after {
+            content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+            pointer-events: none; z-index: 10; opacity: 0.4; mix-blend-mode: overlay;
         }
+
+        .vignette {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle, transparent 30%, rgba(0, 0, 0, 0.8) 120%);
+            pointer-events: none; z-index: 9; transition: opacity 2s;
+        }
+
+        /* --- GAP FILLER 1: BLUE SHARDS --- */
+        #shard-layer {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 2; pointer-events: none; overflow: hidden;
+        }
+        .shard {
+            position: absolute;
+            background: linear-gradient(135deg, rgba(135, 206, 235, 0.4), rgba(255, 255, 255, 0.1));
+            backdrop-filter: blur(2px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            clip-path: polygon(50% 0%, 0% 100%, 100% 100%); 
+            animation: floatShard linear infinite;
+        }
+
+        /* --- GAP FILLER 2: THE VOID PULSE --- */
+        #void-layer {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at center, transparent 10%, #000 90%);
+            z-index: 8; pointer-events: none; opacity: 0;
+            transition: opacity 0.5s;
+        }
+        .void-active { animation: voidPulse 0.3s infinite alternate; }
+
+        /* --- OUTRO TYPEWRITER CONTAINER --- */
+        #outro-container {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 85%; max-width: 700px; z-index: 60; pointer-events: none;
+        }
+        #outro-text { font-size: 1.3rem; color: #555; font-family: 'Noto Serif JP', serif; font-weight: 600; min-height: 1.5em; }
+
+        /* --- FINAL FOCUS (HIGHLIGHT EFFECT) --- */
+        #final-focus-container {
+            position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%);
+            width: 90%; max-width: 800px; z-index: 70; pointer-events: none;
+            display: flex; flex-direction: column; align-items: center;
+        }
+        
         #final-jp {
-          font-size: 1.8rem;
+            font-size: 3rem; font-weight: 900; color: #333; 
+            font-family: 'Noto Serif JP', serif;
+            position: relative; display: inline-block; padding: 0 10px;
+            white-space: nowrap;
         }
-      }
+        
+        #final-jp::after {
+            content: ""; position: absolute; top: 0; left: 0; height: 100%; width: 0%;
+            background-color: var(--selection-bg); 
+            z-index: -1;
+            transition: width 1s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        
+        #final-jp.selected { color: var(--selection-text); } 
+        #final-jp.selected::after { width: 100%; }
+
+        #final-sub {
+            margin-top: 25px; font-family: 'Inter', sans-serif;
+            display: flex; flex-direction: column; gap: 8px; opacity: 0;
+            transition: opacity 2s ease;
+        }
+        .final-en { font-size: 1.2rem; color: #555; font-weight: 700; }
+        .final-id { font-size: 1rem; color: #888; font-style: italic; }
+
+        .cursor, .cursor-final {
+            display: inline-block; width: 2px; height: 1.2em; 
+            animation: blink 1s infinite; vertical-align: bottom; margin-left: 4px;
+        }
+        .cursor { background: #555; } .cursor-final { background: #333; height: 3rem; }
+
+        /* --- UI --- */
+        #song-nav {
+            position: fixed; top: 0; left: 0; width: 100%; padding: 20px 30px;
+            z-index: 9999; display: flex; justify-content: space-between; align-items: center;
+            transition: opacity 1s ease, transform 1s ease; pointer-events: auto;
+        }
+        #song-nav.nav-hidden { opacity: 0; transform: translateY(-20px); pointer-events: none; }
+        .nav-home, .nav-x { color: #ccc; text-decoration: none; opacity: 0.7; transition: 0.3s; display: flex; gap: 10px; align-items: center; }
+        .nav-home:hover, .nav-x:hover { opacity: 1; color: #fff; }
+
+        #overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: #1a1a2e; z-index: 200; 
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            transition: opacity 1.5s ease;
+        }
+        #overlay h1 { font-family: 'Noto Serif JP', serif; font-size: 2.2rem; color: #fff; margin-bottom: 15px; }
+        #overlay p { font-family: 'Inter', sans-serif; font-size: 0.8rem; letter-spacing: 3px; opacity: 0.6; }
+
+        #ending-screen {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: #fffaf0; z-index: 150; opacity: 0; pointer-events: none;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            transition: opacity 3s ease;
+        }
+        #ending-screen h1 { color: #333; font-family: 'Noto Serif JP', serif; font-size: 2rem; margin-bottom: 10px; }
+        #ending-screen p { color: #666; font-size: 1rem; margin-bottom: 30px; font-style: italic; }
+        #replay-btn {
+            background: transparent; border: 1px solid #333; color: #333;
+            padding: 12px 40px; font-family: 'Inter', sans-serif; letter-spacing: 1px;
+            cursor: pointer; transition: 0.3s;
+        }
+        #replay-btn:hover { background: #333; color: #fff; }
+
+        #final-footer {
+            position: fixed; bottom: 30px; width: 100%; text-align: center;
+            font-family: 'Inter', sans-serif; font-size: 0.7rem; color: #888; 
+            z-index: 1000; opacity: 0; transition: opacity 2s ease 1s;
+        }
+        .visible-block { opacity: 1 !important; pointer-events: auto !important; }
+
+        /* --- LYRICS CONTAINER --- */
+        #lyric-container {
+            position: relative; z-index: 50; width: 90%; max-width: 1000px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            min-height: 300px; perspective: 1000px;
+            transition: opacity 0.5s ease;
+        }
+        #lyric-container.hidden { opacity: 0; pointer-events: none; }
+
+        .line { transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94); opacity: 0; transform:translateY(20px); margin-bottom: 10px; filter: blur(4px); }
+        .jp { font-size: 2rem; font-weight: 300; color: var(--text-light); text-shadow: 0 2px 5px rgba(0,0,0,0.5); }
+        .en { font-family: 'Inter', sans-serif; font-size: 1rem; color: var(--text-dim); font-weight: 300; }
+        .id { font-family: 'Inter', sans-serif; font-size: 0.9rem; color: rgba(255,255,255,0.5); font-style: italic; }
+        .line.show { opacity: 1; transform: translateY(0) translateZ(0); filter: blur(0); }
+
+        /* --- MOODS & ANIMATIONS --- */
+        .mood-somber { background-color: var(--bg-somber); }
+        .mood-deep-sadness { background-color: var(--bg-deep-sad); }
+        .mood-deep-sadness .jp { animation: slowDrift 8s infinite alternate; }
+        
+        .mood-despair { background-color: var(--bg-despair); }
+        .mood-despair .vignette { opacity: 1; }
+        .mood-despair .jp { font-family: 'Rock Salt', cursive; font-size: 1.8rem; color: #d32f2f; animation: roughShake 0.1s infinite; }
+        
+        .mood-acceptance { background-color: var(--bg-acceptance); }
+        .mood-acceptance .jp { animation: floatUpSlight 6s ease-out forwards; }
+        
+        .mood-final-climax { background-color: var(--bg-climax); }
+        .mood-final-climax .vignette { opacity: 0; }
+        .mood-final-climax .jp { 
+            color: #333; font-size: 3.2rem; font-weight: 900;
+            text-shadow: 0 0 30px rgba(255, 215, 0, 0.6); 
+        }
+        .mood-final-climax .en { color: #555; font-weight: 600; }
+        .mood-final-climax .id { color: #777; }
+
+        .highlight { color: #b0c4de !important; font-style: italic; text-shadow: 0 0 10px rgba(176, 196, 222, 0.6) !important; }
+
+        /* Keyframes */
+        @keyframes staticShift { 0% { background-position: 0 0; } 100% { background-position: 100px 100px; } }
+        @keyframes roughShake { 0% { transform: translate(1px, 1px); } 50% { transform: translate(-1px, -1px); } 100% { transform: translate(1px, -1px); } }
+        @keyframes blink { 50% { opacity: 0; } }
+        @keyframes slowDrift { 0% { transform: translateX(0); } 100% { transform: translateX(10px); } }
+        @keyframes floatUpSlight { 0% { transform: translateY(10px); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
+        @keyframes floatShard {
+            0% { transform: translateY(120vh) rotate(0deg); opacity: 0; }
+            20% { opacity: 0.6; }
+            80% { opacity: 0.6; }
+            100% { transform: translateY(-20vh) rotate(360deg); opacity: 0; }
+        }
+        @keyframes voidPulse { 0% { transform: scale(1); opacity: 0.8; } 100% { transform: scale(1.1); opacity: 1; } }
+
+        @media (max-width: 600px) {
+            .jp { font-size: 1.5rem; }
+            .mood-final-climax .jp { font-size: 2.2rem; }
+            #final-jp { font-size: 1.8rem; }
+        }
     </style>
   </head>
   <body class="mood-somber">
+    
     <nav id="song-nav">
-      <a href="index.html" class="nav-home">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-          <polyline points="9 22 9 12 15 12 15 22"></polyline>
-        </svg>
-        <span>Library</span>
-      </a>
-      <a href="https://x.com/syuby" target="_blank" class="nav-x">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path></svg>
-      </a>
+        <a href="index.html" class="nav-home">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+            <span>Library</span>
+        </a>
+        <a href="https://x.com/syuby" target="_blank" class="nav-x">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path></svg>
+        </a>
     </nav>
 
     <div class="vignette"></div>
-
+    
     <div id="shard-layer"></div>
     <div id="void-layer"></div>
-
+    
     <div id="outro-container">
-      <div id="outro-text"></div>
+        <div id="outro-text"></div>
     </div>
 
     <div id="final-focus-container">
-      <div id="final-jp"></div>
-      <div id="final-sub">
-        <div class="final-en"></div>
-        <div class="final-id"></div>
-      </div>
+        <div id="final-jp"></div>
+        <div id="final-sub">
+            <div class="final-en"></div>
+            <div class="final-id"></div>
+        </div>
     </div>
 
     <div id="overlay">
-      <h1>僕らだけの主題歌</h1>
-      <p>CENTIMILLIMENTAL</p>
-      <p style="margin-top: 40px; font-size: 0.7rem; opacity: 0.5">[ CLICK TO BEGIN ]</p>
+        <h1>僕らだけの主題歌</h1>
+        <p>CENTIMILLIMENTAL</p>
+        <p style="margin-top: 40px; font-size: 0.7rem; opacity: 0.5;">[ CLICK TO BEGIN ]</p>
     </div>
 
     <div id="ending-screen">
-      <h1>"It's okay now."</h1>
-      <p>Move forward with the memories.</p>
-      <button id="replay-btn">Replay</button>
+        <h1>"It's okay now."</h1>
+        <p>Move forward with the memories.</p>
+        <button id="replay-btn">Replay</button>
     </div>
-
+    
     <div id="final-footer">from: syuby</div>
 
     <audio id="audio-player">
-      <source src="bokura.mp3" type="audio/mpeg" />
+        <source src="bokura.mp3" type="audio/mpeg">
     </audio>
 
     <div id="lyric-container">
-      <div id="line-jp" class="line jp"></div>
-      <div id="line-en" class="line en"></div>
-      <div id="line-id" class="line id"></div>
+        <div id="line-jp" class="line jp"></div>
+        <div id="line-en" class="line en"></div>
+        <div id="line-id" class="line id"></div>
     </div>
 
     <script>
-      const audio = document.getElementById('audio-player');
-      const overlay = document.getElementById('overlay');
-      const lyricContainer = document.getElementById('lyric-container');
-      const lineJp = document.getElementById('line-jp');
-      const lineEn = document.getElementById('line-en');
-      const lineId = document.getElementById('line-id');
+        const audio = document.getElementById('audio-player');
+        const overlay = document.getElementById('overlay');
+        const lyricContainer = document.getElementById('lyric-container');
+        const lineJp = document.getElementById('line-jp');
+        const lineEn = document.getElementById('line-en');
+        const lineId = document.getElementById('line-id');
+        
+        const shardLayer = document.getElementById('shard-layer');
+        const voidLayer = document.getElementById('void-layer');
+        const outroContainer = document.getElementById('outro-text');
+        
+        const finalFocusContainer = document.getElementById('final-focus-container');
+        const finalJp = document.getElementById('final-jp');
+        const finalSub = document.getElementById('final-sub');
 
-      const shardLayer = document.getElementById('shard-layer');
-      const voidLayer = document.getElementById('void-layer');
-      const outroContainer = document.getElementById('outro-text');
+        const endingScreen = document.getElementById('ending-screen');
+        const finalFooter = document.getElementById('final-footer');
+        const replayBtn = document.getElementById('replay-btn');
+        const songNav = document.getElementById('song-nav');
+        
+        let currentLineIndex = -1;
+        let outroSequence = null;
+        let shardInterval;
 
-      const finalFocusContainer = document.getElementById('final-focus-container');
-      const finalJp = document.getElementById('final-jp');
-      const finalSub = document.getElementById('final-sub');
-
-      const endingScreen = document.getElementById('ending-screen');
-      const finalFooter = document.getElementById('final-footer');
-      const replayBtn = document.getElementById('replay-btn');
-      const songNav = document.getElementById('song-nav');
-
-      let currentLineIndex = -1;
-      let outroSequence = null;
-      let shardInterval;
-
-      // --- GAP 1: BLUE SHARDS ---
-      function spawnShard() {
-        const shard = document.createElement('div');
-        shard.className = 'shard';
-        const size = Math.random() * 20 + 10;
-        shard.style.width = `${size}px`;
-        shard.style.height = `${size}px`;
-        shard.style.left = `${Math.random() * 100}%`;
-        shard.style.animationDuration = `${Math.random() * 5 + 5}s`;
-        shardLayer.appendChild(shard);
-        setTimeout(() => shard.remove(), 10000);
-      }
-      function activateShards() {
-        if (!shardInterval) shardInterval = setInterval(spawnShard, 300);
-      }
-      function deactivateShards() {
-        clearInterval(shardInterval);
-        shardInterval = null;
-      }
-
-      // --- GAP 2: VOID PULSE ---
-      function activateVoid() {
-        voidLayer.style.opacity = '1';
-        voidLayer.classList.add('void-active');
-      }
-      function deactivateVoid() {
-        voidLayer.style.opacity = '0';
-        voidLayer.classList.remove('void-active');
-      }
-
-      // --- TYPEWRITER UTILS ---
-      async function typeText(container, text, cursorClass = 'cursor') {
-        container.innerHTML = `<span class='${cursorClass}'></span>`;
-        let currentText = '';
-        for (let i = 0; i < text.length; i++) {
-          if (outroSequence === false) return;
-          currentText += text[i];
-          container.innerHTML = currentText + `<span class='${cursorClass}'></span>`;
-          await new Promise((r) => setTimeout(r, 80));
+        // --- GAP 1: BLUE SHARDS ---
+        function spawnShard() {
+            const shard = document.createElement('div');
+            shard.className = 'shard';
+            const size = Math.random() * 20 + 10;
+            shard.style.width = `${size}px`; shard.style.height = `${size}px`;
+            shard.style.left = `${Math.random() * 100}%`;
+            shard.style.animationDuration = `${Math.random() * 5 + 5}s`;
+            shardLayer.appendChild(shard);
+            setTimeout(() => shard.remove(), 10000);
         }
-      }
-
-      // --- FINAL FOCUS RENDER ---
-      async function renderFinalFocus(line) {
-        lyricContainer.classList.add('hidden');
-        finalFocusContainer.style.pointerEvents = 'auto';
-
-        // 1. Type Japanese
-        finalJp.innerHTML = `<span class='cursor-final'></span>`;
-        let text = line.jp;
-        let current = '';
-        for (let i = 0; i < text.length; i++) {
-          current += text[i];
-          finalJp.innerHTML = current + `<span class='cursor-final'></span>`;
-          await new Promise((r) => setTimeout(r, 80));
+        function activateShards() {
+            if(!shardInterval) shardInterval = setInterval(spawnShard, 300);
         }
-        finalJp.innerHTML = current; // Remove cursor
-
-        // 2. Trigger Selection
-        await new Promise((r) => setTimeout(r, 300));
-        finalJp.classList.add('selected');
-
-        // 3. Fade in translations
-        await new Promise((r) => setTimeout(r, 800));
-        finalSub.querySelector('.final-en').innerText = line.en;
-        finalSub.querySelector('.final-id').innerText = line.id;
-        finalSub.style.opacity = '1';
-      }
-
-      // --- OUTRO SEQUENCE ---
-      const outroMessages = ['Even if it hurts...', 'Even if it fades...', 'I will remember.', 'This blue spring.', 'This pain.', 'It was all proof.', 'Proof that we lived.'];
-      async function runOutroSequence() {
-        finalFocusContainer.style.opacity = '0'; // Hide previous lyric
-        await new Promise((r) => setTimeout(r, 1000));
-
-        for (const msg of outroMessages) {
-          if (!outroSequence) break;
-          await typeText(outroContainer, msg);
-          await new Promise((r) => setTimeout(r, 1500));
-          outroContainer.innerHTML = '';
-          await new Promise((r) => setTimeout(r, 500));
-        }
-      }
-      function startOutro() {
-        outroSequence = true;
-        runOutroSequence();
-      }
-      function stopOutro() {
-        outroSequence = false;
-        outroContainer.innerHTML = '';
-        finalFocusContainer.innerHTML = '';
-      }
-
-      function clearAllGaps() {
-        deactivateShards();
-        deactivateVoid();
-      }
-
-      // --- LYRICS DATA (Fixed & Synced) ---
-      const lyrics = [
-        { time: 0, type: 'gap-shards' },
-        { time: 0.74, jp: 'もう戻れないね', en: "We can't go back, can we?", id: 'Kita tak bisa kembali lagi ya', type: 'somber' },
-        { time: 4.86, type: 'gap-shards' },
-
-        // VERSE 1
-        { time: 9.25, jp: '春を待つ僕らの 青い痛みを', en: 'Our blue pain waiting for spring', id: 'Luka biru kita yang menanti musim semi', type: 'deep-sadness' },
-        { time: 18.11, jp: '愛や夢で ごちゃ混ぜにして走った', en: 'Mixed with love and dreams, we ran', id: 'Bercampur cinta dan mimpi, kita berlari', type: 'acceptance' },
-        { time: 25.97, jp: 'ぼやけていくのに 消えはしないような', en: 'Blurring out but never disappearing', id: 'Memudar namun takkan menghilang', type: 'deep-sadness' },
-        { time: 31.17, jp: 'じゃれ合いの中でついた傷を', en: 'The wounds we got while playing around', id: 'Luka yang didapat saat bercanda tawa', type: 'deep-sadness' },
-        { time: 36.66, jp: '重ねた場所とは 違う所から', en: 'From a place different where we layered them', id: 'Dari tempat yang berbeda dari yang kita lalui', type: 'deep-sadness' },
-        { time: 41.11, jp: '歩き出すから', en: "I'll start walking", id: 'Aku akan mulai melangkah', type: 'acceptance' },
-        { time: 43.67, jp: '泣きじゃくった日々を背に', en: 'Leaving the days of sobbing behind', id: 'Meninggalkan hari-hari penuh tangis', type: 'acceptance' },
-        { time: 47.0, jp: '僕は行くよ', en: 'I will go', id: 'Aku akan pergi', type: 'acceptance' },
-
-        // CHORUS 1
-        { time: 52.06, jp: 'ねぇ 見ててよ', en: 'Hey, watch me', id: 'Hei, lihatlah aku', type: 'acceptance' },
-        { time: 57.13, jp: '可笑しくて 笑った', en: 'It was funny, so we laughed', id: 'Itu lucu, jadi kita tertawa', type: 'acceptance' },
-        { time: 59.98, jp: 'すれ違い 怒った', en: 'Passed each other, got angry', id: 'Berselisih jalan, menjadi marah', type: 'acceptance' },
-        { time: 62.46, jp: 'あなたとの夢を叶えてくるよ', en: "I'll go make our dreams come true", id: 'Kan kuwujudkan mimpi bersamamu', type: 'highlight' },
-        { time: 67.94, jp: '悲しいとき すごく辛いとき', en: "When sad, when it's really painful", id: 'Saat sedih, saat sangat menyakitkan', type: 'deep-sadness' },
-        { time: 78.0, jp: '思い出す記憶を 過ごした時間を', en: 'The memories I recall, the time we spent', id: 'Kenangan yang kuingat, waktu yang kita habiskan', type: 'deep-sadness' },
-        { time: 83.5, jp: 'この心の背もたれにして', en: "I'll use them as a backrest for this heart", id: 'Kan kujadikan sandaran hati ini', type: 'somber' },
-
-        // GAP 2 (SHARDS) - Adjusted to be 2.5s before Verse 2
-        { time: 88.78, type: 'gap-shards' },
-
-        // VERSE 2
-        { time: 91.28, jp: '今度後ろを振り向くときは', en: 'Next time I look back', id: 'Lain kali saat kumenoleh ke belakang', type: 'somber' },
-        { time: 101.07, jp: '手でも振って 笑いあえたらいいな', en: 'I hope we can wave and laugh together', id: 'Kuharap kita bisa melambaikan tangan dan tertawa bersama', type: 'acceptance' },
-        { time: 108.58, jp: '森の奥深く 迷い込んでても', en: 'Even if lost deep in the forest', id: 'Meski tersesat jauh di dalam hutan', type: 'deep-sadness' },
-        { time: 113.65, jp: '差し込む朝日に夜明けを知る', en: 'Knowing dawn by the morning sun shining in', id: 'Mengetahui fajar dari mentari yang menyinar', type: 'acceptance' },
-        { time: 118.9, jp: 'たとえ見えなくても', en: "Even if I can't see it", id: 'Meski tak terlihat', type: 'deep-sadness' },
-
-        // CHORUS 2
-        { time: 121.63, jp: '過去 未来 今が手を繋いで', en: 'Past, future, and present holding hands', id: 'Masa lalu, depan, dan kini bergandengan', type: 'acceptance' },
-        { time: 126.2, jp: '次の夜を照らしてる', en: 'Illuminating the next night', id: 'Menerangi malam berikutnya', type: 'acceptance' },
-        { time: 129.73, jp: 'ここにいるよ', en: 'I am here', id: 'Aku di sini', type: 'highlight' },
-        { time: 134.77, jp: 'そばに来てよ', en: 'Come to my side', id: 'Datanglah padaku', type: 'acceptance' },
-        { time: 139.67, jp: '置き去りの願いも まだ残してるんだ', en: 'Wishes left behind still remain', id: 'Harapan yang tertinggal masih tersisa', type: 'deep-sadness' },
-        { time: 145.37, jp: '何食わぬ顔で生きていても', en: 'Even if living with an innocent face', id: 'Meski hidup dengan wajah tak berdosa', type: 'deep-sadness' },
-        { time: 150.66, jp: '会いたいとき 抱きしめたいとき', en: 'When I want to see you, want to hug you', id: 'Saat rindu, saat ingin memelukmu', type: 'deep-sadness' },
-        { time: 160.44, jp: '思い出す記憶を 過ごした時間を', en: 'The memories I recall, the time we spent', id: 'Kenangan yang kuingat, waktu yang kita habiskan', type: 'deep-sadness' },
-        { time: 166.09, jp: '見えぬ未来の灯りにして', en: 'Making them the light of the unseen future', id: 'Menjadikannya cahaya masa depan yang tak terlihat', type: 'somber' },
-
-        // GAP 3 (VOID PULSE)
-        { time: 174.0, type: 'gap-void' },
-
-        // BRIDGE (DESPAIR)
-        { time: 192.0, jp: 'もう消えたい 逃げたいと', en: 'Wanting to disappear, wanting to run', id: 'Ingin menghilang, ingin lari', type: 'despair' },
-        { time: 193.89, jp: '叫んだ絶望の中を', en: 'Screaming inside despair', id: 'Berteriak dalam keputusasaan', type: 'despair' },
-        { time: 197.36, jp: '出会いも奇跡さえも恨んだ', en: 'Resenting encounters and even miracles', id: 'Membenci pertemuan bahkan keajaiban', type: 'despair' },
-        { time: 199.78, jp: '最低なあの日を', en: 'That worst day', id: 'Hari terburuk itu', type: 'despair' },
-        { time: 202.35, jp: '無かった事には出来ないのだから', en: "Because I can't pretend it didn't happen", id: 'Karena tak bisa kuanggap tak terjadi', type: 'deep-sadness' },
-        { time: 205.23, jp: 'それでも生きて良かったって', en: "'I'm glad I lived after all'", id: "'Syukurlah aku tetap hidup'", type: 'somber' },
-        { time: 208.12, jp: 'せめて最後に思えますように', en: 'Hoping to think that at the very end', id: 'Semoga setidaknya itu yang kupikirkan di akhir nanti', type: 'acceptance' },
-
-        { time: 219.06, jp: 'もう戻れないね', en: "We can't go back, can we?", id: 'Kita tak bisa kembali lagi ya', type: 'somber' },
-
-        // FINAL CHORUS
-        { time: 229.27, jp: '僕は行くよ', en: 'I will go', id: 'Aku akan pergi', type: 'final-climax' },
-        { time: 234.69, jp: 'ねぇ 見ててよ', en: 'Hey, watch me', id: 'Hei, lihatlah aku', type: 'final-climax' },
-        { time: 239.35, jp: 'あなたより大事なもの探してくるよ', en: "I'll go find something more important than you", id: 'Kan kucari sesuatu yang lebih berharga darimu', type: 'final-climax' },
-        { time: 244.79, jp: '何よりも大事なあなたのために', en: 'For the sake of you, who is more important than anything', id: 'Demi dirimu yang lebih berharga dari segalanya', type: 'final-climax' },
-        { time: 250.39, jp: '会いたいとき 抱きしめたいとき', en: 'When I want to see you, want to hug you', id: 'Saat rindu, saat ingin memelukmu', type: 'final-climax' },
-        { time: 260.36, jp: '思い出す記憶を 過ごした時間を', en: 'The memories I recall, the time we spent', id: 'Kenangan yang kuingat, waktu yang kita habiskan', type: 'final-climax' },
-        { time: 265.75, jp: 'この心の背もたれにして', en: "I'll use them as a backrest for this heart", id: 'Kan kujadikan sandaran hati ini', type: 'final-climax' },
-        { time: 273.0, jp: '何回も歌うよ 大事な思いを', en: "I'll sing it many times, these precious feelings", id: 'Kan kunyanyikan berkali-kali, perasaan berharga ini', type: 'final-climax' },
-
-        // FINAL FOCUS
-        { time: 278.47, jp: '僕らだけの 主題歌にして', en: 'Making it our own theme song', id: 'Menjadikannya lagu tema kita semata', type: 'final-focus' },
-
-        { time: 286.48, type: 'gap-outro' }, // OUTRO
-      ];
-
-      overlay.addEventListener('click', () => {
-        overlay.style.opacity = '0';
-        setTimeout(() => (overlay.style.display = 'none'), 1500);
-        songNav.classList.add('nav-hidden');
-        audio.play();
-        activateShards(); // Start intro gap
-      });
-
-      audio.addEventListener('timeupdate', () => {
-        const currentTime = audio.currentTime;
-        let activeIndex = -1;
-        for (let i = 0; i < lyrics.length; i++) {
-          if (currentTime >= lyrics[i].time) activeIndex = i;
-          else break;
-        }
-        if (activeIndex !== -1 && activeIndex !== currentLineIndex) {
-          renderLyric(lyrics[activeIndex]);
-          currentLineIndex = activeIndex;
-        }
-      });
-
-      function renderLyric(line) {
-        // MOOD HANDLER
-        if (line.type && !line.type.startsWith('gap') && line.type !== 'final-focus') {
-          document.body.className = `mood-${line.type}`;
+        function deactivateShards() {
+            clearInterval(shardInterval);
+            shardInterval = null;
         }
 
-        // GAPS
-        if (line.type === 'gap-shards') {
-          hideLyrics();
-          clearAllGaps();
-          activateShards();
-          return;
+        // --- GAP 2: VOID PULSE ---
+        function activateVoid() {
+            voidLayer.style.opacity = '1';
+            voidLayer.classList.add('void-active');
         }
-        if (line.type === 'gap-void') {
-          hideLyrics();
-          clearAllGaps();
-          activateVoid();
-          return;
-        }
-        if (line.type === 'gap-outro') {
-          hideLyrics();
-          clearAllGaps();
-          document.body.className = 'mood-final-climax';
-          startOutro();
-          return;
+        function deactivateVoid() {
+            voidLayer.style.opacity = '0';
+            voidLayer.classList.remove('void-active');
         }
 
-        // FINAL FOCUS
-        if (line.type === 'final-focus') {
-          hideLyrics();
-          clearAllGaps();
-          document.body.className = 'mood-final-climax';
-          renderFinalFocus(line);
-          return;
+        // --- TYPEWRITER UTILS ---
+        async function typeText(container, text, cursorClass = 'cursor') {
+            container.innerHTML = `<span class='${cursorClass}'></span>`;
+            let currentText = "";
+            for (let i = 0; i < text.length; i++) {
+                if (outroSequence === false) return;
+                currentText += text[i];
+                container.innerHTML = currentText + `<span class='${cursorClass}'></span>`;
+                await new Promise(r => setTimeout(r, 80));
+            }
         }
 
-        // NORMAL LYRIC
-        clearAllGaps();
-        lyricContainer.classList.remove('hidden');
+        // --- FINAL FOCUS RENDER ---
+        async function renderFinalFocus(line) {
+            lyricContainer.classList.add('hidden');
+            finalFocusContainer.style.pointerEvents = 'auto'; 
+            
+            // 1. Type Japanese
+            finalJp.innerHTML = `<span class='cursor-final'></span>`;
+            let text = line.jp;
+            let current = "";
+            for(let i=0; i<text.length; i++) {
+                current += text[i];
+                finalJp.innerHTML = current + `<span class='cursor-final'></span>`;
+                await new Promise(r => setTimeout(r, 80));
+            }
+            finalJp.innerHTML = current; // Remove cursor
 
-        setTimeout(() => {
-          lineJp.innerText = line.jp;
-          lineEn.innerText = line.en;
-          lineId.innerText = line.id;
+            // 2. Trigger Selection
+            await new Promise(r => setTimeout(r, 300));
+            finalJp.classList.add('selected');
 
-          lineJp.className = 'line jp';
-          if (line.type === 'highlight') lineJp.classList.add('highlight');
+            // 3. Fade in translations
+            await new Promise(r => setTimeout(r, 800));
+            finalSub.querySelector('.final-en').innerText = line.en;
+            finalSub.querySelector('.final-id').innerText = line.id;
+            finalSub.style.opacity = '1';
+        }
 
-          lineJp.classList.add('show');
-          lineEn.classList.add('show');
-          lineId.classList.add('show');
-        }, 100);
-      }
+        // --- OUTRO SEQUENCE ---
+        const outroMessages = [
+            "Even if it hurts...", "Even if it fades...", "I will remember.",
+            "This blue spring.", "This pain.", "It was all proof.", "Proof that we lived."
+        ];
+        async function runOutroSequence() {
+            finalFocusContainer.style.opacity = '0'; // Hide previous lyric
+            await new Promise(r => setTimeout(r, 1000));
 
-      function hideLyrics() {
-        lyricContainer.classList.add('hidden');
-        lineJp.classList.remove('show');
-        lineEn.classList.remove('show');
-        lineId.classList.remove('show');
-      }
+            for (const msg of outroMessages) {
+                if (!outroSequence) break;
+                await typeText(outroContainer, msg);
+                await new Promise(r => setTimeout(r, 1500));
+                outroContainer.innerHTML = "";
+                await new Promise(r => setTimeout(r, 500));
+            }
+        }
+        function startOutro() { outroSequence = true; runOutroSequence(); }
+        function stopOutro() { outroSequence = false; outroContainer.innerHTML = ""; finalFocusContainer.innerHTML = ""; }
 
-      function clearAllGaps() {
-        deactivateShards();
-        deactivateVoid();
-      }
+        function clearAllGaps() {
+            deactivateShards();
+            deactivateVoid();
+        }
 
-      audio.addEventListener('ended', () => {
-        stopOutro();
-        finalFocusContainer.style.opacity = '0';
-        endingScreen.classList.add('visible-block');
-        endingScreen.style.opacity = '1';
-        endingScreen.style.pointerEvents = 'auto';
-        finalFooter.classList.add('visible-block');
-        finalFooter.style.opacity = '1';
-        songNav.classList.remove('nav-hidden');
-      });
+        // --- LYRICS DATA (Fixed & Synced) ---
+        const lyrics = [
+            { time: 0, type: "gap-shards" },
+            { time: 0.74, jp: "もう戻れないね", en: "We can't go back, can we?", id: "Kita tak bisa kembali lagi ya", type: "somber" },
+            { time: 4.86, type: "gap-shards" },
 
-      replayBtn.addEventListener('click', () => {
-        endingScreen.style.opacity = '0';
-        endingScreen.style.pointerEvents = 'none';
-        finalFooter.style.opacity = '0';
-        songNav.classList.add('nav-hidden');
-        finalFocusContainer.innerHTML = '';
-        finalFocusContainer.style.opacity = '1';
-        finalJp.classList.remove('selected');
+            // VERSE 1
+            { time: 9.25, jp: "春を待つ僕らの 青い痛みを", en: "Our blue pain waiting for spring", id: "Luka biru kita yang menanti musim semi", type: "deep-sadness" },
+            { time: 18.11, jp: "愛や夢で ごちゃ混ぜにして走った", en: "Mixed with love and dreams, we ran", id: "Bercampur cinta dan mimpi, kita berlari", type: "acceptance" },
+            { time: 25.97, jp: "ぼやけていくのに 消えはしないような", en: "Blurring out but never disappearing", id: "Memudar namun takkan menghilang", type: "deep-sadness" },
+            { time: 31.17, jp: "じゃれ合いの中でついた傷を", en: "The wounds we got while playing around", id: "Luka yang didapat saat bercanda tawa", type: "deep-sadness" },
+            { time: 36.66, jp: "重ねた場所とは 違う所から", en: "From a place different where we layered them", id: "Dari tempat yang berbeda dari yang kita lalui", type: "deep-sadness" },
+            { time: 41.11, jp: "歩き出すから", en: "I'll start walking", id: "Aku akan mulai melangkah", type: "acceptance" },
+            { time: 43.67, jp: "泣きじゃくった日々を背に", en: "Leaving the days of sobbing behind", id: "Meninggalkan hari-hari penuh tangis", type: "acceptance" },
+            { time: 47.00, jp: "僕は行くよ", en: "I will go", id: "Aku akan pergi", type: "acceptance" },
 
-        audio.currentTime = 0;
-        audio.play();
-        currentLineIndex = -1;
-        renderLyric(lyrics[0]);
-      });
+            // CHORUS 1
+            { time: 52.06, jp: "ねぇ 見ててよ", en: "Hey, watch me", id: "Hei, lihatlah aku", type: "acceptance" },
+            { time: 57.13, jp: "可笑しくて 笑った", en: "It was funny, so we laughed", id: "Itu lucu, jadi kita tertawa", type: "acceptance" },
+            { time: 59.98, jp: "すれ違い 怒った", en: "Passed each other, got angry", id: "Berselisih jalan, menjadi marah", type: "acceptance" },
+            { time: 62.46, jp: "あなたとの夢を叶えてくるよ", en: "I'll go make our dreams come true", id: "Kan kuwujudkan mimpi bersamamu", type: "highlight" },
+            { time: 67.94, jp: "悲しいとき すごく辛いとき", en: "When sad, when it's really painful", id: "Saat sedih, saat sangat menyakitkan", type: "deep-sadness" },
+            { time: 78.00, jp: "思い出す記憶を 過ごした時間を", en: "The memories I recall, the time we spent", id: "Kenangan yang kuingat, waktu yang kita habiskan", type: "deep-sadness" },
+            { time: 83.50, jp: "この心の背もたれにして", en: "I'll use them as a backrest for this heart", id: "Kan kujadikan sandaran hati ini", type: "somber" },
+            
+            // GAP 2 (SHARDS) - Adjusted to be 2.5s before Verse 2
+            { time: 88.78, type: "gap-shards" }, 
+
+            // VERSE 2
+            { time: 91.28, jp: "今度後ろを振り向くときは", en: "Next time I look back", id: "Lain kali saat kumenoleh ke belakang", type: "somber" },
+            { time: 101.07, jp: "手でも振って 笑いあえたらいいな", en: "I hope we can wave and laugh together", id: "Kuharap kita bisa melambaikan tangan dan tertawa bersama", type: "acceptance" },
+            { time: 108.58, jp: "森の奥深く 迷い込んでても", en: "Even if lost deep in the forest", id: "Meski tersesat jauh di dalam hutan", type: "deep-sadness" },
+            { time: 113.65, jp: "差し込む朝日に夜明けを知る", en: "Knowing dawn by the morning sun shining in", id: "Mengetahui fajar dari mentari yang menyinar", type: "acceptance" },
+            { time: 118.90, jp: "たとえ見えなくても", en: "Even if I can't see it", id: "Meski tak terlihat", type: "deep-sadness" },
+            
+            // CHORUS 2
+            { time: 121.63, jp: "過去 未来 今が手を繋いで", en: "Past, future, and present holding hands", id: "Masa lalu, depan, dan kini bergandengan", type: "acceptance" },
+            { time: 126.20, jp: "次の夜を照らしてる", en: "Illuminating the next night", id: "Menerangi malam berikutnya", type: "acceptance" },
+            { time: 129.73, jp: "ここにいるよ", en: "I am here", id: "Aku di sini", type: "highlight" },
+            { time: 134.77, jp: "そばに来てよ", en: "Come to my side", id: "Datanglah padaku", type: "acceptance" },
+            { time: 139.67, jp: "置き去りの願いも まだ残してるんだ", en: "Wishes left behind still remain", id: "Harapan yang tertinggal masih tersisa", type: "deep-sadness" },
+            { time: 145.37, jp: "何食わぬ顔で生きていても", en: "Even if living with an innocent face", id: "Meski hidup dengan wajah tak berdosa", type: "deep-sadness" },
+            { time: 150.66, jp: "会いたいとき 抱きしめたいとき", en: "When I want to see you, want to hug you", id: "Saat rindu, saat ingin memelukmu", type: "deep-sadness" },
+            { time: 160.44, jp: "思い出す記憶を 過ごした時間を", en: "The memories I recall, the time we spent", id: "Kenangan yang kuingat, waktu yang kita habiskan", type: "deep-sadness" },
+            { time: 166.09, jp: "見えぬ未来の灯りにして", en: "Making them the light of the unseen future", id: "Menjadikannya cahaya masa depan yang tak terlihat", type: "somber" },
+
+            // GAP 3 (VOID PULSE)
+            { time: 174.00, type: "gap-void" }, 
+
+            // BRIDGE (DESPAIR)
+            { time: 192.00, jp: "もう消えたい 逃げたいと", en: "Wanting to disappear, wanting to run", id: "Ingin menghilang, ingin lari", type: "despair" },
+            { time: 193.89, jp: "叫んだ絶望の中を", en: "Screaming inside despair", id: "Berteriak dalam keputusasaan", type: "despair" },
+            { time: 197.36, jp: "出会いも奇跡さえも恨んだ", en: "Resenting encounters and even miracles", id: "Membenci pertemuan bahkan keajaiban", type: "despair" },
+            { time: 199.78, jp: "最低なあの日を", en: "That worst day", id: "Hari terburuk itu", type: "despair" },
+            { time: 202.35, jp: "無かった事には出来ないのだから", en: "Because I can't pretend it didn't happen", id: "Karena tak bisa kuanggap tak terjadi", type: "deep-sadness" },
+            { time: 205.23, jp: "それでも生きて良かったって", en: "'I'm glad I lived after all'", id: "'Syukurlah aku tetap hidup'", type: "somber" },
+            { time: 208.12, jp: "せめて最後に思えますように", en: "Hoping to think that at the very end", id: "Semoga setidaknya itu yang kupikirkan di akhir nanti", type: "acceptance" },
+
+            { time: 219.06, jp: "もう戻れないね", en: "We can't go back, can we?", id: "Kita tak bisa kembali lagi ya", type: "somber" },
+            
+            // FINAL CHORUS
+            { time: 229.27, jp: "僕は行くよ", en: "I will go", id: "Aku akan pergi", type: "final-climax" },
+            { time: 234.69, jp: "ねぇ 見ててよ", en: "Hey, watch me", id: "Hei, lihatlah aku", type: "final-climax" },
+            { time: 239.35, jp: "あなたより大事なもの探してくるよ", en: "I'll go find something more important than you", id: "Kan kucari sesuatu yang lebih berharga darimu", type: "final-climax" },
+            { time: 244.79, jp: "何よりも大事なあなたのために", en: "For the sake of you, who is more important than anything", id: "Demi dirimu yang lebih berharga dari segalanya", type: "final-climax" },
+            { time: 250.39, jp: "会いたいとき 抱きしめたいとき", en: "When I want to see you, want to hug you", id: "Saat rindu, saat ingin memelukmu", type: "final-climax" },
+            { time: 260.36, jp: "思い出す記憶を 過ごした時間を", en: "The memories I recall, the time we spent", id: "Kenangan yang kuingat, waktu yang kita habiskan", type: "final-climax" },
+            { time: 265.75, jp: "この心の背もたれにして", en: "I'll use them as a backrest for this heart", id: "Kan kujadikan sandaran hati ini", type: "final-climax" },
+            { time: 273.00, jp: "何回も歌うよ 大事な思いを", en: "I'll sing it many times, these precious feelings", id: "Kan kunyanyikan berkali-kali, perasaan berharga ini", type: "final-climax" },
+            
+            // FINAL FOCUS
+            { time: 278.47, jp: "僕らだけの 主題歌にして", en: "Making it our own theme song", id: "Menjadikannya lagu tema kita semata", type: "final-focus" },
+            
+            { time: 286.48, type: "gap-outro" } // OUTRO
+        ];
+
+        overlay.addEventListener('click', () => {
+            overlay.style.opacity = '0';
+            setTimeout(() => overlay.style.display = 'none', 1500);
+            songNav.classList.add('nav-hidden');
+            audio.play();
+            activateShards(); // Start intro gap
+        });
+
+        audio.addEventListener('timeupdate', () => {
+            const currentTime = audio.currentTime;
+            let activeIndex = -1;
+            for(let i=0; i<lyrics.length; i++){
+                if(currentTime >= lyrics[i].time) activeIndex = i;
+                else break;
+            }
+            if(activeIndex !== -1 && activeIndex !== currentLineIndex){
+                renderLyric(lyrics[activeIndex]);
+                currentLineIndex = activeIndex;
+            }
+        });
+
+        function renderLyric(line) {
+            // MOOD HANDLER
+            if(line.type && !line.type.startsWith('gap') && line.type !== 'final-focus') {
+                document.body.className = `mood-${line.type}`;
+            }
+
+            // GAPS
+            if(line.type === 'gap-shards') { hideLyrics(); clearAllGaps(); activateShards(); return; }
+            if(line.type === 'gap-void') { hideLyrics(); clearAllGaps(); activateVoid(); return; }
+            if(line.type === 'gap-outro') { 
+                hideLyrics(); clearAllGaps(); 
+                document.body.className = 'mood-final-climax';
+                startOutro(); 
+                return; 
+            }
+            
+            // FINAL FOCUS
+            if(line.type === 'final-focus') {
+                hideLyrics(); clearAllGaps();
+                document.body.className = 'mood-final-climax';
+                renderFinalFocus(line);
+                return;
+            }
+
+            // NORMAL LYRIC
+            clearAllGaps();
+            lyricContainer.classList.remove('hidden');
+            
+            setTimeout(() => {
+                lineJp.innerText = line.jp;
+                lineEn.innerText = line.en;
+                lineId.innerText = line.id;
+
+                lineJp.className = 'line jp'; 
+                if(line.type === 'highlight') lineJp.classList.add('highlight');
+
+                lineJp.classList.add('show');
+                lineEn.classList.add('show');
+                lineId.classList.add('show');
+            }, 100);
+        }
+
+        function hideLyrics() {
+            lyricContainer.classList.add('hidden');
+            lineJp.classList.remove('show');
+            lineEn.classList.remove('show');
+            lineId.classList.remove('show');
+        }
+
+        function clearAllGaps() {
+            deactivateShards();
+            deactivateVoid();
+        }
+
+        audio.addEventListener('ended', () => {
+            stopOutro();
+            finalFocusContainer.style.opacity = '0';
+            endingScreen.classList.add('visible-block');
+            endingScreen.style.opacity = '1';
+            endingScreen.style.pointerEvents = 'auto';
+            finalFooter.classList.add('visible-block');
+            finalFooter.style.opacity = '1';
+            songNav.classList.remove('nav-hidden');
+        });
+
+        replayBtn.addEventListener('click', () => {
+            endingScreen.style.opacity = '0';
+            endingScreen.style.pointerEvents = 'none';
+            finalFooter.style.opacity = '0';
+            songNav.classList.add('nav-hidden');
+            finalFocusContainer.innerHTML = '';
+            finalFocusContainer.style.opacity = '1';
+            finalJp.classList.remove('selected');
+            
+            audio.currentTime = 0;
+            audio.play();
+            currentLineIndex = -1;
+            renderLyric(lyrics[0]);
+        });
+
     </script>
-  </body>
+</body>
 </html>
